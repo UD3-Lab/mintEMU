@@ -1,14 +1,16 @@
 Package: minTEMU
-Title: What the Package Does (One Line, Title Case)
+Title: The Legacy of the European Postgraduate Master in Urbanism at TU Delft: A Text Mining Approach
 Version: 0.0.0.9000
 Authors@R:
     person("Claudiu", "Forgaci", , "C.Forgaci@tudelft.nl", role = c("aut", "cre"),
-    comment = c(ORCID = "YOUR-ORCID-ID")),
+    comment = c(ORCID = "0000-0003-3218-5102")),
     
     person("Aleksandra", "Wilczynska", , "A.E.Wilczynska@tudelft.nl", role = c("aut"),
     comment = c(ORCID = "0000-0001-9323-0267"))
     
-Description: What the package does (one paragraph).
+Description: This package is a research compendium produced with the `rrtools`
+package containing the paper and code of "The Legacy of the European post-Master 
+in Urbanism (EMU) at TU Delft: A Text Mining Approach" research project.
 License: MIT + file LICENSE
 ByteCompile: true
 Encoding: UTF-8
