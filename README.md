@@ -1,28 +1,29 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# minTEMU
+# minTEMU - The Legacy of the European Postgraduate Master in Urbanism at TU Delft: A Text Mining Approach
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/UD3-Lab/minTEMU/master?urlpath=rstudio)
 
 This repository contains the data and code for our paper:
 
-> Authors, (YYYY). *Title of your paper goes here*. Name of journal/book
+> Authors, (YYYY). *The Legacy of the European Postgraduate Master in
+> Urbanism at TU Delft: A Text Mining Approach*. Name of journal/book
 > <https://doi.org/xxx/xxx>
 
 Our pre-print is online here:
 
-> Authors, (YYYY). *Title of your paper goes here*. Name of
-> journal/book, Accessed 09 Dec 2022. Online at
-> <https://doi.org/xxx/xxx>
+> Authors, (YYYY). *The Legacy of the European Postgraduate Master in
+> Urbanism at TU Delft: A Text Mining Approach*. Name of journal/book,
+> Accessed 12 Dec 2022. Online at <https://doi.org/xxx/xxx>
 
 ### How to cite
 
 Please cite this compendium as:
 
-> Authors, (2022). *Compendium of R code and data for Title of your
-> paper goes here*. Accessed 09 Dec 2022. Online at
-> <https://doi.org/xxx/xxx>
+> Authors, (2022). *Compendium of R code and data for The Legacy of the
+> European Postgraduate Master in Urbanism at TU Delft: A Text Mining
+> Approach*. Accessed 12 Dec 2022. Online at <https://doi.org/xxx/xxx>
 
 ## Contents
 
@@ -50,12 +51,12 @@ software](https://cloud.r-project.org/) itself and optionally [RStudio
 Desktop](https://rstudio.com/products/rstudio/download/).
 
 You can download the compendium as a zip from from this URL:
-[master.zip](/archive/master.zip). After unzipping: - open the `.Rproj`
-file in RStudio - run `devtools::install()` to ensure you have the
-packages this analysis depends on (also listed in the
-[DESCRIPTION](/DESCRIPTION) file). - finally, open
-`analysis/paper/paper.Rmd` and knit to produce the `paper.docx`, or run
-`rmarkdown::render("analysis/paper/paper.Rmd")` in the R console
+[main.zip](/archive/main.zip). After unzipping: - open the `.Rproj` file
+in RStudio - run `devtools::install()` to ensure you have the packages
+this analysis depends on (also listed in the [DESCRIPTION](/DESCRIPTION)
+file). - finally, open `analysis/paper/paper.Rmd` and knit to produce
+the `paper.docx`, or run `rmarkdown::render("analysis/paper/paper.Rmd")`
+in the R console
 
 ### Licenses
 
