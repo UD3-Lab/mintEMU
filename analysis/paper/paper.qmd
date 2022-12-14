@@ -65,7 +65,19 @@ Highlights: `r rmarkdown::metadata$highlights`
 
 ```{r}
 #| label: setup
-library(minTEMU)
+library(dplyr)
+library(readr)
+devtools::load_all(".")
+
+
+# read csv file with pages that are useful for the analysis
+emu_theses <- read_csv(here::here("analysis","data", "raw_data", "emu-theses.csv")) %>%
+  mutate(pdf_filename = paste0(year, "-", author_surname, ".pdf")) %>%
+  mutate(text = "")
+
+pdf_paths<- here::here("analysis","data", "raw_data", emu_theses$pdf_filename)
+
+emu_theses$text <- convert_pdf_text(pdf_paths)
 
 ```
 

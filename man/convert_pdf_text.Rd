@@ -4,13 +4,13 @@
 \alias{convert_pdf_text}
 \title{Convert pdf to text}
 \usage{
-convert_pdf_text(pdf_filename_vector)
+convert_pdf_text(pdf_filenames)
 }
 \arguments{
-\item{pdf_filename_vector}{Vector of paths to input (pdf) files}
+\item{pdf_filenames}{A vector of paths to input (pdf) files}
 }
 \value{
-A vector of body of text one string per file
+A vector of body of text; one string per pdf file
 }
 \description{
 Function returns a list of files from the directory chosen by the user and to be converted.
