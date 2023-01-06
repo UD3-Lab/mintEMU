@@ -80,7 +80,7 @@ pdf_paths<- here::here("analysis","data", "raw_data", emu_theses$pdf_filename)
 
 emu_theses$text <- convert_pdf_text(pdf_paths)
 
-# clean text
+# clean text 
   emu_theses$text_clean <- emu_theses$text %>%
     str_replace_all("\\s", " ") %>%  ### remove all carriage return and newline characters
     str_squish() %>%
