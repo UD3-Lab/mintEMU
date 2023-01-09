@@ -51,9 +51,33 @@ Highlights: `r rmarkdown::metadata$highlights`
 
 ```{r}
 #| label: setup
-#| echo: false
-library(tidyverse)
-library(tmap)
+library(dplyr)
+library(readr)
+library(stringr)
+devtools::load_all(".")
+
+
+# read csv file with pages that are useful for the analysis
+emu_theses <- read_csv(here::here("analysis","data", "raw_data", "emu-theses.csv")) %>%
+  mutate(pdf_filename = paste0(year, "-", author_surname, ".pdf")) %>%
+  mutate(text = "")
+
+pdf_paths<- here::here("analysis","data", "raw_data", emu_theses$pdf_filename)
+
+emu_theses$text <- convert_pdf_text(pdf_paths)
+
+# clean text 
+  emu_theses$text_clean <- emu_theses$text %>%
+    str_replace_all("\\s", " ") %>%  ### remove all carriage return and newline characters
+    str_squish() %>%
+    str_replace_all("- ", "") %>%       ### remove all hyphens
+    str_replace_all("[0-9]", "") %>%    ### remove all numbers
+    str_replace_all(emu_theses$author_firstname, "") %>%   ### remove author first name
+    str_replace_all(emu_theses$author_surname, "") %>%     ### remove author surname
+    str_replace_all(emu_theses$title, "") %>%              ### remove title
+    # str_replace_all("Claudiu Forgaci", "") %>%
+    # str_replace_all("Bucharest: Between North and South", "") %>%
+    str_replace_all("EMU", "")          ### remove common words
 ```
 
 # Introduction

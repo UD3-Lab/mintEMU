@@ -1,16 +1,23 @@
 Package: minTEMU
 Title: The Legacy of the European Postgraduate Master in Urbanism at TU Delft: A Text Mining Approach
 Version: 0.0.0.9000
-Authors@R:
-    person("Claudiu", "Forgaci", , "C.Forgaci@tudelft.nl", role = c("aut", "cre"),
-    comment = c(ORCID = "0000-0003-3218-5102")),
-    
-    person("Aleksandra", "Wilczynska", , "A.E.Wilczynska@tudelft.nl", role = c("aut"),
-    comment = c(ORCID = "0000-0001-9323-0267"))
-    
+Authors@R:c(
+    person(given   = "Claudiu",
+           family  = "Forgaci",
+           email   = "C.Forgaci@tudelft.nl", 
+           role    = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-3218-5102")
+           ),
+    person(given   = "Aleksandra",
+           family  = "Wilczynska", 
+           email   = "A.E.Wilczynska@tudelft.nl",
+           role    = c("aut"),
+           comment = c(ORCID = "0000-0001-9323-0267")
+           )
+           )
 Description: This package is a research compendium produced with the `rrtools`
-package containing the paper and code of "The Legacy of the European post-Master 
-in Urbanism (EMU) at TU Delft: A Text Mining Approach" research project.
+    package containing the paper and code of "The Legacy of the European post-Master 
+    in Urbanism (EMU) at TU Delft: A Text Mining Approach" research project.
 License: MIT + file LICENSE
 ByteCompile: true
 Encoding: UTF-8
@@ -18,12 +25,5 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2
 Imports: here,
-    base (>= 4.2.0),
-    jsonlite (>= 1.8.4),
-    knitr (>= 1.41),
-    renv (>= 0.16.0),
-    rmarkdown (>= 2.18),
-    tools (>= 4.2.0),
-    utils (>= 4.2.0)
-Suggests: devtools,
-    git2r
+    reticulate
+Suggests: devtools
