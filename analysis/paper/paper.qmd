@@ -1,30 +1,19 @@
 ---
-title: "Title Goes Here"
+title: "The Legacy of the European Post-Master in Urbanism at TU Delft: A Text Mining Approach"
 author:
   - Jane Doe:
       correspondence: "yes"
       email: janedoe@fosg.org
       orcid: 0000-0003-1689-0557
-      institute:
-        - fosg
-        - fop
+      institute: tud
   - John Q. Doe:
-      institute: fosg
+      email: johndoe@fosg.org
       orcid: 0000-0003-1689-0558
-  - Peder Ås:
-      institute: fosg
-      orcid: 0000-0003-1689-0559
-  - Juan Pérez:
-      orcid: 0000-0003-1689-0551
-      institute:
-        - name: Acme Corporation
-  - Max Mustermann:
-      orcid: 0000-0003-1689-0552
+      institute: tud
 institute:
-  - fosg:
-      name: Formatting Open Science Group
-      address: 23 Science Street, Eureka, Mississippi, USA
-  - fop: Federation of Planets
+  - tud:
+      name: Delft University of Technology
+      address: Julianalaan 134, 2628 BL, Delft, Zuid-Holland, The Netherlands
 title-block-published: "Last updated"  
 date: now
 date-format: long
@@ -47,13 +36,10 @@ csl: "../templates/journal-of-archaeological-science.csl" # Insert path for the 
 abstract: |
   Text of abstract
 keywords: |
-  keyword 1; keyword 2; keyword 3
+  urbanism; education; post-master; text mining
 highlights: |
   These are the highlights. 
 ---
-
-
-<!-- This is the format for text comments that will be ignored during renderings. Do not put R code in these comments because it will not be ignored. -->
 
 <!-- With the following code you can access and display values from the yml header above. -->
 
@@ -92,19 +78,46 @@ emu_theses$text <- convert_pdf_text(pdf_paths)
     # str_replace_all("Claudiu Forgaci", "") %>%
     # str_replace_all("Bucharest: Between North and South", "") %>%
     str_replace_all("EMU", "")          ### remove common words
-
 ```
-
 
 # Introduction
 
-Here is a citation [@Marwick2017]
+The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. 
+<!-- Complete paragraph about the program -->
 
-# Background
+In order to describe the legacy of the EMU program, including the distinctive features of the didactics employed in it, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: 97 theses of 100+ pages each produced over the years for the entire duration of the program between 2007-2021.
 
 # Methods
 
+## Data collection
+The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined. 
+
+## Data analysis
+
+[@silge2017a]
+[@hvitfeldt2021a]
+
 # Results
+
+```{r}
+#| label: map-theses
+#| warning: false 
+
+# Create dummy data
+location_names <- as.data.frame(c("Paris, France", "Bucharest, Romania", "Delft, The Netherlands"))
+
+# Geocode
+
+# Visualise thesis locations on world map
+world <- map_data("world")
+ggplot() +
+  geom_map(
+    data = world, map = world,
+    aes(long, lat, map_id = region),
+    color = "black", fill = "lightgray", size = 0.1
+  )
+```
+
 
 <!-- Here's some example analysis code: -->
 
