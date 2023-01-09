@@ -62,6 +62,11 @@ emu_theses <- read_csv(here::here("analysis","data", "raw_data", "emu-theses.csv
   mutate(pdf_filename = paste0(year, "-", author_surname, ".pdf")) %>%
   mutate(text = "")
 
+pdf_names <- dir("analysis/data/raw_data", pattern = "*.pdf")
+
+emu_theses <- emu_theses %>%
+  filter(pdf_filename %in% pdf_names)
+  
 pdf_paths<- here::here("analysis","data", "raw_data", emu_theses$pdf_filename)
 
 emu_theses$text <- convert_pdf_text(pdf_paths)
