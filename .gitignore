@@ -4,4 +4,7 @@
 # Data
 analysis/data/
 
+# pyvenv
+R/pyvenv
+
 .DS_Store
