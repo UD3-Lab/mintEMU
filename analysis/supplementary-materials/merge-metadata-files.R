@@ -12,8 +12,8 @@ theses_all <-
          -pdf_exists,
          -`Current Employmment`) %>%
   mutate(file_name = ifelse(is.na(last_name_2),
-                            paste0(grad_year, "-", last_name),
-                            paste0(grad_year, "-", last_name, "-", last_name_2)),
+                            paste0(grad_year, "-", last_name, ".pdf"),
+                            paste0(grad_year, "-", last_name, "-", last_name_2, ".pdf")),
          last_name_split = str_split(last_name, "-|\\s")) %>%
   unnest(last_name_split) %>%
   mutate(last_name_split_year = str_to_lower(paste0(last_name_split, "-", grad_year)))
