@@ -51,38 +51,40 @@ Highlights: `r rmarkdown::metadata$highlights`
 
 ```{r}
 #| label: setup
+
+# Load packages ----
+library(here)
 library(dplyr)
 library(readr)
 library(stringr)
+library(tidytext)
+library(pluralize)
+library(tm)
 devtools::load_all(".")
 
-
-# read csv file with pages that are useful for the analysis
-emu_theses <- read_csv(here::here("analysis","data", "raw_data", "emu-theses.csv")) %>%
-  mutate(pdf_filename = paste0(year, "-", author_surname, ".pdf")) %>%
+# Read thesis metadata ----
+emu_theses <- read_csv(here::here("analysis","data", "raw_data", "theses-metadata.csv")) %>%
   mutate(text = "")
 
-pdf_names <- dir("analysis/data/raw_data", pattern = "*.pdf")
+pdf_names <- dir(here::here("analysis", "data", "raw_data"), pattern = "*.pdf")
 
 emu_theses <- emu_theses %>%
-  filter(pdf_filename %in% pdf_names)
+  filter(file_name %in% pdf_names)
   
-pdf_paths<- here::here("analysis","data", "raw_data", emu_theses$pdf_filename)
+pdf_paths <- here::here("analysis","data", "raw_data", emu_theses$file_name)
 
 emu_theses$text <- convert_pdf_text(pdf_paths)
 
 # clean text 
 emu_theses$text_clean <- emu_theses$text %>%
   str_replace_all("\\s", " ") %>%  ### remove all carriage return and newline characters
-  str_squish() %>%
   str_replace_all("- ", "") %>%       ### remove all hyphens
   str_replace_all("[0-9]", "") %>%    ### remove all numbers
-  str_replace_all(emu_theses$author_firstname, "") %>%   ### remove author first name
-  str_replace_all(emu_theses$author_surname, "") %>%     ### remove author surname
+  str_replace_all(emu_theses$first_name, "") %>%   ### remove author first name
+  str_replace_all(emu_theses$last_name, "") %>%     ### remove author surname
   str_replace_all(emu_theses$title, "") %>%              ### remove title
-  # str_replace_all("Claudiu Forgaci", "") %>%
-  # str_replace_all("Bucharest: Between North and South", "") %>%
-  str_replace_all("EMU", "")          ### remove common words
+  str_replace_all("EMU", "") %>%           ### remove common words
+  str_squish()
 ```
 
 # Introduction
@@ -122,6 +124,125 @@ ggplot() +
     color = "black", fill = "lightgray", size = 0.1
   )
 ```
+
+Stop words:
+- Custom stop words from titles and author names should only be removed from corresponding theses;
+- Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as custom stop words;
+- All theses were written in English; for common English stop words the "snowball" lexicon was used.
+
+```{r}
+stop_words_custom <- emu_theses %>% 
+  unnest_tokens(output = word, input = title) %>%   ### add words from the title
+  select(word) %>% 
+  rbind(., data.frame(word = c("preface", "foreword", "introduction", "conclusion", "thesis"))) %>% 
+  rbind(., data.frame(word = c("city", "urban", "urbanism"))) %>% 
+  rbind(., data.frame(word = c("hab", "km")))
+
+emu_theses_words <- emu_theses %>%
+  mutate(author = paste(first_name, last_name)) %>% 
+  select(author, title, text, -c(graduation_year, first_name, last_name)) %>% 
+  unnest_tokens(output = word, input = text) %>%   # remove punctuation, convert to lowercase, seperate all words
+  anti_join(stop_words, by = "word") %>%  # remove stop words
+  anti_join(stop_words_custom, by = "word")
+```
+
+
+
+```{r}
+# find the most frequently used words
+emu_theses_top <- emu_theses_words %>%
+  group_by(title) %>%
+  count(word, sort = TRUE) %>%
+  slice_max(n, n = 20) %>%        ### top_n is superseded; better use slice_max instead
+  filter(n > 50) %>%              ### filter words with a minimum count
+  ungroup() %>% 
+  mutate(word = reorder(word, n))
+
+emu_theses_top[emu_theses_top$word == "ring",]
+
+emu_theses_top %>%
+  ggplot(aes(x = word, y = n, fill = title)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip() +
+  labs(y = "Count",
+       x = "Unique words",
+       title = "Count of unique words found in thesis",
+       subtitle = "Stop words were removed from the list") +
+  facet_wrap( ~ title, scales = "free", ncol = 2)
+
+
+# # wip function ngrams
+# get_ngrams <- function(df, n) {
+#   if (!is.numeric(n)) {
+#     stop("n is not numeric")
+#   }
+#   emu_theses %>%
+#     mutate(author = paste(first_name, last_name)) %>% 
+#     select(author, title, text, -c(year, first_name, last_name, text_start, text_end)) %>% 
+#     unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
+#     separate(bigram, into = c("first","second"), sep = " ", remove = FALSE) %>%
+#     anti_join(stop_words, by = c("first" = "word")) %>%
+#     anti_join(stop_words, by = c("second" = "word")) %>%
+#     anti_join(stop_words_custom, by = c("first" = "word")) %>%
+#     anti_join(stop_words_custom, by = c("second" = "word")) %>%
+#     filter(str_detect(first, "[a-z]") & str_detect(second, "[a-z]")) %>% 
+#     filter(first != second) %>% 
+#     filter(first != "source")
+# }
+# emu_theses_ngrams <- get_ngrams(emu_theses, 2)
+
+# bigrams
+emu_theses_bigrams <- emu_theses %>%
+  mutate(author = paste(first_name, last_name)) %>% 
+  select(author, title, text, -c(graduation_year, first_name, last_name)) %>% 
+  unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
+  separate(bigram, into = c("first","second"), sep = " ", remove = FALSE) %>%
+  anti_join(stop_words, by = c("first" = "word")) %>%
+  anti_join(stop_words, by = c("second" = "word")) %>%
+  anti_join(stop_words_custom, by = c("first" = "word")) %>%
+  anti_join(stop_words_custom, by = c("second" = "word")) %>%
+  filter(str_detect(first, "[a-z]") & str_detect(second, "[a-z]")) %>% 
+  filter(first != second) %>% 
+  filter(first != "source")
+
+emu_theses_bigrams_top <- emu_theses_bigrams %>%
+  group_by(title) %>%
+  count(bigram, sort = TRUE) %>%
+  slice_max(n, n = 10) %>%        ### top_n is superseded; better use slice_max instead
+  # filter(n > 50)                ### filter words with a minimum count
+  ungroup() %>% 
+  mutate(bigram = reorder(bigram, n))
+
+emu_theses_bigrams_top %>%
+  ggplot(aes(x = bigram, y = n, fill = title)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip() +
+  labs(y = "Count",
+       x = "Unique words",
+       title = "Count of unique words found in thesis",
+       subtitle = "Stop words were removed from the list") +
+  facet_wrap( ~ title, scales = "free", ncol = 2)
+
+# find the most frequently used bigrams
+emu_thesis_bigrams_top <- emu_theses_bigrams %>%
+  group_by(title) %>% 
+  count(bigram, sort = TRUE) %>%
+  slice_max(n, n = 10) %>%                   ### change the number of top words to show
+  mutate(bigram = reorder(bigram, n)) %>% 
+  print()
+```
+
+
+
+
+
+
+
+
+
+
 
 
 <!-- Here's some example analysis code: -->
