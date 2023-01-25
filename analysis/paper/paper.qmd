@@ -71,18 +71,15 @@ pdf_paths<- here::here("analysis","data", "raw_data", emu_theses$pdf_filename)
 
 emu_theses$text <- convert_pdf_text(pdf_paths)
 
+#head_text(emu_theses$text)
+
 # clean text 
 emu_theses$text_clean <- emu_theses$text %>%
-  str_replace_all("\\s", " ") %>%  ### remove all carriage return and newline characters
-  str_squish() %>%
-  str_replace_all("- ", "") %>%       ### remove all hyphens
-  str_replace_all("[0-9]", "") %>%    ### remove all numbers
-  str_replace_all(emu_theses$author_firstname, "") %>%   ### remove author first name
-  str_replace_all(emu_theses$author_surname, "") %>%     ### remove author surname
-  str_replace_all(emu_theses$title, "") %>%              ### remove title
-  # str_replace_all("Claudiu Forgaci", "") %>%
-  # str_replace_all("Bucharest: Between North and South", "") %>%
-  str_replace_all("EMU", "")          ### remove common words
+  clean_basic() %>%
+  str_remove_all(find_meta_stopwords(emu_theses) )  
+
+
+
 ```
 
 # Introduction
