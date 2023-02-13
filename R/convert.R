@@ -7,14 +7,15 @@
 #' @return A vector of body of text; one string per pdf file
 #' @export
 convert_pdf_text <-function(pdf_filenames){
+
   pdf_list<- as.list(pdf_filenames)
 
   # Create virtual environment
-  if (!file.exists(here::here("R","pyvenv"))) {
+  if ( !file.exists(here::here("R","pyvenv") )) {
     reticulate::install_python(version = '3.9.7')
     reticulate::virtualenv_create(envname = here::here("R","pyvenv"),
                                   version = "3.9.7")
-    reticulate::py_install("PyMuPDF==1.21.0", envname = here::here("R","pyvenv"))
+    reticulate::py_install("PyMuPDF == 1.21.0", envname = here::here("R","pyvenv"))
   }
 
   # Activate the virtual environment for python
