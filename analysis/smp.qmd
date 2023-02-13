@@ -1,0 +1,49 @@
+---
+title: "mintEMU Software Management Plan"
+author: "Claudiu Forgaci"
+format: pdf
+editor: visual
+bibliography: paper/references.bib
+---
+
+This Software Management Plan uses the guidelines for medium management level as described in the Practical guide to Software Management Plans [@martinez-ortiz2022].
+
+**Please provide a brief description of your software, stating its purpose and intended audience.**
+
+*mintEMU* is a research compendium created as an R package with `rrtools` in preparation of the scientific paper *The Legacy of the European Post-Master in Urbanism at TU Delft: A Text Mining Approach*. The compendum contains the data, code for data processing and analysis, as well as the paper presenting the results of the analysis. The intended audience is the scientific community interested in the research results, methods employed or data generated in the project.
+
+The project was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this research aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employ a text mining approach in which we analyse its output: 90+ theses each with 100+ pages produced over the years for the duration of the program between 2007-2021.
+
+The findings will be presented in a journal article, accompanied by a fully reproducible research compendium comprising an open dataset and corresponding software, as well as a dashboard to enable users to interact with the data and explore relations and patterns in the data beyond the findings presented in the paper. The project is carried out with in-kind support from the TU Delft Digital Competence Center.
+
+**How will you manage versioning of your software?**
+
+The software will be versioned with Git and hosted on GitHub to allow for collaborative development. Although the research compendium is not a software that will be versioned after publication, semantic versioning will be used in the process leading up to publication, as follows: development version 0.0.0.9000 in the research stage; patch version 0.0.1 with the publication of the preprint; minor version 0.1.0 and subsequent increments of minor version at the time of submission for review, and responses to reviews, respectively; and 1.0.0 for the published paper.
+
+**How will your software be documented for users? Please provide a link to the documentation if available. How will you document your software's contribution guidelines and governance structure?**
+
+The research compendium will be documented as an R package, that is, all functions used in data processing and analysis will have associated documentation available from the help interface of R. Once loaded as a package all documentation is available to the user. The analysis will be fully documented in a Quarto computational notebook using R Markdown with the knitr engine.
+
+**What licence will you give your software? How will you check that it respects the licences of libraries and dependencies it uses?**
+
+The software will use an MIT license.
+
+**How will the installation requirements of your software be documented? Please provide a link to the installation documentation if available.**
+
+Installation requirements are described in the README file of the repository on GitHub:
+
+**How will users of your software be able to cite your software? Please provide a link to your software citation file (CFF) if available.**
+
+**How will your software be documented for future developers?**
+
+**How will your software be tested? Please provide a link to the (automated) testing results.**
+
+**Do you follow specific software quality guidelines? If yes, which ones?**
+
+FAIR4RS
+
+**How will your software be packaged and distributed? Please provide a link to available packaging information (e.g. entry in a packaging registry, if available).**
+
+The software will be made available as an R package on GitHub, available for direct installation from RStudio. As the package is s research compendium, it will not be made available in a packaging registry.
+
+**How do you plan to procure long term maintenance of your software?**
