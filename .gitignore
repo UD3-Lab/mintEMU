@@ -5,6 +5,6 @@
 analysis/data/
 
 # pyvenv
-R/pyvenv
+inst/python/pyvenv
 
 .DS_Store
