@@ -51,45 +51,89 @@ Highlights: `r rmarkdown::metadata$highlights`
 
 ```{r}
 #| label: setup
-library(dplyr)
-library(readr)
-library(stringr)
+#| echo: false
+#| warning: false
+
+# Load packages ----
+## Managing paths
+library(here)
+
+## Data manipulation and visualisation
+library(tidyverse)
+
+
+## Text processing and analysis
+library(tidytext)
+library(SnowballC)
+library(tm)
+
+
+## Working with spatial data
+library(tidygeocoder)
+
+# Load analysis functions ----
 devtools::load_all(".")
 
+# Read thesis metadata ----
+## All theses
+theses_all <-
+  readxl::read_xlsx(path = here("analysis", "data", "raw_data", "theses-all.xlsx"))
 
-# read csv file with pages that are useful for the analysis
-emu_theses <- read_csv(here::here("analysis","data", "raw_data", "emu-theses.csv")) %>%
-  mutate(pdf_filename = paste0(year, "-", author_surname, ".pdf")) %>%
-  mutate(text = "")
+## Theses with PDF available
+data_path <- here("analysis", "data", "raw_data")
+pdf_names <- dir(data_path, pattern = "*.pdf")
 
-pdf_names <- dir("analysis/data/raw_data", pattern = "*.pdf")
-
-emu_theses <- emu_theses %>%
-  filter(pdf_filename %in% pdf_names)
+emu_theses <- 
+  read_csv(here(data_path, "theses-metadata.csv")) %>%
+  mutate(text = "") %>%
+  filter(!is.na(pdf_via))
   
-pdf_paths<- here::here("analysis","data", "raw_data", emu_theses$pdf_filename)
+pdf_paths <- here(data_path, emu_theses$file_name)
+```
 
+```{r}
+#| label: extract-pdf-text
+#| echo: false
 emu_theses$text <- convert_pdf_text(pdf_paths)
+```
+
+```{r}
+#| label: clean-text
+#| echo: false
+
+#head_text(emu_theses$text)
 
 # clean text 
 emu_theses$text_clean <- emu_theses$text %>%
-  str_replace_all("\\s", " ") %>%  ### remove all carriage return and newline characters
-  str_squish() %>%
-  str_replace_all("- ", "") %>%       ### remove all hyphens
-  str_replace_all("[0-9]", "") %>%    ### remove all numbers
-  str_replace_all(emu_theses$author_firstname, "") %>%   ### remove author first name
-  str_replace_all(emu_theses$author_surname, "") %>%     ### remove author surname
-  str_replace_all(emu_theses$title, "") %>%              ### remove title
-  # str_replace_all("Claudiu Forgaci", "") %>%
-  # str_replace_all("Bucharest: Between North and South", "") %>%
-  str_replace_all("EMU", "")          ### remove common words
+  clean_basic() %>%
+  str_remove_all(find_meta_stopwords(emu_theses) )  
+
+```
+
+```{r}
+#| label: preview
+#| include: false
+
+# Preview theses
+emu_theses %>% 
+  arrange(graduation_year) %>% 
+  pull(text_clean) %>% 
+  str_sub(1, 500)
+
+# Preview theses
+hist(str_length(emu_theses$text_clean))
+
+Encoding(emu_theses$text_clean)
 ```
 
 # Introduction
 
-The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. The EMU was an advanced master ran jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia. <!-- Complete paragraph about the program -->
 
-In order to describe the legacy of the EMU program, including the distinctive features of the didactics employed in it, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: 97 theses of 100+ pages each produced over the years for the entire duration of the program between 2007-2021.
+The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. The EMU was an advanced master ran jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia. 
+<!-- Complete paragraph about the program -->
+
+
+In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(theses_all)` theses with an average of `r mean(str_length(emu_theses$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(theses_all$grad_year, na.rm = TRUE), "-", max(theses_all$grad_year, na.rm = TRUE))`. The first year of the program was not represented, as PDF files were only available from 2008 onward.
 
 # Methods
 
@@ -107,34 +151,37 @@ Research questions:
 
 The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined.
 
-## Data analysis
-
-[@silge2017a]
-[@hvitfeldt2021a]
-
-# Results
+A total number of `r nrow(emu_theses)` were analysed.
 
 ```{r}
-#| label: map-theses
+#| label: fig-map-theses
 #| warning: false 
+#| echo: false
+#| fig-cap: "Location of EMU theses included in the analysis"
 
-# Create dummy data
-location_names <- as.data.frame(c("Paris, France", "Bucharest, Romania", "Delft, The Netherlands"))
+# Geocode thesis locations
+emu_theses <- emu_theses %>%
+  geocode(location, method = 'osm', lat = latitude , long = longitude)
 
-# Geocode
-
-# Visualise thesis locations on world map
+# Show thesis locations on world map
 world <- map_data("world")
 ggplot() +
   geom_map(
     data = world, map = world,
     aes(long, lat, map_id = region),
     color = "black", fill = "lightgray", size = 0.1
-  )
+  ) +
+  geom_point(data = emu_theses, aes(longitude, latitude), color = "red") +
+  coord_fixed() +
+  theme_void()
 ```
 
+Figure @fig-map-theses shows the geographic spread of the theses included in the analysis.
 
-<!-- Here's some example analysis code: -->
+## Data analysis
+
+[@silge2017a]
+[@hvitfeldt2021a]
 
 [@silge2017a] [@hvitfeldt2021a]
 
@@ -154,30 +201,135 @@ Word-level tokenisation was applied with the `unnest_tokens()` function of the `
 -   Document stop words:
     -   Stop words from titles and author names should only be removed from corresponding theses
 
+
 ```{r}
-#| label: get-data
-#| eval: false
-# Note the path that we need to use to access our data files when rendering this document
-my_data <- read.csv(here::here('analysis/data/raw_data/my_csv_file.csv'))
+#| label: stop-words
+
+stop_words_custom <- emu_theses %>% 
+  unnest_tokens(output = word, input = title) %>%   ### add words from the title
+  select(word) %>% 
+  rbind(., data.frame(word = c("preface", "foreword", "introduction", "conclusion", "thesis", 
+                               "source", "author"))) %>% 
+  # rbind(., data.frame(word = c("city", "urban", "urbanism"))) %>% 
+  rbind(., data.frame(word = c("hab", "km")))
+
+emu_theses_words <- emu_theses %>%
+  mutate(author = paste(first_name, last_name)) %>% 
+  select(author, title, text, -c(graduation_year, first_name, last_name)) %>% 
+  unnest_tokens(output = word, input = text) %>%   # remove punctuation, convert to lowercase, seperate all words
+  anti_join(stop_words, by = "word") %>%  # remove stop words
+  anti_join(stop_words_custom, by = "word")
 ```
 
 Stemming is a pre-processing step that needs to be carefully thought through, as it might either degrade topic modeling or produce no meaningful results [@hvitfeldt2021a].
 
-```{r}
-#| label: fig-demo-plot
-#| fig-cap: "A plot of random numbers"
-plot(rnorm(10))
-```
-
-Figure @fig-demo-plot shows how we can have a caption and cross-reference for a plot. Note that figure label and cross-references must both be prefixed with `fig-`
 
 ```{r}
-#| label: demo-inline-code
-#| echo: false
-x <- round(pi, 2)
+#| label: stemming
+
+emu_theses_words %>% 
+  mutate(stem = wordStem(words = word, 
+                         language = "porter")) %>%  # Implement the Porter stemming algorithm for English provided by the SnowballC package
+  count(stem, sort = TRUE)
 ```
 
-Here is an example of inline code `r x` in the middle of a sentence.
+# Results
+
+```{r}
+# Which are the top 20 most frequently used words in each thesis?
+emu_theses_top_20 <- emu_theses_words %>%
+  group_by(title) %>%
+  count(word, sort = TRUE) %>%
+  slice_max(n, n = 20) %>%        ### top_n is superseded; better use slice_max instead
+  # filter(n > 50) %>%              ### filter words with a minimum count
+  ungroup() %>% 
+  mutate(word = reorder(word, n))
+
+# Which are first 5 most frequently used words in each thesis?
+emu_theses_first_5 <- emu_theses_words %>%
+  count(title, word) %>% 
+  group_by(title) %>% 
+  arrange(desc(n)) %>% 
+  slice(1:5)
+
+# Which theses contain "fabric" in the top 20 most frequently used words?
+emu_theses_top_20 %>% 
+  filter(word == "fabric")
+
+emu_theses_top_20 %>%
+  slice(1:40) %>% 
+  ggplot(aes(x = reorder(word, n), y = n, fill = title)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip() +
+  labs(y = "Count",
+       x = "Unique words",
+       title = "Count of unique words found in thesis",
+       subtitle = "Stop words were removed from the list") +
+  facet_wrap( ~ title, scales = "free", ncol = 2)
+
+
+# # wip function ngrams
+# get_ngrams <- function(df, n) {
+#   if (!is.numeric(n)) {
+#     stop("n is not numeric")
+#   }
+#   emu_theses %>%
+#     mutate(author = paste(first_name, last_name)) %>% 
+#     select(author, title, text, -c(year, first_name, last_name, text_start, text_end)) %>% 
+#     unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
+#     separate(bigram, into = c("first","second"), sep = " ", remove = FALSE) %>%
+#     anti_join(stop_words, by = c("first" = "word")) %>%
+#     anti_join(stop_words, by = c("second" = "word")) %>%
+#     anti_join(stop_words_custom, by = c("first" = "word")) %>%
+#     anti_join(stop_words_custom, by = c("second" = "word")) %>%
+#     filter(str_detect(first, "[a-z]") & str_detect(second, "[a-z]")) %>% 
+#     filter(first != second) %>% 
+#     filter(first != "source")
+# }
+# emu_theses_ngrams <- get_ngrams(emu_theses, 2)
+
+# bigrams
+emu_theses_bigrams <- emu_theses %>%
+  mutate(author = paste(first_name, last_name)) %>% 
+  select(author, title, text, -c(graduation_year, first_name, last_name)) %>% 
+  unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
+  separate(bigram, into = c("first","second"), sep = " ", remove = FALSE) %>%
+  anti_join(stop_words, by = c("first" = "word")) %>%
+  anti_join(stop_words, by = c("second" = "word")) %>%
+  anti_join(stop_words_custom, by = c("first" = "word")) %>%
+  anti_join(stop_words_custom, by = c("second" = "word")) %>%
+  filter(str_detect(first, "[a-z]") & str_detect(second, "[a-z]")) %>% 
+  filter(first != second) %>% 
+  filter(first != "source")
+
+emu_theses_bigrams_top <- emu_theses_bigrams %>%
+  group_by(title) %>%
+  count(bigram, sort = TRUE) %>%
+  slice_max(n, n = 10) %>%        ### top_n is superseded; better use slice_max instead
+  # filter(n > 50)                ### filter words with a minimum count
+  ungroup() %>% 
+  mutate(bigram = reorder(bigram, n))
+
+emu_theses_bigrams_top %>%
+  ggplot(aes(x = bigram, y = n, fill = title)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip() +
+  labs(y = "Count",
+       x = "Unique words",
+       title = "Count of unique words found in thesis",
+       subtitle = "Stop words were removed from the list") +
+  facet_wrap( ~ title, scales = "free", ncol = 2)
+
+# find the most frequently used bigrams
+emu_thesis_bigrams_top <- emu_theses_bigrams %>%
+  group_by(title) %>% 
+  count(bigram, sort = TRUE) %>%
+  slice_max(n, n = 10) %>%                   ### change the number of top words to show
+  mutate(bigram = reorder(bigram, n)) %>% 
+  print()
+```
 
 # Discussion
 
