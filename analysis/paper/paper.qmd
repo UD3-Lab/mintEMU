@@ -183,8 +183,6 @@ Figure @fig-map-theses shows the geographic spread of the theses included in the
 [@silge2017a]
 [@hvitfeldt2021a]
 
-[@silge2017a] [@hvitfeldt2021a]
-
 ### Tokenisation
 
 Word-level tokenisation was applied with the `unnest_tokens()` function of the `tidytext` package. This was preferred over other tokenisers as it produced results that work seamlessly with other `tidyverse` tools.
