@@ -159,9 +159,8 @@ A total number of `r nrow(emu_theses)` were analysed.
 #| echo: false
 #| fig-cap: "Location of EMU theses included in the analysis"
 
-# Geocode thesis locations
-emu_theses <- emu_theses %>%
-  geocode(location, method = 'osm', lat = latitude , long = longitude)
+# Add latitude and longitude information to theses data frame
+emu_theses <- geocode_thesis_locations(emu_theses)
 
 # Show thesis locations on world map
 world <- map_data("world")
