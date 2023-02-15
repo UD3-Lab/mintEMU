@@ -309,6 +309,12 @@ emu_theses_bigrams_top <- emu_theses_bigrams %>%
   ungroup() %>% 
   mutate(bigram = reorder(bigram, n))
 
+emu_theses_bigrams_top_all <- emu_theses_bigrams %>%
+  count(bigram, sort = TRUE) %>%
+  slice_max(n, n = 20) %>%        ### top_n is superseded; better use slice_max instead
+  # filter(n > 50)                ### filter words with a minimum count
+  mutate(bigram = reorder(bigram, n))
+
 emu_theses_bigrams_top %>%
   ggplot(aes(x = bigram, y = n, fill = title)) +
   geom_col() +
