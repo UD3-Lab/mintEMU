@@ -1,4 +1,4 @@
-#' Find top n words with the highest count per document
+#' Extract top n words with the highest count per document
 #'
 #' Given a data frame with a column storing the words found in a document
 #' identified with a title column and a positive number top_n, this function
@@ -12,7 +12,7 @@
 #'
 #' @return A data frame with the top n words with a count above the given minimum.
 #' @export
-top_n_word_count_per_document <- function(data, top_n, title_col = NULL, word_col = NULL, min_count = 1) {
+get_top_words_per_document <- function(data, top_n, title_col = NULL, word_col = NULL, min_count = 1) {
   data_top_n <- data |>
     dplyr::group_by(!!sym(title_col)) |>
     dplyr::count(!!sym(word_col), sort = TRUE) |>
@@ -23,7 +23,7 @@ top_n_word_count_per_document <- function(data, top_n, title_col = NULL, word_co
   data_top_n
 }
 
-#' Find top n words with the highest count across all documents
+#' Extract top n words with the highest count across all documents
 #'
 #' Given a data frame with a column storing the words found in a document
 #' and a positive number top_n, this function returns the top n words with the
@@ -35,7 +35,7 @@ top_n_word_count_per_document <- function(data, top_n, title_col = NULL, word_co
 #'
 #' @return A data frame with the top n words across all documents.
 #' @export
-top_n_word_count_per_corpus <- function(data, top_n, word_col = NULL) {
+get_top_words_per_corpus <- function(data, top_n, word_col = NULL) {
   data_top_n <- data |>
     dplyr::group_by(!!sym(word_col)) |>
     dplyr::count(!!sym(word_col), sort = TRUE) |>

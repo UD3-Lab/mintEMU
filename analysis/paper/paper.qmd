@@ -235,17 +235,17 @@ emu_theses_words %>%
 
 ```{r}
 # Which are the top n most frequently used words in each thesis?
-top_n_word_count_per_document(data = emu_theses_words, 
-                              top_n = 3, 
-                              title_col = "title", 
-                              word_col = "word")
+get_top_words_per_document(data = emu_theses_words, 
+                           top_n = 3, 
+                           title_col = "title", 
+                           word_col = "word")
 ```
 
 ```{r}
 # Which are the top n most frequently used words in all theses`?
-top_n_word_count_per_corpus(data = emu_theses_words, 
-                            top_n = 5, 
-                            word_col = "word")
+get_top_words_per_corpus(data = emu_theses_words, 
+                         top_n = 5, 
+                         word_col = "word")
 ```
 
 ```{r}
