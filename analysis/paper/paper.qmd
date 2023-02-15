@@ -233,13 +233,12 @@ emu_theses_words %>%
 
 # Results
 
-Counting frequencies of words per document
 ```{r}
 # Which are the top n most frequently used words in each thesis?
 top_n_word_count_per_document(data = emu_theses_words, 
                               top_n = 3, 
-                              title_col = 'title', 
-                              word_col = 'word')
+                              title_col = "title", 
+                              word_col = "word")
 ```
 
 ```{r}
@@ -247,15 +246,6 @@ top_n_word_count_per_document(data = emu_theses_words,
 top_n_word_count_per_corpus(data = emu_theses_words, 
                             top_n = 5, 
                             word_col = "word")
-```
-
-```{r}
-# Which are first 5 most frequently used words in each thesis?
-emu_theses_first_5 <- emu_theses_words %>%
-  count(title, word) %>% 
-  group_by(title) %>% 
-  arrange(desc(n)) %>% 
-  slice(1:5)
 ```
 
 ```{r}
