@@ -244,7 +244,9 @@ top_n_word_count_per_document(data = emu_theses_words,
 
 ```{r}
 # Which are the top n most frequently used words in all theses`?
-top_n_word_count_per_corpus(emu_theses_words, 5, "word")
+top_n_word_count_per_corpus(data = emu_theses_words, 
+                            top_n = 5, 
+                            word_col = "word")
 ```
 
 ```{r}
