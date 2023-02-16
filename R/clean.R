@@ -97,7 +97,7 @@ find_meta_stopwords <- function(metadata,
 #' @export
 urbanism_stopwords <- function(add_stopwords = NULL) {
   stop_words <-
-    c(add_stopwords, "city", "urban", "urbanism", "hab", "km")
+    tibble(word = c(add_stopwords, "city", "urban", "urbanism", "hab", "km"))
 
   stop_words
 }
@@ -110,8 +110,9 @@ urbanism_stopwords <- function(add_stopwords = NULL) {
 #' @export
 thesis_stopwords <- function(add_stopwords = NULL) {
   stop_words <-
-    c(add_stopwords, "preface", "foreword", "introduction", "conclusion", "thesis")
+    tibble(word = c(add_stopwords, "preface", "foreword", "introduction", "conclusion", "thesis"))
 
+  stop_words
 }
 
 
