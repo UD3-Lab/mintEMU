@@ -99,6 +99,7 @@ urbanism_stopwords <- function(add_stopwords = NULL) {
   stop_words <-
     c(add_stopwords, "city", "urban", "urbanism", "hab", "km")
 
+  stop_words
 }
 
 #' Adjustable list of stopwords associated with master theses

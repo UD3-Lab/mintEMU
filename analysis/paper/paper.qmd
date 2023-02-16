@@ -203,6 +203,13 @@ Word-level tokenisation was applied with the `unnest_tokens()` function of the `
 ```{r}
 #| label: stop-words
 
+emu_theses |> 
+  find_meta_stopwords(convert_to_regex = FALSE)
+
+emu_theses |> 
+  urbanism_stopwords()
+  
+
 stop_words_custom <- emu_theses %>% 
   unnest_tokens(output = word, input = title) %>%   ### add words from the title
   select(word) %>% 
