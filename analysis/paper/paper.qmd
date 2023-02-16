@@ -149,7 +149,7 @@ Research questions:
 
 ## Data collection
 
-The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined.
+The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined. With the exception of a bilingual English-Spanish thesis, all thesis were written in English.
 
 A total number of `r nrow(emu_theses)` were analysed.
 
@@ -185,7 +185,7 @@ Figure @fig-map-theses shows the geographic spread of the theses included in the
 
 ### Tokenisation
 
-Word-level tokenisation was applied with the `unnest_tokens()` function of the `tidytext` package. This was preferred over other tokenisers as it produced results that work seamlessly with other `tidyverse` tools.
+Word-level tokenisation was applied with the `unnest_tokens()` function of the `tidytext` package. This was preferred over other tokenisers as it produced results that work seamlessly with other `tidyverse` tools used in the analysis.
 
 ### Stop words
 
