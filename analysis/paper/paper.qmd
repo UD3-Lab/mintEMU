@@ -203,27 +203,16 @@ Word-level tokenisation was applied with the `unnest_tokens()` function of the `
 ```{r}
 #| label: stop-words
 
-emu_theses |> 
-  find_meta_stopwords(convert_to_regex = FALSE)
+meta_stopwords <- find_meta_stopwords(emu_theses, convert_to_regex = FALSE)
+urbanism_stopwords <- urbanism_stopwords() 
+thesis_stopwords <- thesis_stopwords()
 
-emu_theses |> 
-  urbanism_stopwords()
-  
-
-stop_words_custom <- emu_theses %>% 
-  unnest_tokens(output = word, input = title) %>%   ### add words from the title
-  select(word) %>% 
-  rbind(., data.frame(word = c("preface", "foreword", "introduction", "conclusion", "thesis", 
-                               "source", "author"))) %>% 
-  # rbind(., data.frame(word = c("city", "urban", "urbanism"))) %>% 
-  rbind(., data.frame(word = c("hab", "km")))
-
-emu_theses_words <- emu_theses %>%
-  mutate(author = paste(first_name, last_name)) %>% 
-  select(author, title, text, -c(graduation_year, first_name, last_name)) %>% 
-  unnest_tokens(output = word, input = text) %>%   # remove punctuation, convert to lowercase, seperate all words
-  anti_join(stop_words, by = "word") %>%  # remove stop words
-  anti_join(stop_words_custom, by = "word")
+emu_theses_words <- emu_theses |> 
+  select(title, text) |>  
+  unnest_tokens(output = word, input = text) |>   # remove punctuation, convert to lowercase, seperate all words
+  anti_join(stop_words, by = "word") |> 
+  anti_join(urbanism_stopwords, by = "word") |> 
+  anti_join(thesis_stopwords, by = "word")
 ```
 
 Stemming is a pre-processing step that needs to be carefully thought through, as it might either degrade topic modeling or produce no meaningful results [@hvitfeldt2021a].
