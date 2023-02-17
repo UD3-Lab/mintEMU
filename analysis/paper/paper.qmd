@@ -61,18 +61,18 @@ library(here)
 ## Data manipulation and visualisation
 library(tidyverse)
 
-
 ## Text processing and analysis
 library(tidytext)
 library(SnowballC)
 library(tm)
 
-
 ## Working with spatial data
 library(tidygeocoder)
 
+
 # Load analysis functions ----
 devtools::load_all(".")
+
 
 # Read thesis metadata ----
 ## All theses
@@ -103,8 +103,8 @@ emu_theses$text <- convert_pdf_text(pdf_paths)
 #| label: clean-text
 #| echo: false
 
-emu_theses$text_clean <- emu_theses$text %>%
-  clean_basic() %>%
+emu_theses$text_clean <- emu_theses$text |> 
+  clean_basic() |> 
   str_remove_all(find_meta_stopwords(emu_theses) )  
 ```
 
