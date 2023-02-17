@@ -146,7 +146,7 @@ Research questions:
 
 The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined.
 
-A total number of `r nrow(emu_theses)` were analysed.
+A total number of `r nrow(emu_theses)` out of `r nrow(theses_all)` were analysed.
 
 ```{r}
 #| label: fig-map-theses
