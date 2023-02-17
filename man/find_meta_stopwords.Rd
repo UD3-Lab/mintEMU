@@ -6,8 +6,8 @@
 \usage{
 find_meta_stopwords(
   metadata,
-  stop_cols = list(author1 = c("author_firstname", "author_surname"), author2 =
-    c("author_firstname2", "author_surname2"), title = "title"),
+  stop_cols = list(author1 = c("first_name", "last_name"), author2 = c("first_name_2",
+    "last_name_2"), title = "title"),
   convert_to_regex = TRUE
 )
 }
