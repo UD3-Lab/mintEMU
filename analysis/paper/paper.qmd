@@ -223,6 +223,10 @@ emu_theses_words %>%
   count(stem, sort = TRUE)
 ```
 
+## Topic model
+
+Similar to topic clustering on numeric data, topic modeling is a method of unsupervised classification of topics found in a group of documents [@silge2017].
+
 # Results
 
 ```{r}
