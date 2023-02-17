@@ -203,13 +203,12 @@ Word-level tokenisation was applied with the `unnest_tokens()` function of the `
 ```{r}
 #| label: stop-words
 
-meta_stopwords <- find_meta_stopwords(emu_theses, convert_to_regex = FALSE)
 urbanism_stopwords <- urbanism_stopwords() 
 thesis_stopwords <- thesis_stopwords()
 
 emu_theses_words <- emu_theses |> 
-  select(title, text) |>  
-  unnest_tokens(output = word, input = text) |>   # remove punctuation, convert to lowercase, seperate all words
+  select(title, text_clean) |> 
+  unnest_tokens(output = word, input = text_clean) |>   # remove punctuation, convert to lowercase, seperate all words
   anti_join(stop_words, by = "word") |> 
   anti_join(urbanism_stopwords, by = "word") |> 
   anti_join(thesis_stopwords, by = "word")
