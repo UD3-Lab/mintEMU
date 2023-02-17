@@ -65,6 +65,7 @@ library(tidyverse)
 library(tidytext)
 library(SnowballC)
 library(tm)
+library(topicmodels)
 
 ## Working with spatial data
 library(tidygeocoder)
