@@ -126,10 +126,7 @@ Encoding(emu_theses$text_clean)
 
 # Introduction
 
-
-The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. The EMU was an advanced master ran jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia. 
-<!-- Complete paragraph about the program -->
-
+The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. The EMU was an advanced master ran jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia. <!-- Complete paragraph about the program -->
 
 In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(theses_all)` theses with an average of `r mean(str_length(emu_theses$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(theses_all$grad_year, na.rm = TRUE), "-", max(theses_all$grad_year, na.rm = TRUE))`. The first year of the program was not represented, as PDF files were only available from 2008 onward.
 
@@ -178,8 +175,7 @@ Figure @fig-map-theses shows the geographic spread of the theses included in the
 
 ## Data analysis
 
-[@silge2017a]
-[@hvitfeldt2021a]
+[@silge2017a] [@hvitfeldt2021a]
 
 ### Tokenisation
 
@@ -196,7 +192,6 @@ Word-level tokenisation was applied with the `unnest_tokens()` function of the `
     -   Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as custom stop words
 -   Document stop words:
     -   Stop words from titles and author names should only be removed from corresponding theses
-
 
 ```{r}
 #| label: stop-words
@@ -218,7 +213,6 @@ emu_theses_words <- emu_theses %>%
 ```
 
 Stemming is a pre-processing step that needs to be carefully thought through, as it might either degrade topic modeling or produce no meaningful results [@hvitfeldt2021a].
-
 
 ```{r}
 #| label: stemming
