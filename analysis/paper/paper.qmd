@@ -261,7 +261,10 @@ emu_theses_top_20 %>%
        title = "Count of unique words found in thesis",
        subtitle = "Stop words were removed from the list") +
   facet_wrap( ~ title, scales = "free", ncol = 2)
+```
 
+```{r}
+#| label: ngrams
 
 # # wip function ngrams
 # get_ngrams <- function(df, n) {
@@ -283,19 +286,25 @@ emu_theses_top_20 %>%
 # }
 # emu_theses_ngrams <- get_ngrams(emu_theses, 2)
 
-# bigrams
-emu_theses_bigrams <- emu_theses %>%
-  mutate(author = paste(first_name, last_name)) %>% 
-  select(author, title, text, -c(graduation_year, first_name, last_name)) %>% 
-  unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
-  separate(bigram, into = c("first","second"), sep = " ", remove = FALSE) %>%
-  anti_join(stop_words, by = c("first" = "word")) %>%
-  anti_join(stop_words, by = c("second" = "word")) %>%
-  anti_join(stop_words_custom, by = c("first" = "word")) %>%
-  anti_join(stop_words_custom, by = c("second" = "word")) %>%
-  filter(str_detect(first, "[a-z]") & str_detect(second, "[a-z]")) %>% 
-  filter(first != second) %>% 
-  filter(first != "source")
+## Bigrams
+emu_theses_bigrams <- emu_theses |> 
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+
+emu_theses_bigrams_separated <- emu_theses_bigrams |>  
+  separate(bigram, into = c("first","second"), sep = " ", remove = FALSE) 
+
+emu_theses_bigrams_filtered <- emu_theses_bigrams_separated |> 
+  anti_join(stop_words, by = c("first" = "word")) |> 
+  anti_join(stop_words, by = c("second" = "word"))
+
+bigram_counts <- emu_theses_bigrams_filtered |> 
+  count(first, second, sort = TRUE)
+
+bigram_counts
+
+  # # filter(str_detect(first, "[a-z]") & str_detect(second, "[a-z]")) %>% 
+  # filter(first != second) %>% 
+  # filter(first != "source")
 
 emu_theses_bigrams_top <- emu_theses_bigrams %>%
   group_by(title) %>%
