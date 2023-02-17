@@ -298,7 +298,7 @@ trigram_counts <- emu_theses_trigrams |>
 
 trigram_counts
 
-# Bigram tf-idf
+## Bigram tf-idf
 bigram_tf_idf <- emu_theses_bigrams |> 
   count(title, bigram) |> 
   bind_tf_idf(bigram, title, n) |> 
@@ -306,7 +306,7 @@ bigram_tf_idf <- emu_theses_bigrams |>
 
 bigram_tf_idf
 
-# Trigram tf-idf
+## Trigram tf-idf
 trigram_tf_idf <- emu_theses_trigrams |> 
   count(title, trigram) |> 
   bind_tf_idf(trigram, title, n) |> 
@@ -314,7 +314,10 @@ trigram_tf_idf <- emu_theses_trigrams |>
 
 trigram_tf_idf
 
-
+## Show network of bigrams
+bigram_graph <- bigram_counts |> 
+  filter(n > 20) |> 
+  igraph::graph_from_data_frame()
 
 emu_theses_bigrams_top <- emu_theses_bigrams %>%
   group_by(title) %>%
