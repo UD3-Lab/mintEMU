@@ -60,7 +60,8 @@ packages <- c(
   "here",                         # Managing paths
   "tidyverse",                    # Data manipulation and visualisation
   "tidytext", "SnowballC", "tm",  # Text processing and analysis
-  "tidygeocoder"                  # Working with spatial data
+  "tidygeocoder",                 # Working with spatial data
+  "igraph", "ggraph"              # Network analysis and visualsation
 )
 
 ## Load required packages, install them if needed
