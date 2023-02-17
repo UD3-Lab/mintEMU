@@ -332,6 +332,86 @@ emu_thesis_bigrams_top <- emu_theses_bigrams %>%
   print()
 ```
 
+```{r}
+#| label: tf-idf
+
+emu_theses_words
+
+emu_theses_words_count <- emu_theses_words |> 
+  count(title, word, sort = TRUE) |> 
+  ungroup()
+
+emu_theses_words_total <- emu_theses_words_count |> 
+  group_by(title) |> 
+  summarise(total = sum(n))
+
+emu_theses_words_count <- left_join(emu_theses_words_count, emu_theses_words_total)
+
+# emu_theses_words_count |> 
+#   group_by(title) |> 
+#   summarise(total = unique(tot
+
+# Preview term frequency distributions in a subset of theses
+ggplot(emu_theses_words_count |> 
+         filter(title == unique(title)[1:6]),
+       aes(n/total, fill = title)) +
+  geom_histogram(show.legend = FALSE, binwidth = 0.0001) +
+  xlim(NA, 0.0009) +
+  facet_wrap(~ title, ncol = 3, scales = "free_y")
+
+# Examine Zipf's law for the EMU theses
+## Calculate rank and term frequency
+freq_by_rank <- emu_theses_words_count |> 
+  group_by(title) |> 
+  mutate(rank = row_number(),
+         `term frequency` = n/total)
+
+## Visualise Zipf's law
+freq_by_rank |> 
+  ggplot(aes(rank, `term frequency`, color = title)) +
+  geom_line(size = 1.1, alpha = 0.8, show.legend = FALSE) +
+  scale_x_log10() +
+  scale_y_log10()
+
+rank_subset <- freq_by_rank |> 
+  filter(rank < 500,
+         rank > 10)
+
+lm(log10(`term frequency`) ~ log10(rank), data =  rank_subset)
+
+freq_by_rank |> 
+  ggplot(aes(rank, `term frequency`, color = title)) +
+  geom_line(size = 1.1, alpha = 0.8, show.legend = FALSE) +
+  geom_abline(intercept = -1.44, slope = -0.7, color = "gray50", linetype = 2) +
+  scale_x_log10() +
+  scale_y_log10()
+
+## Calculate tf-idf
+emu_theses_words_count <- emu_theses_words_count |> 
+  bind_tf_idf(word, title, n)
+emu_theses_words_count
+
+emu_theses_words_count |> 
+  select(-total) |> 
+  arrange(desc(tf_idf))
+
+## Visualise the top n words with the highest tf-idf values for each of a subset of theses
+emu_theses_words_count |> 
+  filter(title == unique(title)[1:6]) |> 
+  arrange(desc(tf_idf)) |> 
+  mutate(word = factor(word, levels = rev(unique(word)))) |> 
+  group_by(title) |> 
+  top_n(15) |> 
+  ungroup() |> 
+  ggplot(aes(word, tf_idf, fill = title)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~ title,  ncol = 3, scales = "free") +
+  coord_flip()
+```
+
+The `tf-idf` statistic shows high values for the names of thesis locations that tend to be high-frequency thesis-specific words. As such, it shows words that are the most important to one document in a collection of documents [@silge2017].
+
 # Discussion
 
 # Conclusion
