@@ -60,6 +60,7 @@ library(here)
 
 ## Data manipulation and visualisation
 library(tidyverse)
+library(reshape2)
 
 ## Text processing and analysis
 library(tidytext)
