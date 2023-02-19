@@ -3,7 +3,7 @@
 
 # mintEMU - The Legacy of the European Postgraduate Master in Urbanism at TU Delft: A Text Mining Approach
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/UD3-Lab/minTEMU/main?urlpath=rstudio) 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/UD3-Lab/minTEMU/main?urlpath=rstudio)
 
 This repository contains the data and code for our paper:
 
@@ -15,15 +15,15 @@ Our pre-print is online here:
 
 > Authors, (YYYY). *The Legacy of the European Postgraduate Master in
 > Urbanism at TU Delft: A Text Mining Approach*. Name of journal/book,
-> Accessed 14 Dec 2022. Online at <https://doi.org/xxx/xxx>
+> Accessed 19 Feb 2023. Online at <https://doi.org/xxx/xxx>
 
 ### How to cite
 
 Please cite this compendium as:
 
-> Authors, (2022). *Compendium of R code and data for The Legacy of the
+> Authors, (2023). *Compendium of R code and data for The Legacy of the
 > European Postgraduate Master in Urbanism at TU Delft: A Text Mining
-> Approach*. Accessed 14 Dec 2022. Online at <https://doi.org/xxx/xxx>
+> Approach*. Accessed 19 Feb 2023. Online at <https://doi.org/xxx/xxx>
 
 ## Contents
 
