@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# minTEMU - The Legacy of the European Postgraduate Master in Urbanism at TU Delft: A Text Mining Approach
+# mintEMU - The Legacy of the European Postgraduate Master in Urbanism at TU Delft: A Text Mining Approach
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/UD3-Lab/minTEMU/main?urlpath=rstudio) 
 
