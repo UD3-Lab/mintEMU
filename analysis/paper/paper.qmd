@@ -242,11 +242,11 @@ emu_theses_dtm
 emu_theses_lda <- LDA(emu_theses_dtm, k = 2, control = list(seed = 2023))
 emu_theses_lda
 
-# 
+# Tidy model with beta statistic
 emu_theses_topics <- tidy(emu_theses_lda, matrix = "beta")
 emu_theses_topics
 
-# The top 10 words that are the most coomon in each topic
+# The top 10 words that are the most common in each topic
 emu_theses_top_terms <- emu_theses_topics |> 
   group_by(topic) |> 
   top_n(10, beta) |> 
