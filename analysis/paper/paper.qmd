@@ -234,22 +234,21 @@ Similar to topic clustering on numeric data, topic modeling is a method of unsup
 # Results
 
 ```{r}
-# Which are the top 20 most frequently used words in each thesis?
-emu_theses_top_20 <- emu_theses_words %>%
-  group_by(title) %>%
-  count(word, sort = TRUE) %>%
-  slice_max(n, n = 20) %>%        ### top_n is superseded; better use slice_max instead
-  # filter(n > 50) %>%              ### filter words with a minimum count
-  ungroup() %>% 
-  mutate(word = reorder(word, n))
+# Which are the top n most frequently used words in each thesis?
+get_top_words_per_document(data = emu_theses_words, 
+                           top_n = 3, 
+                           title_col = "title", 
+                           word_col = "word")
+```
 
-# Which are first 5 most frequently used words in each thesis?
-emu_theses_first_5 <- emu_theses_words %>%
-  count(title, word) %>% 
-  group_by(title) %>% 
-  arrange(desc(n)) %>% 
-  slice(1:5)
+```{r}
+# Which are the top n most frequently used words in all theses`?
+get_top_words_per_corpus(data = emu_theses_words, 
+                         top_n = 5, 
+                         word_col = "word")
+```
 
+```{r}
 # Which theses contain "fabric" in the top 20 most frequently used words?
 emu_theses_top_20 %>% 
   filter(word == "fabric")
