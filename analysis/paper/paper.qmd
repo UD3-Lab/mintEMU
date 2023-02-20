@@ -118,16 +118,14 @@ emu_theses$text_clean <- emu_theses$text |>
 #| label: preview
 #| include: false
 
-# Preview theses
+# Preview theses in increasing order of graduation year
 emu_theses %>% 
   arrange(graduation_year) %>% 
   pull(text_clean) %>% 
-  str_sub(1, 500)
+  head_text(head_n = 5)
 
-# Preview theses
+# Show distribution of the length of theses
 hist(str_length(emu_theses$text_clean))
-
-Encoding(emu_theses$text_clean)
 ```
 
 # Introduction
