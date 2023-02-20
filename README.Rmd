@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 Title <- "The Legacy of the European Postgraduate Master in Urbanism at TU Delft: A Text Mining Approach"
 ```
 
-# minTEMU - The Legacy of the European Postgraduate Master in Urbanism at TU Delft: A Text Mining Approach
+# mintEMU - The Legacy of the European Postgraduate Master in Urbanism at TU Delft: A Text Mining Approach
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/UD3-Lab/minTEMU/main?urlpath=rstudio)
 
