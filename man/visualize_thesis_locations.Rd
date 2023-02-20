@@ -4,7 +4,10 @@
 \alias{visualize_thesis_locations}
 \title{Visualise thesis locations}
 \usage{
-visualize_thesis_locations(data)
+visualize_thesis_locations(
+  data,
+  cols = c(map_col = "black", map_fill = "lightgray", point_col = "red")
+)
 }
 \arguments{
 \item{data}{Data frame with thesis data.}

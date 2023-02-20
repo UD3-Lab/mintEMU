@@ -17,6 +17,7 @@ geocode_thesis_locations <- function(data, location = "location") {
       long = longitude
     )
   }
+  geocoded_data
 }
 
 
@@ -28,15 +29,15 @@ geocode_thesis_locations <- function(data, location = "location") {
 #'
 #' @return A plot with thesis locations
 #' @export
-visualize_thesis_locations <- function(data) {
+visualize_thesis_locations <- function(data, cols = c(map_col = 'black' , map_fill = 'lightgray', point_col = 'red' )) {
   world <- ggplot2::map_data("world")
   ggplot2::ggplot() +
     ggplot2::geom_map(
       data = world, map = world,
       aes(long, lat, map_id = region),
-      color = "black", fill = "lightgray", size = 0.1
+      color = cols['map_col'], fill = cols['map_fill'], size = 0.1
     ) +
-    ggplot2::geom_point(data = data, aes(longitude, latitude), color = "red") +
+    ggplot2::geom_point(data = data, aes(longitude, latitude), color = cols['point_col']) +
     ggplot2::coord_fixed() +
     ggplot2::theme_void()
 }
