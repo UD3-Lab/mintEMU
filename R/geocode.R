@@ -7,9 +7,9 @@
 #' @return Data frame with latitude and longitude columns
 #'
 #' @export
-geocode_thesis_locations <- function(data) {
+geocode_thesis_locations <- function(data, location = NULL) {
   if (!("latitude" %in% names(data)) | !("longitude" %in% names(data))) {
-    tidygeocoder::geocode(data, "location", method = 'osm', lat = latitude , long = longitude)
+    tidygeocoder::geocode(data, !!sym(location), method = 'osm', lat = latitude , long = longitude)
   }
 }
 

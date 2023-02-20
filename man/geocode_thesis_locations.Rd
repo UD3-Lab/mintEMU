@@ -4,7 +4,7 @@
 \alias{geocode_thesis_locations}
 \title{Geocode thesis locations}
 \usage{
-geocode_thesis_locations(data)
+geocode_thesis_locations(data, location = NULL)
 }
 \arguments{
 \item{data}{Data frame with thesis data}
