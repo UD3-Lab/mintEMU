@@ -55,19 +55,23 @@ Highlights: `r rmarkdown::metadata$highlights`
 #| warning: false
 
 # Load packages ----
-## Managing paths
-library(here)
+## List packages to be loaded
+packages <- c(
+  "here",                         # Managing paths
+  "tidyverse",                    # Data manipulation and visualisation
+  "tidytext", "SnowballC", "tm",  # Text processing and analysis
+  "tidygeocoder",                 # Working with spatial data
+  "igraph", "ggraph"              # Network analysis and visualsation
+)
 
-## Data manipulation and visualisation
-library(tidyverse)
+## Load required packages, install them if needed
+for (package in packages) {
+  if (!require(package, character.only = TRUE)) {
+    install.packages(package)
+  }
+  library(package, character.only = TRUE)
+}
 
-## Text processing and analysis
-library(tidytext)
-library(SnowballC)
-library(tm)
-
-## Working with spatial data
-library(tidygeocoder)
 
 
 # Load analysis functions ----
@@ -75,26 +79,28 @@ devtools::load_all(".")
 
 
 # Read thesis metadata ----
-## All theses
-theses_all <-
-  readxl::read_xlsx(path = here("analysis", "data", "raw_data", "theses-all.xlsx"))
-
-## Theses with PDF available
 data_path <- here("analysis", "data", "raw_data")
 pdf_names <- dir(data_path, pattern = "*.pdf")
 
+## Read metadata for all theses
+all_theses <-
+  readxl::read_xlsx(path = here(data_path, "theses-all.xlsx"))
+
+## Read only metadata for theses with PDF available
 emu_theses <- 
   read_csv(here(data_path, "theses-metadata.csv")) %>%
   mutate(text = "") %>%
   filter(!is.na(pdf_via))
-  
+
 pdf_paths <- here(data_path, emu_theses$file_name)
 ```
 
 ```{r}
 #| label: extract-pdf-text
 #| echo: false
-#| cache: true
+
+# Extract text from PDFs
+# On the first run, this function might take extra time as a Python environment needs to be set up
 
 emu_theses$text <- convert_pdf_text(pdf_paths)
 ```
@@ -128,7 +134,7 @@ Encoding(emu_theses$text_clean)
 
 The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. The EMU was an advanced master ran jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia. <!-- Complete paragraph about the program -->
 
-In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(theses_all)` theses with an average of `r mean(str_length(emu_theses$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(theses_all$grad_year, na.rm = TRUE), "-", max(theses_all$grad_year, na.rm = TRUE))`. The first year of the program was not represented, as PDF files were only available from 2008 onward.
+In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(all_theses)` theses with an average of `r mean(str_length(emu_theses$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(all_theses$grad_year, na.rm = TRUE), "-", max(all_theses$grad_year, na.rm = TRUE))`. The first year of the program was not represented, as PDF files were only available from 2008 onward.
 
 # Methods
 
