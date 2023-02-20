@@ -55,20 +55,23 @@ Highlights: `r rmarkdown::metadata$highlights`
 #| warning: false
 
 # Load packages ----
-## Managing paths
-library(here)
+## List packages to be loaded
+packages <- c(
+  "here",                                      # Managing paths
+  "tidyverse",                                 # Data manipulation and visualisation
+  "tidytext", "SnowballC", "tm","topicmodels"  # Text processing and analysis
+  "tidygeocoder",                              # Working with spatial data
+  "igraph", "ggraph"                           # Network analysis and visualsation
+)
 
-## Data manipulation and visualisation
-library(tidyverse)
+## Load required packages, install them if needed
+for (package in packages) {
+  if (!require(package, character.only = TRUE)) {
+    install.packages(package)
+  }
+  library(package, character.only = TRUE)
+}
 
-## Text processing and analysis
-library(tidytext)
-library(SnowballC)
-library(tm)
-library(topicmodels)
-
-## Working with spatial data
-library(tidygeocoder)
 
 
 # Load analysis functions ----
@@ -76,26 +79,28 @@ devtools::load_all(".")
 
 
 # Read thesis metadata ----
-## All theses
-theses_all <-
-  readxl::read_xlsx(path = here("analysis", "data", "raw_data", "theses-all.xlsx"))
-
-## Theses with PDF available
 data_path <- here("analysis", "data", "raw_data")
 pdf_names <- dir(data_path, pattern = "*.pdf")
 
+## Read metadata for all theses
+all_theses <-
+  readxl::read_xlsx(path = here(data_path, "theses-all.xlsx"))
+
+## Read only metadata for theses with PDF available
 emu_theses <- 
   read_csv(here(data_path, "theses-metadata.csv")) %>%
   mutate(text = "") %>%
   filter(!is.na(pdf_via))
-  
+
 pdf_paths <- here(data_path, emu_theses$file_name)
 ```
 
 ```{r}
 #| label: extract-pdf-text
 #| echo: false
-#| cache: true
+
+# Extract text from PDFs
+# On the first run, this function might take extra time as a Python environment needs to be set up
 
 emu_theses$text <- convert_pdf_text(pdf_paths)
 ```
@@ -113,23 +118,21 @@ emu_theses$text_clean <- emu_theses$text |>
 #| label: preview
 #| include: false
 
-# Preview theses
+# Preview theses in increasing order of graduation year
 emu_theses %>% 
   arrange(graduation_year) %>% 
   pull(text_clean) %>% 
-  str_sub(1, 500)
+  head_text(head_n = 5)
 
-# Preview theses
+# Show distribution of the length of theses
 hist(str_length(emu_theses$text_clean))
-
-Encoding(emu_theses$text_clean)
 ```
 
 # Introduction
 
 The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. The EMU was an advanced master ran jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia. <!-- Complete paragraph about the program -->
 
-In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(theses_all)` theses with an average of `r mean(str_length(emu_theses$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(theses_all$grad_year, na.rm = TRUE), "-", max(theses_all$grad_year, na.rm = TRUE))`. The first year of the program was not represented, as PDF files were only available from 2008 onward.
+In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(all_theses)` theses with an average of `r mean(str_length(emu_theses$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(all_theses$grad_year, na.rm = TRUE), "-", max(all_theses$grad_year, na.rm = TRUE))`. The first year of the program was not represented, as PDF files were only available from 2008 onward.
 
 # Methods
 
@@ -231,22 +234,21 @@ Similar to topic clustering on numeric data, topic modeling is a method of unsup
 # Results
 
 ```{r}
-# Which are the top 20 most frequently used words in each thesis?
-emu_theses_top_20 <- emu_theses_words %>%
-  group_by(title) %>%
-  count(word, sort = TRUE) %>%
-  slice_max(n, n = 20) %>%        ### top_n is superseded; better use slice_max instead
-  # filter(n > 50) %>%              ### filter words with a minimum count
-  ungroup() %>% 
-  mutate(word = reorder(word, n))
+# Which are the top n most frequently used words in each thesis?
+get_top_words_per_document(data = emu_theses_words, 
+                           top_n = 3, 
+                           title_col = "title", 
+                           word_col = "word")
+```
 
-# Which are first 5 most frequently used words in each thesis?
-emu_theses_first_5 <- emu_theses_words %>%
-  count(title, word) %>% 
-  group_by(title) %>% 
-  arrange(desc(n)) %>% 
-  slice(1:5)
+```{r}
+# Which are the top n most frequently used words in all theses`?
+get_top_words_per_corpus(data = emu_theses_words, 
+                         top_n = 5, 
+                         word_col = "word")
+```
 
+```{r}
 # Which theses contain "fabric" in the top 20 most frequently used words?
 emu_theses_top_20 %>% 
   filter(word == "fabric")
@@ -262,46 +264,82 @@ emu_theses_top_20 %>%
        title = "Count of unique words found in thesis",
        subtitle = "Stop words were removed from the list") +
   facet_wrap( ~ title, scales = "free", ncol = 2)
+```
 
+```{r}
+#| label: ngrams
 
-# # wip function ngrams
-# get_ngrams <- function(df, n) {
-#   if (!is.numeric(n)) {
-#     stop("n is not numeric")
-#   }
-#   emu_theses %>%
-#     mutate(author = paste(first_name, last_name)) %>% 
-#     select(author, title, text, -c(year, first_name, last_name, text_start, text_end)) %>% 
-#     unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
-#     separate(bigram, into = c("first","second"), sep = " ", remove = FALSE) %>%
-#     anti_join(stop_words, by = c("first" = "word")) %>%
-#     anti_join(stop_words, by = c("second" = "word")) %>%
-#     anti_join(stop_words_custom, by = c("first" = "word")) %>%
-#     anti_join(stop_words_custom, by = c("second" = "word")) %>%
-#     filter(str_detect(first, "[a-z]") & str_detect(second, "[a-z]")) %>% 
-#     filter(first != second) %>% 
-#     filter(first != "source")
-# }
-# emu_theses_ngrams <- get_ngrams(emu_theses, 2)
+## TO DO: generalise bigrams and trigrams into ngrams function
 
-# bigrams
-emu_theses_bigrams <- emu_theses %>%
-  mutate(author = paste(first_name, last_name)) %>% 
-  select(author, title, text, -c(graduation_year, first_name, last_name)) %>% 
-  unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
-  separate(bigram, into = c("first","second"), sep = " ", remove = FALSE) %>%
-  anti_join(stop_words, by = c("first" = "word")) %>%
-  anti_join(stop_words, by = c("second" = "word")) %>%
-  anti_join(stop_words_custom, by = c("first" = "word")) %>%
-  anti_join(stop_words_custom, by = c("second" = "word")) %>%
-  filter(str_detect(first, "[a-z]") & str_detect(second, "[a-z]")) %>% 
-  filter(first != second) %>% 
-  filter(first != "source")
+## Bigrams
+emu_theses_bigrams <- emu_theses |> 
+  unnest_tokens(bigram, text, token = "ngrams", n = 2) |> 
+  separate(bigram, into = c("first", "second"), sep = " ", remove = FALSE) |> 
+  anti_join(stop_words, by = c("first" = "word")) |> 
+  anti_join(stop_words, by = c("second" = "word")) |> 
+  filter(str_detect(first, "[a-z]") & 
+         str_detect(second, "[a-z]"))
+
+bigram_counts <- emu_theses_bigrams |> 
+  count(first, second, sort = TRUE)
+
+bigram_counts
+
+## Trigrams
+emu_theses_trigrams <- emu_theses |> 
+  unnest_tokens(trigram, text, token = "ngrams", n = 3) |> 
+  separate(trigram, into = c("first", "second", "third"), sep = " ", remove = FALSE) |> 
+  filter(!first %in% stop_words$word,
+         !second %in% stop_words$word,
+         !third %in% stop_words$word) |>  
+  filter(str_detect(first, "[a-z]"), 
+         str_detect(second, "[a-z]"),
+         str_detect(third, "[a-z]"))
+
+trigram_counts <- emu_theses_trigrams |> 
+  count(first, second, sort = TRUE)
+
+trigram_counts
+
+## Bigram tf-idf
+bigram_tf_idf <- emu_theses_bigrams |> 
+  count(title, bigram) |> 
+  bind_tf_idf(bigram, title, n) |> 
+  arrange(desc(tf_idf))
+
+bigram_tf_idf
+
+## Trigram tf-idf
+trigram_tf_idf <- emu_theses_trigrams |> 
+  count(title, trigram) |> 
+  bind_tf_idf(trigram, title, n) |> 
+  arrange(desc(tf_idf))
+
+trigram_tf_idf
+
+## Show network of bigrams
+bigram_graph <- bigram_counts |> 
+  filter(n > 100) |> 
+  graph_from_data_frame()
+
+bigram_graph
+
+set.seed(2023)
+
+a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+  
+ggraph(bigram_graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, arrow = a) +
+  geom_node_point(color = "lightblue", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+  theme_void()
+
+## Higgh frequency bigrams ----
 
 emu_theses_bigrams_top <- emu_theses_bigrams %>%
   group_by(title) %>%
   count(bigram, sort = TRUE) %>%
-  slice_max(n, n = 10) %>%        ### top_n is superseded; better use slice_max instead
+  slice_max(n, n = 20) %>%        ### top_n is superseded; better use slice_max instead
   # filter(n > 50)                ### filter words with a minimum count
   ungroup() %>% 
   mutate(bigram = reorder(bigram, n))
@@ -313,6 +351,7 @@ emu_theses_bigrams_top_all <- emu_theses_bigrams %>%
   mutate(bigram = reorder(bigram, n))
 
 emu_theses_bigrams_top %>%
+  filter(title == unique(title)[1:6]) |> 
   ggplot(aes(x = bigram, y = n, fill = title)) +
   geom_col() +
   xlab(NULL) +
@@ -321,15 +360,8 @@ emu_theses_bigrams_top %>%
        x = "Unique words",
        title = "Count of unique words found in thesis",
        subtitle = "Stop words were removed from the list") +
-  facet_wrap( ~ title, scales = "free", ncol = 2)
-
-# find the most frequently used bigrams
-emu_thesis_bigrams_top <- emu_theses_bigrams %>%
-  group_by(title) %>% 
-  count(bigram, sort = TRUE) %>%
-  slice_max(n, n = 10) %>%                   ### change the number of top words to show
-  mutate(bigram = reorder(bigram, n)) %>% 
-  print()
+  facet_wrap( ~ title, scales = "free", ncol = 2) +
+  theme(legend.position = "none") 
 ```
 
 ```{r}
