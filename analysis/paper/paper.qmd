@@ -264,46 +264,82 @@ emu_theses_top_20 %>%
        title = "Count of unique words found in thesis",
        subtitle = "Stop words were removed from the list") +
   facet_wrap( ~ title, scales = "free", ncol = 2)
+```
 
+```{r}
+#| label: ngrams
 
-# # wip function ngrams
-# get_ngrams <- function(df, n) {
-#   if (!is.numeric(n)) {
-#     stop("n is not numeric")
-#   }
-#   emu_theses %>%
-#     mutate(author = paste(first_name, last_name)) %>% 
-#     select(author, title, text, -c(year, first_name, last_name, text_start, text_end)) %>% 
-#     unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
-#     separate(bigram, into = c("first","second"), sep = " ", remove = FALSE) %>%
-#     anti_join(stop_words, by = c("first" = "word")) %>%
-#     anti_join(stop_words, by = c("second" = "word")) %>%
-#     anti_join(stop_words_custom, by = c("first" = "word")) %>%
-#     anti_join(stop_words_custom, by = c("second" = "word")) %>%
-#     filter(str_detect(first, "[a-z]") & str_detect(second, "[a-z]")) %>% 
-#     filter(first != second) %>% 
-#     filter(first != "source")
-# }
-# emu_theses_ngrams <- get_ngrams(emu_theses, 2)
+## TO DO: generalise bigrams and trigrams into ngrams function
 
-# bigrams
-emu_theses_bigrams <- emu_theses %>%
-  mutate(author = paste(first_name, last_name)) %>% 
-  select(author, title, text, -c(graduation_year, first_name, last_name)) %>% 
-  unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
-  separate(bigram, into = c("first","second"), sep = " ", remove = FALSE) %>%
-  anti_join(stop_words, by = c("first" = "word")) %>%
-  anti_join(stop_words, by = c("second" = "word")) %>%
-  anti_join(stop_words_custom, by = c("first" = "word")) %>%
-  anti_join(stop_words_custom, by = c("second" = "word")) %>%
-  filter(str_detect(first, "[a-z]") & str_detect(second, "[a-z]")) %>% 
-  filter(first != second) %>% 
-  filter(first != "source")
+## Bigrams
+emu_theses_bigrams <- emu_theses |> 
+  unnest_tokens(bigram, text, token = "ngrams", n = 2) |> 
+  separate(bigram, into = c("first", "second"), sep = " ", remove = FALSE) |> 
+  anti_join(stop_words, by = c("first" = "word")) |> 
+  anti_join(stop_words, by = c("second" = "word")) |> 
+  filter(str_detect(first, "[a-z]") & 
+         str_detect(second, "[a-z]"))
+
+bigram_counts <- emu_theses_bigrams |> 
+  count(first, second, sort = TRUE)
+
+bigram_counts
+
+## Trigrams
+emu_theses_trigrams <- emu_theses |> 
+  unnest_tokens(trigram, text, token = "ngrams", n = 3) |> 
+  separate(trigram, into = c("first", "second", "third"), sep = " ", remove = FALSE) |> 
+  filter(!first %in% stop_words$word,
+         !second %in% stop_words$word,
+         !third %in% stop_words$word) |>  
+  filter(str_detect(first, "[a-z]"), 
+         str_detect(second, "[a-z]"),
+         str_detect(third, "[a-z]"))
+
+trigram_counts <- emu_theses_trigrams |> 
+  count(first, second, sort = TRUE)
+
+trigram_counts
+
+## Bigram tf-idf
+bigram_tf_idf <- emu_theses_bigrams |> 
+  count(title, bigram) |> 
+  bind_tf_idf(bigram, title, n) |> 
+  arrange(desc(tf_idf))
+
+bigram_tf_idf
+
+## Trigram tf-idf
+trigram_tf_idf <- emu_theses_trigrams |> 
+  count(title, trigram) |> 
+  bind_tf_idf(trigram, title, n) |> 
+  arrange(desc(tf_idf))
+
+trigram_tf_idf
+
+## Show network of bigrams
+bigram_graph <- bigram_counts |> 
+  filter(n > 100) |> 
+  graph_from_data_frame()
+
+bigram_graph
+
+set.seed(2023)
+
+a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+  
+ggraph(bigram_graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, arrow = a) +
+  geom_node_point(color = "lightblue", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+  theme_void()
+
+## Higgh frequency bigrams ----
 
 emu_theses_bigrams_top <- emu_theses_bigrams %>%
   group_by(title) %>%
   count(bigram, sort = TRUE) %>%
-  slice_max(n, n = 10) %>%        ### top_n is superseded; better use slice_max instead
+  slice_max(n, n = 20) %>%        ### top_n is superseded; better use slice_max instead
   # filter(n > 50)                ### filter words with a minimum count
   ungroup() %>% 
   mutate(bigram = reorder(bigram, n))
@@ -315,6 +351,7 @@ emu_theses_bigrams_top_all <- emu_theses_bigrams %>%
   mutate(bigram = reorder(bigram, n))
 
 emu_theses_bigrams_top %>%
+  filter(title == unique(title)[1:6]) |> 
   ggplot(aes(x = bigram, y = n, fill = title)) +
   geom_col() +
   xlab(NULL) +
@@ -323,15 +360,8 @@ emu_theses_bigrams_top %>%
        x = "Unique words",
        title = "Count of unique words found in thesis",
        subtitle = "Stop words were removed from the list") +
-  facet_wrap( ~ title, scales = "free", ncol = 2)
-
-# find the most frequently used bigrams
-emu_thesis_bigrams_top <- emu_theses_bigrams %>%
-  group_by(title) %>% 
-  count(bigram, sort = TRUE) %>%
-  slice_max(n, n = 10) %>%                   ### change the number of top words to show
-  mutate(bigram = reorder(bigram, n)) %>% 
-  print()
+  facet_wrap( ~ title, scales = "free", ncol = 2) +
+  theme(legend.position = "none") 
 ```
 
 # Discussion
