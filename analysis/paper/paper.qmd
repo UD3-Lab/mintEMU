@@ -148,7 +148,7 @@ Research questions:
 
 ## Data collection
 
-The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined.
+The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined. With the exception of a bilingual English-Spanish thesis, all thesis were written in English.
 
 A total number of `r nrow(emu_theses)` out of `r nrow(theses_all)` were analysed.
 
@@ -184,19 +184,12 @@ Figure @fig-map-theses shows the geographic spread of the theses included in the
 
 ### Tokenisation
 
-Word-level tokenisation was applied with the `unnest_tokens()` function of the `tidytext` package. This was preferred over other tokenisers as it produced results that work seamlessly with other `tidyverse` tools.
+Word-level tokenisation was applied with the `unnest_tokens()` function of the `tidytext` package. This was preferred over other tokenisers as it produced results that work seamlessly with other `tidyverse` tools used in the analysis.
 
 ### Stop words
 
--   Three types of stop words: global, subject-specific and document stop words.
--   Global stop words:
-    -   All theses were written in English, so for common English stop words the "snowball" lexicon was used
-    -   Optionally, try creating a custom stop word list on the entire corpus, by removing high-frequency words, starting with 20 words and increasing by 10 until reaching words that are not appropriate as stop words
--   Subject-specific stop words:
-    -   Manually constructed list, needs domain knowledge
-    -   Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as custom stop words
--   Document stop words:
-    -   Stop words from titles and author names should only be removed from corresponding theses
+For analyses in which word-level tokenisation was chosen, stop words, i.e., common words or words that do not add much meaning, were removed in the data preparation stage. Global, subject-specific and document stop words [@hvitfeldt2021a] were differentiated. As all theses were written in English, the pre-made "snowball" lexicon was used to remove global stop words. <!-- We tried to create a custom global stop word list on the entire corpus, by removing high-frequency words, starting with 20 words and increasing by 10 until reaching words that are not appropriate as stop words, but no significant imoprvement was observed in the result. --> Subject-specific stop words, we manually constructed a list based on our domain knowledge. Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words on document-level.
+
 
 ```{r}
 #| label: stop-words
