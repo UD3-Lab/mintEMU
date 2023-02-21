@@ -57,11 +57,11 @@ Highlights: `r rmarkdown::metadata$highlights`
 # Load packages ----
 ## List packages to be loaded
 packages <- c(
-  "here",                                      # Managing paths
-  "tidyverse",                                 # Data manipulation and visualisation
-  "tidytext", "SnowballC", "tm","topicmodels"  # Text processing and analysis
-  "tidygeocoder",                              # Working with spatial data
-  "igraph", "ggraph"                           # Network analysis and visualsation
+  "here",                                        # Managing paths
+  "tidyverse",                                   # Data manipulation and visualisation
+  "tidytext", "SnowballC", "tm", "topicmodels",  # Text processing and analysis
+  "tidygeocoder",                                # Working with spatial data
+  "igraph", "ggraph"                             # Network analysis and visualsation
 )
 
 ## Load required packages, install them if needed
