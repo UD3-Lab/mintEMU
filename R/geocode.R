@@ -37,7 +37,8 @@ visualize_thesis_locations <- function(data, cols = c(map_col = 'black' , map_fi
       aes(long, lat, map_id = region),
       color = cols['map_col'], fill = cols['map_fill'], size = 0.1
     ) +
-    ggplot2::geom_point(data = data, aes(longitude, latitude), color = cols['point_col']) +
+    ggplot2::geom_count(data = data, aes(longitude, latitude), color = cols['point_col']) +
+    ggplot2::scale_size_area(max_size = 5) +
     ggplot2::coord_fixed() +
     ggplot2::theme_void()
 }
