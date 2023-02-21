@@ -170,7 +170,8 @@ ggplot() +
     aes(long, lat, map_id = region),
     color = "black", fill = "lightgray", size = 0.1
   ) +
-  geom_point(data = emu_theses, aes(longitude, latitude), color = "red") +
+  geom_count(data = emu_theses, aes(longitude, latitude), color = "red", alpha = 0.7) +
+  scale_size_area(max_size = 3) +
   coord_fixed() +
   theme_void()
 ```
