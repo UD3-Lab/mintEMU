@@ -162,14 +162,6 @@ A total number of `r nrow(emu_theses)` were analysed.
 # Add latitude and longitude information to theses data frame
 emu_theses <- geocode_thesis_locations(emu_theses, location = NULL)
 
-# emu_theses <- tidygeocoder::geocode(
-#   emu_theses,
-#   address = location,
-#   method = 'osm',
-#   lat = latitude ,
-#   long = longitude
-# )
-
 # Show thesis locations on world map
 visualize_thesis_locations(emu_theses)
 ```

@@ -11,7 +11,7 @@ geocode_thesis_locations <- function(data, location = "location") {
   if (!("latitude" %in% names(data)) | !("longitude" %in% names(data))) {
     geocoded_data <- tidygeocoder::geocode(
       data,
-      address = !!sym(location),
+      address = location,
       method = 'osm',
       lat = latitude ,
       long = longitude
