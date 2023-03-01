@@ -67,10 +67,20 @@ packages <- c(
 ## Load required packages, install them if needed
 for (package in packages) {
   if (!require(package, character.only = TRUE)) {
-    install.packages(package)
+    install.packages(package,  "http://cran.us.r-project.org")
   }
   library(package, character.only = TRUE)
 }
+
+# library(here)
+# library(tidyverse)
+# library(tidytext)
+# library(SnowballC)
+# library(tm)
+# library(topicmodels)
+# library(tidygeocoder)
+# library(igraph)
+# library(ggraph)
 
 
 
@@ -150,7 +160,7 @@ Research questions:
 
 The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined. With the exception of a bilingual English-Spanish thesis, all thesis were written in English.
 
-A total number of `r nrow(emu_theses)` out of `r nrow(theses_all)` were analysed.
+A total number of `r nrow(emu_theses)` out of `r nrow(all_theses)` were analysed.
 
 ```{r}
 #| label: fig-map-theses
@@ -163,7 +173,7 @@ emu_theses <- emu_theses %>%
   geocode(location, method = 'osm', lat = latitude , long = longitude)
 
 # Show thesis locations on world map
-world <- map_data("world")
+world <- ggplot2::map_data("world")
 ggplot() +
   geom_map(
     data = world, map = world,
@@ -243,22 +253,30 @@ get_top_words_per_corpus(data = emu_theses_words,
 ```
 
 ```{r}
-# Which theses contain "fabric" in the top 20 most frequently used words?
-emu_theses_top_20 %>% 
-  filter(word == "fabric")
-
-emu_theses_top_20 %>%
-  slice(1:40) %>% 
-  ggplot(aes(x = reorder(word, n), y = n, fill = title)) +
-  geom_col() +
-  xlab(NULL) +
-  coord_flip() +
-  labs(y = "Count",
-       x = "Unique words",
-       title = "Count of unique words found in thesis",
-       subtitle = "Stop words were removed from the list") +
-  facet_wrap( ~ title, scales = "free", ncol = 2)
+# Which are the top n most frequently used words in all theses`?
+emu_theses_top_20 <- get_top_words_per_corpus(data = emu_theses_words, 
+                         top_n = 20, 
+                         word_col = "word")
 ```
+
+
+<!-- ```{r} -->
+<!-- # Which theses contain "fabric" in the top 20 most frequently used words? -->
+<!-- emu_theses_top_20 %>%  -->
+<!--   filter(word == "fabric") -->
+
+<!-- emu_theses_top_20 %>% -->
+<!--   slice(1:40) %>%  -->
+<!--   ggplot(aes(x = reorder(word, n), y = n, fill = title)) + -->
+<!--   geom_col() + -->
+<!--   xlab(NULL) + -->
+<!--   coord_flip() + -->
+<!--   labs(y = "Count", -->
+<!--        x = "Unique words", -->
+<!--        title = "Count of unique words found in thesis", -->
+<!--        subtitle = "Stop words were removed from the list") + -->
+<!--   facet_wrap( ~ title, scales = "free", ncol = 2) -->
+<!-- ``` -->
 
 ```{r}
 #| label: ngrams
