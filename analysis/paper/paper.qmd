@@ -108,6 +108,7 @@ pdf_paths <- here(data_path, emu_theses$file_name)
 ```{r}
 #| label: extract-pdf-text
 #| echo: false
+#| cache: true
 
 # Extract text from PDFs
 # On the first run, this function might take extra time as a Python environment needs to be set up
