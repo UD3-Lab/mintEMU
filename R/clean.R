@@ -95,7 +95,7 @@ find_meta_stopwords <- function(metadata,
 #' @param add_stopwords A vector of words to be added to the urbanism stopwords
 #' @return A vector of urbanism-related stopwords
 #' @export
-urbanism_stopwords <- function(add_stopwords = NULL) {
+subject_stopwords <- function(add_stopwords = NULL) {
   stop_words <-
     tibble(word = c(add_stopwords, "city", "urban", "urbanism", "hab", "km"))
 
@@ -108,7 +108,7 @@ urbanism_stopwords <- function(add_stopwords = NULL) {
 #' @param add_stopwords A vector of words to be added to the master theses-related stopwords
 #' @return A vector of thesis-related stopwords
 #' @export
-thesis_stopwords <- function(add_stopwords = NULL) {
+document_stopwords <- function(add_stopwords = NULL) {
   stop_words <-
     tibble(word = c(add_stopwords, "preface", "foreword", "introduction", "conclusion", "thesis"))
 
