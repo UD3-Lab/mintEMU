@@ -249,7 +249,7 @@ emu_theses_topics
 # The top 10 words that are the most common in each topic
 emu_theses_top_terms <- emu_theses_topics |> 
   group_by(topic) |> 
-  top_n(10, beta) |> 
+  top_n(20, beta) |> 
   ungroup() |> 
   arrange(topic, -beta)
 
@@ -271,7 +271,7 @@ beta_spread
 
 beta_spread %>%
   group_by(direction = log_ratio > 0) %>%
-  slice_max(abs(log_ratio), n = 10) %>% 
+  slice_max(abs(log_ratio), n = 20) %>% 
   ungroup() %>%
   mutate(term = reorder(term, log_ratio)) %>%
   ggplot(aes(log_ratio, term)) +
@@ -280,6 +280,23 @@ beta_spread %>%
 
 emu_theses_documents <- tidy(emu_theses_lda, matrix = "gamma")
 emu_theses_documents
+
+emu_theses_documents |> 
+  ggplot(aes(x = reorder(str_sub(document, 1, 50), gamma), y = gamma, fill = topic)) + 
+  geom_bar(stat = "identity") + 
+  coord_flip()
+
+emu_theses_documents |> 
+  inner_join(emu_theses |> select(title, graduation_year), by = c("document" = "title")) |> 
+  ggplot(aes(x = reorder(str_sub(document, 1, 50), gamma), y = gamma, fill = topic)) + 
+  geom_bar(stat = "identity") + 
+  coord_flip() + 
+  facet_wrap(~ graduation_year, ncol = 1, scales = "free", drop = TRUE)
+
+emu_theses_documents |> 
+  inner_join(emu_theses |> select(title, graduation_year), by = c("document" = "title")) |> 
+  ggplot(aes(x = factor(graduation_year), y = topic, fill = factor(topic))) +
+  geom_col()
 ```
 
 
