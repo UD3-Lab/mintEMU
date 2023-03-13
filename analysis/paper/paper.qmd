@@ -142,6 +142,11 @@ hist(str_length(emu_theses$text_clean))
 
 The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. The EMU was an advanced master ran jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia. <!-- Complete paragraph about the program -->
 
+Distinctive features of the program:  
+- as a postmaster, it only accepted applicants with a prior MSc degree and experience in practice
+- provides a bridge towards PhD-level research
+- all students had an exchange semester at one of the other three program universities
+
 In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(all_theses)` theses with an average of `r mean(str_length(emu_theses$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(all_theses$grad_year, na.rm = TRUE), "-", max(all_theses$grad_year, na.rm = TRUE))`. The first year of the program was not represented, as PDF files were only available from 2008 onward.
 
 # Methods
@@ -199,7 +204,6 @@ Word-level tokenisation was applied with the `unnest_tokens()` function of the `
 ### Stop words
 
 For analyses in which word-level tokenisation was chosen, stop words, i.e., common words or words that do not add much meaning, were removed in the data preparation stage. Global, subject-specific and document stop words [@hvitfeldt2021a] were differentiated. As all theses were written in English, the pre-made "snowball" lexicon was used to remove global stop words. <!-- We tried to create a custom global stop word list on the entire corpus, by removing high-frequency words, starting with 20 words and increasing by 10 until reaching words that are not appropriate as stop words, but no significant imoprvement was observed in the result. --> Subject-specific stop words, we manually constructed a list based on our domain knowledge. Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words on document-level.
-
 
 ```{r}
 #| label: stop-words
@@ -259,23 +263,36 @@ emu_theses_top_20 <- get_top_words_per_corpus(data = emu_theses_words,
                          word_col = "word")
 ```
 
-
 <!-- ```{r} -->
+
 <!-- # Which theses contain "fabric" in the top 20 most frequently used words? -->
+
 <!-- emu_theses_top_20 %>%  -->
+
 <!--   filter(word == "fabric") -->
 
 <!-- emu_theses_top_20 %>% -->
+
 <!--   slice(1:40) %>%  -->
+
 <!--   ggplot(aes(x = reorder(word, n), y = n, fill = title)) + -->
+
 <!--   geom_col() + -->
+
 <!--   xlab(NULL) + -->
+
 <!--   coord_flip() + -->
+
 <!--   labs(y = "Count", -->
+
 <!--        x = "Unique words", -->
+
 <!--        title = "Count of unique words found in thesis", -->
+
 <!--        subtitle = "Stop words were removed from the list") + -->
+
 <!--   facet_wrap( ~ title, scales = "free", ncol = 2) -->
+
 <!-- ``` -->
 
 ```{r}
