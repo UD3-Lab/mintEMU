@@ -110,10 +110,16 @@ pdf_paths <- here(data_path, emu_theses$file_name)
 #| echo: false
 #| cache: true
 
-# Extract text from PDFs
-# On the first run, this function might take extra time as a Python environment needs to be set up
+data_path <- here("analysis", "data", "derived_data", "emu_theses_with_text.csv")
 
-emu_theses$text <- convert_pdf_text(pdf_paths)
+if (!file.exists(data_path)) {
+  # On the first run, this function might take extra time as a Python environment needs to be set up
+  emu_theses$text <- convert_pdf_text(pdf_paths)
+  write_csv(emu_theses, data_path)
+} else {
+  emu_theses <- read_csv(data_path)
+}
+
 ```
 
 ```{r}
