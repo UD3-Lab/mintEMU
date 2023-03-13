@@ -4,7 +4,7 @@
 \alias{document_stopwords}
 \title{Adjustable list of stopwords associated with master theses}
 \usage{
-document_stopwords(add_stopwords = NULL)
+document_stopwords(add_stopwords = NULL, convert_to_regex = TRUE)
 }
 \arguments{
 \item{add_stopwords}{A vector of words to be added to the master theses-related stopwords}

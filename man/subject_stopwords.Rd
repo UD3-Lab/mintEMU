@@ -4,7 +4,7 @@
 \alias{subject_stopwords}
 \title{Adjustable list of stopwords associated with urbanism}
 \usage{
-subject_stopwords(add_stopwords = NULL)
+subject_stopwords(add_stopwords = NULL, convert_to_regex = TRUE)
 }
 \arguments{
 \item{add_stopwords}{A vector of words to be added to the urbanism stopwords}

@@ -101,13 +101,11 @@ emu_theses$text <- convert_pdf_text(pdf_paths)
 #| label: clean-text
 #| echo: false
 
-#head_text(emu_theses$text)
-
-# clean text 
-emu_theses$text_clean <- emu_theses$text %>%
-  clean_basic() %>%
-  str_remove_all(find_meta_stopwords(emu_theses) )  
-
+emu_theses$text_clean <- emu_theses$text |>
+  clean_basic() |>
+  str_remove_all(find_meta_stopwords(emu_theses)) |> 
+  str_remove_all(subject_stopwords()) |> 
+  str_remove_all(document_stopwords())
 ```
 
 ```{r}
