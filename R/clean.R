@@ -11,7 +11,7 @@ clean_basic <- function(text) {
   out_text <- text |>
     tolower() |>
     str_replace_all("\\s{1,}", " ") |>
-    str_remove_all("[^0-9a-z ]") |>
+    str_remove_all("[[:punct:]]") |>
     str_squish()
 
   out_text
