@@ -162,6 +162,7 @@ Research questions:
 -   To what extent were the topics and evolution thereof influenced by the assignments given to the students throughout their studies leading up to their thesis?
 
 -   To what extent were the topics and evolution thereof influenced by the exchange semester followed by the students?
+    - Use LDA clustering with 3 classes (corresponding to the three exchange universities) to see how well the clustering is aligned with where the student carried out their exchange semester. Use a confusion matrix to visualize the relation between real values and values assigned through clustering.
 
 ## Data collection
 
