@@ -10,7 +10,7 @@ clean_basic <- function(text) {
 
   out_text <- text |>
     tolower() |>
-    stringr::str_replace_all("\\s{1,}", " ") |>
+    stringr::str_replace_all("\\s{2,}", " ") |>
     stringr::str_remove_all("[[:punct:]]") |>
     stringr::str_remove_all("\\b[0-9]+\\b") |>
     stringr::str_squish()
@@ -76,7 +76,7 @@ find_meta_stopwords <- function(metadata,
                            function(x) {
                              df <- stop_words_list[[x]]
                              colNames <- names(df)
-                             do.call(paste, df[, colNames])
+                             do.call(paste, df[colNames])
                            }) |>
     as.data.frame() |>
     lapply(clean_basic)
