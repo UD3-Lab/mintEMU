@@ -11,7 +11,8 @@ clean_basic <- function(text) {
   out_text <- text |>
     tolower() |>
     stringr::str_replace_all("\\s{1,}", " ") |>
-    stringr::str_remove_all("[^0-9a-z ]") |>
+    stringr::str_remove_all("[[:punct:]]") |>
+    stringr::str_remove_all("\\b[0-9]+\\b") |>
     stringr::str_squish()
 
   out_text
@@ -97,8 +98,9 @@ find_meta_stopwords <- function(metadata,
 #' @export
 urbanism_stopwords <- function(add_stopwords = NULL) {
   stop_words <-
-    c(add_stopwords, "city", "urban", "urbanism", "hab", "km")
+    tibble::tibble(word = c(add_stopwords, "city", "urban", "urbanism", "hab", "km"))
 
+  stop_words
 }
 
 #' Adjustable list of stopwords associated with master theses
@@ -108,8 +110,20 @@ urbanism_stopwords <- function(add_stopwords = NULL) {
 #' @return A vector of thesis-related stopwords
 #' @export
 thesis_stopwords <- function(add_stopwords = NULL) {
-  stop_words <-
-    c(add_stopwords, "preface", "foreword", "introduction", "conclusion", "thesis")
+  stop_words <- tibble::tibble(
+    word =
+      c(
+        add_stopwords,
+        "preface",
+        "foreword",
+        "introduction",
+        "conclusion",
+        "thesis",
+        "source",
+        "author"
+      )
+  )
+  stop_words
 
 }
 
