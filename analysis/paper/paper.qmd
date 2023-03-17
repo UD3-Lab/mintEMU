@@ -173,22 +173,11 @@ A total number of `r nrow(emu_theses)` out of `r nrow(all_theses)` were analysed
 #| echo: false
 #| fig-cap: "Location of EMU theses included in the analysis"
 
-# Geocode thesis locations
-emu_theses <- emu_theses %>%
-  geocode(location, method = 'osm', lat = latitude , long = longitude)
+# Add latitude and longitude information to theses data frame
+emu_theses <- geocode_thesis_locations(emu_theses, location = NULL)
 
 # Show thesis locations on world map
-world <- ggplot2::map_data("world")
-ggplot() +
-  geom_map(
-    data = world, map = world,
-    aes(long, lat, map_id = region),
-    color = "black", fill = "lightgray", size = 0.1
-  ) +
-  geom_count(data = emu_theses, aes(longitude, latitude), color = "red", alpha = 0.7) +
-  scale_size_area(max_size = 3) +
-  coord_fixed() +
-  theme_void()
+visualize_thesis_locations(emu_theses)
 ```
 
 Figure @fig-map-theses shows the geographic spread of the theses included in the analysis.
