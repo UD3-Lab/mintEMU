@@ -61,7 +61,7 @@ packages <- c(
   "tidyverse",                                   # Data manipulation and visualisation
   "tidytext", "SnowballC", "tm", "topicmodels",  # Text processing and analysis
   "tidygeocoder",                                # Working with spatial data
-  "igraph", "ggraph"                             # Network analysis and visualsation
+  "igraph", "ggraph"                             # Network analysis and visualization
 )
 
 ## Load required packages, install them if needed
@@ -71,17 +71,6 @@ for (package in packages) {
   }
   library(package, character.only = TRUE)
 }
-
-# library(here)
-# library(tidyverse)
-# library(tidytext)
-# library(SnowballC)
-# library(tm)
-# library(topicmodels)
-# library(tidygeocoder)
-# library(igraph)
-# library(ggraph)
-
 
 
 # Load analysis functions ----
