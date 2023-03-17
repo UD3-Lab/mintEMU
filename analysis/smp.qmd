@@ -22,7 +22,7 @@ The software will be versioned with Git and hosted on GitHub to allow for collab
 
 **How will your software be documented for users? Please provide a link to the documentation if available. How will you document your software's contribution guidelines and governance structure?**
 
-The research compendium will be documented as an R package, that is, all functions used in data processing and analysis will have associated documentation available from the help interface of R. Once loaded as a package all documentation is available to the user. The analysis will be fully documented in a Quarto computational notebook using R Markdown with the knitr engine.
+The research compendium will be documented as an R package, that is, all functions used in data processing and analysis will have associated documentation available from the help interface of R. Once loaded as a package, all documentation is available to the user. The analysis will be fully documented in a Quarto computational notebook using R Markdown with the knitr engine.
 
 **What licence will you give your software? How will you check that it respects the licences of libraries and dependencies it uses?**
 
@@ -30,13 +30,20 @@ The software will use an MIT license.
 
 **How will the installation requirements of your software be documented? Please provide a link to the installation documentation if available.**
 
-Installation requirements are described in the README file of the repository on GitHub:
+Installation requirements are described in the [README file](https://github.com/UD3-Lab/mintEMU#how-to-run-in-your-browser-or-download-and-run-locally) of the repository on GitHub.
 
 **How will users of your software be able to cite your software? Please provide a link to your software citation file (CFF) if available.**
 
+Citation guidelines are described in the [README file](https://github.com/UD3-Lab/mintEMU#how-to-cite) of the repository on GitHub.
+
+
 **How will your software be documented for future developers?**
 
+All the functions are well documented and the following R package structure so that they can be reused in other context. The repository README file has also a [Contributions](https://github.com/UD3-Lab/mintEMU#contributions) section, where [contributor guidelines](https://github.com/UD3-Lab/mintEMU/blob/main/CONTRIBUTING.md) and [Contributor code of Conduct](https://github.com/UD3-Lab/mintEMU/blob/main/CONDUCT.md) can be easily accessed.
+
 **How will your software be tested? Please provide a link to the (automated) testing results.**
+
+TBD
 
 **Do you follow specific software quality guidelines? If yes, which ones?**
 
@@ -46,4 +53,7 @@ FAIR4RS
 
 The software will be made available as an R package on GitHub, available for direct installation from RStudio. As the package is s research compendium, it will not be made available in a packaging registry.
 
+The snapshot of the GitHub repository (e.g. release associated with the publication of the paper) will be published on Zenodo.
+
 **How do you plan to procure long term maintenance of your software?**
+The long-term maintenance of the software is not foreseen in the project.The software is making use of the package management software, `renv`, which help user retrieve the required version of dependencies needed to use the functionalities of the software.
