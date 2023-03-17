@@ -3,6 +3,7 @@
 
 # Data
 analysis/data/
+analysis/nul
 
 # pyvenv
 inst/python/pyvenv

@@ -10,9 +10,9 @@ clean_basic <- function(text) {
 
   out_text <- text |>
     tolower() |>
-    str_replace_all("\\s{1,}", " ") |>
-    str_remove_all("[^0-9a-z ]") |>
-    str_squish()
+    stringr::str_replace_all("\\s{1,}", " ") |>
+    stringr::str_remove_all("[^0-9a-z ]") |>
+    stringr::str_squish()
 
   out_text
 
@@ -112,5 +112,7 @@ thesis_stopwords <- function(add_stopwords = NULL) {
     c(add_stopwords, "preface", "foreword", "introduction", "conclusion", "thesis")
 
 }
+
+
 
 
