@@ -1,3 +1,9 @@
+# Resources:
+# https://www.pipinghotdata.com/posts/2021-11-23-getting-started-with-unit-testing-in-r/
+# https://carpentries-incubator.github.io/lesson-R-packaging/06-testing/index.html
+# https://rklopotek.blog.uksw.edu.pl/files/2017/09/package-development.pdf
+
+
 # create testing directory
 usethis::use_testthat()
 

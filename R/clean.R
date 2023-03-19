@@ -22,7 +22,6 @@ clean_basic <- function(text) {
 
 #' Show the beginning of each of the element of a string vector
 #'
-#'
 #' @param text_vector A string vector
 #' @param head_n  Number of elements of the vector. Default is 10
 #' @param sub_start starting position within the string. Default is 1.
@@ -38,6 +37,7 @@ head_text <- function(text_vector, head_n = 10, sub_start = 1 , sub_end = 500 ){
 
   head_text
 }
+
 
 #' Find custom stop-phrases based on metadata file
 #'
@@ -82,13 +82,14 @@ find_meta_stopwords <- function(metadata,
     lapply(clean_basic)
 
   if (convert_to_regex == TRUE)
-    return(regex(do.call(paste, c(
+    return(stringr::regex(do.call(paste, c(
       stop_words_df, sep = "|"
     ))))
   else
     return(stop_words_df)
 
 }
+
 
 #' Adjustable list of stopwords associated with urbanism
 #'
@@ -97,11 +98,10 @@ find_meta_stopwords <- function(metadata,
 #' @return A vector of urbanism-related stopwords
 #' @export
 urbanism_stopwords <- function(add_stopwords = NULL) {
-  stop_words <-
-    tibble::tibble(word = c(add_stopwords, "city", "urban", "urbanism", "hab", "km"))
+  stop_words <-  c(add_stopwords, "city", "urban", "urbanism", "hab", "km")
 
-  stop_words
 }
+
 
 #' Adjustable list of stopwords associated with master theses
 #'
@@ -110,9 +110,7 @@ urbanism_stopwords <- function(add_stopwords = NULL) {
 #' @return A vector of thesis-related stopwords
 #' @export
 thesis_stopwords <- function(add_stopwords = NULL) {
-  stop_words <- tibble::tibble(
-    word =
-      c(
+  stop_words <- c(
         add_stopwords,
         "preface",
         "foreword",
@@ -121,9 +119,7 @@ thesis_stopwords <- function(add_stopwords = NULL) {
         "thesis",
         "source",
         "author"
-      )
-  )
-  stop_words
+        )
 
 }
 

@@ -1619,6 +1619,21 @@
         "vctrs"
       ]
     },
+    "tidygeocoder": {
+      "Package": "tidygeocoder",
+      "Version": "1.0.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "44fd552dae5b20c4224e895449e3827a",
+      "Requirements": [
+        "dplyr",
+        "httr",
+        "jsonlite",
+        "lifecycle",
+        "progress",
+        "tibble"
+      ]
+    },
     "tidyr": {
       "Package": "tidyr",
       "Version": "1.2.1",
