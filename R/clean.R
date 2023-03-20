@@ -21,7 +21,6 @@ clean_basic <- function(text) {
 
 #' Show the beginning of each of the element of a string vector
 #'
-#'
 #' @param text_vector A string vector
 #' @param head_n  Number of elements of the vector. Default is 10
 #' @param sub_start starting position within the string. Default is 1.
@@ -37,6 +36,7 @@ head_text <- function(text_vector, head_n = 10, sub_start = 1 , sub_end = 500 ){
 
   head_text
 }
+
 
 #' Find custom stop-phrases based on metadata file
 #'
@@ -77,19 +77,20 @@ find_meta_stopwords <- function(metadata,
                            function(x) {
                              df <- stop_words_list[[x]]
                              colNames <- names(df)
-                             do.call(paste, df[, colNames])
+                             do.call(paste, df[colNames])
                            }) |>
     as.data.frame() |>
     lapply(clean_basic)
 
   if (convert_to_regex == TRUE)
-    return(regex(do.call(paste, c(
+    return(stringr::regex(do.call(paste, c(
       stop_words_df, sep = "|"
     ))))
   else
     return(stop_words_df)
 
 }
+
 
 #' Adjustable list of stopwords associated with urbanism
 #'
@@ -104,6 +105,7 @@ urbanism_stopwords <- function(add_stopwords = NULL, convert_to_regex = TRUE) {
   else return(stop_words)
 }
 
+
 #' Adjustable list of stopwords associated with master theses
 #'
 #' Function creates a vector of stopwords associated with master theses
@@ -111,11 +113,24 @@ urbanism_stopwords <- function(add_stopwords = NULL, convert_to_regex = TRUE) {
 #' @return A vector of thesis-related stopwords
 #' @export
 thesis_stopwords <- function(add_stopwords = NULL, convert_to_regex = TRUE) {
-  stop_words <- c(add_stopwords, "preface", "foreword", "introduction", "conclusion",
-                  "thesis", "colophon", "acknowledgements", "references")
+  stop_words <- c(
+        add_stopwords,
+        "preface",
+        "foreword",
+        "introduction",
+        "conclusion",
+        "thesis",
+        "source",
+        "author",
+        "colophon",
+        "acknowledgements", 
+        "references"
+        )
 
   if (convert_to_regex) return(paste(stop_words, collapse = "|"))
   else return(stop_words)
 }
+
+
 
 

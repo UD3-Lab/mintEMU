@@ -87,8 +87,8 @@ all_theses <-
 
 ## Read only metadata for theses with PDF available
 emu_theses <- 
-  read_csv(here(data_path, "theses-metadata.csv")) %>%
-  mutate(text = "") %>%
+  read_csv(here(data_path, "theses-metadata.csv")) |>
+  mutate(text = "") |>
   filter(!is.na(pdf_via))
 
 pdf_paths <- here(data_path, emu_theses$file_name)
@@ -117,7 +117,7 @@ if (!file.exists(data_path)) {
 
 emu_theses$text_clean <- emu_theses$text |>
   clean_basic() 
-
+  
 ```
 
 # Introduction
@@ -190,6 +190,7 @@ emu_theses_words <- emu_theses |>
   select(title, text_clean) |> 
   unnest_tokens(output = word, input = text_clean) |>   # remove punctuation, convert to lowercase, separate all words
   anti_join(tidytext::stop_words, by = "word")
+
 ```
 
 Stemming is a pre-processing step that needs to be carefully thought through, as it might either degrade topic modeling or produce no meaningful results [@hvitfeldt2021a].
@@ -199,7 +200,7 @@ Stemming is a pre-processing step that needs to be carefully thought through, as
 
 emu_theses_words %>% 
   mutate(stem = wordStem(words = word, 
-                         language = "porter")) %>%  # Implement the Porter stemming algorithm for English provided by the SnowballC package
+                         language = "porter")) |>  # Implement the Porter stemming algorithm for English provided by the SnowballC package
   count(stem, sort = TRUE)
 ```
 
@@ -404,21 +405,21 @@ ggraph(bigram_graph, layout = "fr") +
 
 ## Higgh frequency bigrams ----
 
-emu_theses_bigrams_top <- emu_theses_bigrams %>%
-  group_by(title) %>%
-  count(bigram, sort = TRUE) %>%
-  slice_max(n, n = 20) %>%        ### top_n is superseded; better use slice_max instead
+emu_theses_bigrams_top <- emu_theses_bigrams |>
+  group_by(title) |>
+  count(bigram, sort = TRUE) |>
+  slice_max(n, n = 20) |>        ### top_n is superseded; better use slice_max instead
   # filter(n > 50)                ### filter words with a minimum count
-  ungroup() %>% 
+  ungroup() |>
   mutate(bigram = reorder(bigram, n))
 
-emu_theses_bigrams_top_all <- emu_theses_bigrams %>%
-  count(bigram, sort = TRUE) %>%
-  slice_max(n, n = 20) %>%        ### top_n is superseded; better use slice_max instead
+emu_theses_bigrams_top_all <- emu_theses_bigrams |>
+  count(bigram, sort = TRUE) |>
+  slice_max(n, n = 20) |>        ### top_n is superseded; better use slice_max instead
   # filter(n > 50)                ### filter words with a minimum count
   mutate(bigram = reorder(bigram, n))
 
-emu_theses_bigrams_top %>%
+emu_theses_bigrams_top |>
   filter(title == unique(title)[1:6]) |> 
   ggplot(aes(x = bigram, y = n, fill = title)) +
   geom_col() +
