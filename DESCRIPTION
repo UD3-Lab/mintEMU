@@ -1,7 +1,7 @@
 Package: minTEMU
 Title: The Legacy of the European Postgraduate Master in Urbanism at TU Delft: A Text Mining Approach
 Version: 0.0.0.9000
-Authors@R:c(
+Authors@R: c(
     person(given   = "Claudiu",
            family  = "Forgaci",
            email   = "C.Forgaci@tudelft.nl", 
@@ -23,7 +23,10 @@ ByteCompile: true
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
-Imports: here,
-    reticulate
+RoxygenNote: 7.2.3
+Imports: 
+    ggplot2,
+    here,
+    reticulate,
+    tidygeocoder
 Suggests: devtools
