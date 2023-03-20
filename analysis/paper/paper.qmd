@@ -184,8 +184,9 @@ Word-level tokenisation was applied with the `unnest_tokens()` function of the `
 
 emu_theses$text_clean <- emu_theses$text_clean |>
   str_remove_all(find_meta_stopwords(emu_theses)) |> 
-  str_remove_all(subject_stopwords()) |> 
-  str_remove_all(document_stopwords())
+  str_remove_all(urbanism_stopwords(
+    add_stopwords = c("emu", "european postgraduate master in urbanism"))) |>
+  str_remove_all(thesis_stopwords(add_stopwords = c("advisor", "prof")))
 
 emu_theses_words <- emu_theses |> 
   select(title, text_clean) |> 
