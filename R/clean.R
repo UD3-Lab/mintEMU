@@ -50,7 +50,7 @@ find_meta_stopwords <- function(metadata,
                                 stop_cols =  list(
                                   'author1' = c('first_name', 'last_name'),
                                   'author2' = c('first_name_2', 'last_name_2'),
-                                  'title'  = 'title'
+                                  'title'  = c('full_title', 'title', 'subtitle')
                                 ),
                                 convert_to_regex = TRUE) {
   cols_meta <- names(metadata)
