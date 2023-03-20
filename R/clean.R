@@ -52,7 +52,7 @@ find_meta_stopwords <- function(metadata,
                                   'author2' = c('first_name_2', 'last_name_2'),
                                   'title'  = 'title',
                                   'subtitle' = 'subtitle',
-                                  'full_title' = 'full_title                       
+                                  'full_title' = 'full_title'
                                 ),
                                 convert_to_regex = TRUE) {
   cols_meta <- names(metadata)
@@ -123,7 +123,7 @@ thesis_stopwords <- function(add_stopwords = NULL, convert_to_regex = TRUE) {
         "source",
         "author",
         "colophon",
-        "acknowledgements", 
+        "acknowledgements",
         "references"
         )
 
