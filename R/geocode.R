@@ -9,7 +9,7 @@
 #' @export
 geocode_thesis_locations <- function(data, location = "location") {
   if (!("latitude" %in% names(data)) | !("longitude" %in% names(data))) {
-    geocoded_data <- tidygeocoder::geocode(
+    data <- tidygeocoder::geocode(
       data,
       address = location,
       method = 'osm',
@@ -17,7 +17,7 @@ geocode_thesis_locations <- function(data, location = "location") {
       long = longitude
     )
   }
-  geocoded_data
+  data
 }
 
 
