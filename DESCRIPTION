@@ -24,6 +24,9 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Imports: here,
-    reticulate
+Imports: 
+    ggplot2,
+    here,
+    reticulate,
+    tidygeocoder
 Suggests: devtools
