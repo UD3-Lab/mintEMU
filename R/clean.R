@@ -10,10 +10,9 @@ clean_basic <- function(text) {
 
   out_text <- text |>
     tolower() |>
-    stringr::str_replace_all("\\s{2,}", " ") |>
-    stringr::str_remove_all("[[:punct:]]") |>
-    stringr::str_remove_all("\\b[0-9]+\\b") |>
-    stringr::str_squish()
+    str_replace_all("\\s{1,}", " ") |>
+    str_remove_all("[[:punct:]]") |>
+    str_squish()
 
   out_text
 
@@ -49,9 +48,11 @@ head_text <- function(text_vector, head_n = 10, sub_start = 1 , sub_end = 500 ){
 #' @export
 find_meta_stopwords <- function(metadata,
                                 stop_cols =  list(
-                                  'author1' = c('author_firstname', 'author_surname'),
-                                  'author2' = c('author_firstname2', 'author_surname2'),
-                                  'title'  = 'title'
+                                  'author1' = c('first_name', 'last_name'),
+                                  'author2' = c('first_name_2', 'last_name_2'),
+                                  'title'  = 'title',
+                                  'subtitle' = 'subtitle',
+                                  'full_title' = 'full_title                       
                                 ),
                                 convert_to_regex = TRUE) {
   cols_meta <- names(metadata)
@@ -97,9 +98,11 @@ find_meta_stopwords <- function(metadata,
 #' @param add_stopwords A vector of words to be added to the urbanism stopwords
 #' @return A vector of urbanism-related stopwords
 #' @export
-urbanism_stopwords <- function(add_stopwords = NULL) {
-  stop_words <-  c(add_stopwords, "city", "urban", "urbanism", "hab", "km")
+urbanism_stopwords <- function(add_stopwords = NULL, convert_to_regex = TRUE) {
+  stop_words <- c(add_stopwords, "city", "cities", "urban", "urbanism", "hab", "km")
 
+  if (convert_to_regex) return(paste(stop_words, collapse = "|"))
+  else return(stop_words)
 }
 
 
@@ -109,7 +112,7 @@ urbanism_stopwords <- function(add_stopwords = NULL) {
 #' @param add_stopwords A vector of words to be added to the master theses-related stopwords
 #' @return A vector of thesis-related stopwords
 #' @export
-thesis_stopwords <- function(add_stopwords = NULL) {
+thesis_stopwords <- function(add_stopwords = NULL, convert_to_regex = TRUE) {
   stop_words <- c(
         add_stopwords,
         "preface",
@@ -118,9 +121,14 @@ thesis_stopwords <- function(add_stopwords = NULL) {
         "conclusion",
         "thesis",
         "source",
-        "author"
+        "author",
+        "colophon",
+        "acknowledgements", 
+        "references"
         )
 
+  if (convert_to_regex) return(paste(stop_words, collapse = "|"))
+  else return(stop_words)
 }
 
 
