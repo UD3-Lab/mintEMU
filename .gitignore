@@ -4,6 +4,7 @@
 # Data
 analysis/data/
 analysis/nul
+analysis/paper/paper_*
 
 # pyvenv
 inst/python/pyvenv
