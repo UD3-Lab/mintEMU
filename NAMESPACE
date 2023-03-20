@@ -2,11 +2,13 @@
 
 export(clean_basic)
 export(convert_pdf_text)
+export(document_stopwords)
 export(find_meta_stopwords)
 export(geocode_thesis_locations)
 export(get_top_words_per_corpus)
 export(get_top_words_per_document)
 export(head_text)
+export(subject_stopwords)
 export(thesis_stopwords)
 export(urbanism_stopwords)
 export(visualize_thesis_locations)

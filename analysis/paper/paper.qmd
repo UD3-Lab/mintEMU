@@ -115,23 +115,9 @@ if (!file.exists(data_path)) {
 #| label: clean-text
 #| echo: false
 
-emu_theses$text_clean <- emu_theses$text |> 
-  clean_basic() |> 
-  str_remove_all(find_meta_stopwords(emu_theses) )  
-```
+emu_theses$text_clean <- emu_theses$text |>
+  clean_basic() 
 
-```{r}
-#| label: preview
-#| include: false
-
-# Preview theses in increasing order of graduation year
-emu_theses %>% 
-  arrange(graduation_year) %>% 
-  pull(text_clean) %>% 
-  head_text(head_n = 5)
-
-# Show distribution of the length of theses
-hist(str_length(emu_theses$text_clean))
 ```
 
 # Introduction
@@ -194,20 +180,16 @@ For analyses in which word-level tokenisation was chosen, stop words, i.e., comm
 ```{r}
 #| label: stop-words
 
-stop_words_custom <- emu_theses %>% 
-  unnest_tokens(output = word, input = title) %>%   ### add words from the title
-  select(word) %>% 
-  rbind(., data.frame(word = c("preface", "foreword", "introduction", "conclusion", "thesis", 
-                               "source", "author"))) %>% 
-  # rbind(., data.frame(word = c("city", "urban", "urbanism"))) %>% 
-  rbind(., data.frame(word = c("hab", "km")))
+emu_theses$text_clean <- emu_theses$text_clean |>
+  str_remove_all(find_meta_stopwords(emu_theses)) |> 
+  str_remove_all(urbanism_stopwords(
+    add_stopwords = c("emu", "european postgraduate master in urbanism"))) |>
+  str_remove_all(thesis_stopwords(add_stopwords = c("advisor", "prof")))
 
-emu_theses_words <- emu_theses %>%
-  mutate(author = paste(first_name, last_name)) %>% 
-  select(author, title, text, -c(graduation_year, first_name, last_name)) %>% 
-  unnest_tokens(output = word, input = text) %>%   # remove punctuation, convert to lowercase, seperate all words
-  anti_join(stop_words, by = "word") %>%  # remove stop words
-  anti_join(stop_words_custom, by = "word")
+emu_theses_words <- emu_theses |> 
+  select(title, text_clean) |> 
+  unnest_tokens(output = word, input = text_clean) |>   # remove punctuation, convert to lowercase, separate all words
+  anti_join(tidytext::stop_words, by = "word")
 ```
 
 Stemming is a pre-processing step that needs to be carefully thought through, as it might either degrade topic modeling or produce no meaningful results [@hvitfeldt2021a].
