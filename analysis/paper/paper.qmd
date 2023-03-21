@@ -226,11 +226,7 @@ emu_theses_topics <- tidy(emu_theses_lda, matrix = "beta")
 emu_theses_topics
 
 # The top 10 words that are the most common in each topic
-emu_theses_top_terms <- emu_theses_topics |> 
-  group_by(topic) |> 
-  top_n(20, beta) |> 
-  ungroup() |> 
-  arrange(topic, -beta)
+emu_theses_top_terms <- get_top_words_per_topic(emu_theses_topics, 20, "topic", "beta")
 
 emu_theses_top_terms |> 
   mutate(term = reorder(term, beta)) |> 

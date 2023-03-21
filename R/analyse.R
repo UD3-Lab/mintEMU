@@ -44,3 +44,22 @@ get_top_words_per_corpus <- function(data, top_n, word_col = NULL) {
 
   data_top_n
 }
+
+#' Extract top n terms with the highest count across all topics
+#'
+#' @param data Data frame with topics, terms and beta statistic.
+#' @param top_n The number of top words to be returned by the function.
+#' @param topic_col Name of the column containing topics.
+#' @param beta_col Name of the column containing the beta statistic for all terms.
+#'
+#' @return A data frame with the top n terms across all topics.
+#' @export
+get_top_words_per_topic <- function(data, top_n, topic_col = NULL, beta_col = NULL) {
+  data_top_terms <- data |>
+    dplyr::group_by(!!rlang::sym(topic_col)) |>
+    dplyr::top_n(top_n, !!rlang::sym(beta_col)) |>
+    dplyr::ungroup() |>
+    dplyr::arrange(!!rlang::sym(topic_col), -!!rlang::sym(beta_col))
+
+  data_top_terms
+}
