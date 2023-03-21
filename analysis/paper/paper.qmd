@@ -226,11 +226,10 @@ emu_theses_topics <- tidy(emu_theses_lda, matrix = "beta")
 emu_theses_topics
 
 # The top 10 words that are the most common in each topic
-emu_theses_top_terms <- get_top_words_per_topic(emu_theses_topics, 20, "topic", "beta")
+emu_theses_top_terms <- get_top_words_per_topic(emu_theses_topics, 20)
 
 emu_theses_top_terms |> 
-  mutate(term = reorder(term, beta)) |> 
-  ggplot(aes(term, beta, fill = factor(topic))) +
+  ggplot(aes(reorder(term, beta), beta, fill = factor(topic))) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~ topic, scales = "free") +
   coord_flip()
@@ -280,23 +279,19 @@ emu_theses_documents |>
 ```{r}
 # Which are the top n most frequently used words in each thesis?
 get_top_words_per_document(data = emu_theses_words, 
-                           top_n = 3, 
-                           title_col = "title", 
-                           word_col = "word")
+                           top_n = 3)
 ```
 
 ```{r}
 # Which are the top n most frequently used words in all theses`?
 get_top_words_per_corpus(data = emu_theses_words, 
-                         top_n = 5, 
-                         word_col = "word")
+                         top_n = 5)
 ```
 
 ```{r}
 # Which are the top n most frequently used words in all theses`?
-emu_theses_top_20 <- get_top_words_per_corpus(data = emu_theses_words, 
-                         top_n = 20, 
-                         word_col = "word")
+get_top_words_per_corpus(data = emu_theses_words, 
+                         top_n = 20)
 ```
 
 <!-- ```{r} -->

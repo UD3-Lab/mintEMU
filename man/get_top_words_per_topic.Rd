@@ -4,7 +4,7 @@
 \alias{get_top_words_per_topic}
 \title{Extract top n terms with the highest count across all topics}
 \usage{
-get_top_words_per_topic(data, top_n, topic_col = NULL, beta_col = NULL)
+get_top_words_per_topic(data, top_n, topic_col = "topic", beta_col = "beta")
 }
 \arguments{
 \item{data}{Data frame with topics, terms and beta statistic.}

@@ -12,10 +12,17 @@
 #'
 #' @return A data frame with the top n words with a count above the given minimum.
 #' @export
-get_top_words_per_document <- function(data, top_n, title_col = NULL, word_col = NULL, min_count = 1) {
+get_top_words_per_document <- function(data,
+                                       top_n,
+                                       title_col = "title",
+                                       word_col = "word",
+                                       min_count = 1) {
+  title <- sym(title_col)
+  word <- sym(word_col)
+
   data_top_n <- data |>
-    dplyr::group_by(!!sym(title_col)) |>
-    dplyr::count(!!sym(word_col), sort = TRUE) |>
+    dplyr::group_by(!!title) |>
+    dplyr::count(!!word, sort = TRUE) |>
     dplyr::slice_max(n, n = top_n) |>
     dplyr::filter(n > min_count) |>
     dplyr::ungroup()
@@ -35,10 +42,12 @@ get_top_words_per_document <- function(data, top_n, title_col = NULL, word_col =
 #'
 #' @return A data frame with the top n words across all documents.
 #' @export
-get_top_words_per_corpus <- function(data, top_n, word_col = NULL) {
+get_top_words_per_corpus <- function(data, top_n, word_col = "word") {
+  word <- sym(word_col)
+
   data_top_n <- data |>
-    dplyr::group_by(!!sym(word_col)) |>
-    dplyr::count(!!sym(word_col), sort = TRUE) |>
+    dplyr::group_by(!!word) |>
+    dplyr::count(!!word, sort = TRUE) |>
     dplyr::ungroup() |>
     dplyr::slice_max(n, n = top_n)
 
@@ -54,12 +63,18 @@ get_top_words_per_corpus <- function(data, top_n, word_col = NULL) {
 #'
 #' @return A data frame with the top n terms across all topics.
 #' @export
-get_top_words_per_topic <- function(data, top_n, topic_col = NULL, beta_col = NULL) {
+get_top_words_per_topic <- function(data,
+                                    top_n,
+                                    topic_col = "topic",
+                                    beta_col = "beta") {
+  topic <- rlang::sym(topic_col)
+  beta <- rlang::sym(beta_col)
+
   data_top_terms <- data |>
-    dplyr::group_by(!!rlang::sym(topic_col)) |>
-    dplyr::top_n(top_n, !!rlang::sym(beta_col)) |>
+    dplyr::group_by(!!topic) |>
+    dplyr::top_n(top_n,!!beta) |>
     dplyr::ungroup() |>
-    dplyr::arrange(!!rlang::sym(topic_col), -!!rlang::sym(beta_col))
+    dplyr::arrange(!!topic,-beta)
 
   data_top_terms
 }
