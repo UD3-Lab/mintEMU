@@ -14,8 +14,8 @@
 #' @export
 get_top_words_per_document <- function(data, top_n, title_col = NULL, word_col = NULL, min_count = 1) {
   data_top_n <- data |>
-    dplyr::group_by(!!sym(title_col)) |>
-    dplyr::count(!!sym(word_col), sort = TRUE) |>
+    dplyr::group_by(!!rlang::sym(title_col)) |>
+    dplyr::count(!!rlang::sym(word_col), sort = TRUE) |>
     dplyr::slice_max(n, n = top_n) |>
     dplyr::filter(n > min_count) |>
     dplyr::ungroup()
