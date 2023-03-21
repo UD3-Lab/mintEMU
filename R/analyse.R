@@ -44,3 +44,19 @@ get_top_words_per_corpus <- function(data, top_n, word_col = NULL) {
 
   data_top_n
 }
+
+#' Convert data frame with word frequencies into document term matrix
+#'
+#' @param data Data frame containing colomns with titles, words and word counts
+#' @param title_col Name of the title column of the input data frame
+#' @param word_col Name of the word column of the input data frame
+#'
+#' @return A document term matrix
+#' @export
+convert_to_dtm <- function(data, title_col = NULL, word_col = NULL) {
+  data_dtm <- data |>
+    dplyr::count(!!rlang::sym(title_col), !!rlang::sym(word_col), sort = TRUE) |>
+    tidytext::cast_dtm(!!rlang::sym(title_col), !!rlang::sym(word_col), n)
+
+  data_dtm
+}

@@ -208,11 +208,8 @@ emu_theses_words %>%
 Similar to clustering on numeric data, topic modeling is a method of unsupervised classification of topics found in a group of documents [@silge2017].
 
 ```{r}
-# The topicmodels package requires a document-term matrix as input
-emu_theses_dtm <- emu_theses_words |> 
-  count(title, word, sort = TRUE) |> 
-  cast_dtm(title, word, n)
-
+# The {topicmodels} package requires a document-term matrix as input
+emu_theses_dtm <- convert_to_dtm(emu_theses_words, "title", "word")
 emu_theses_dtm
 
 # We will use the Latent Dirichlet Allocation (LDA) algorithm for topic modeling
