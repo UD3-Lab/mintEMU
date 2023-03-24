@@ -354,7 +354,6 @@ test_that("urbanism_stopwords function cleans the additional stopwords before ad
       "hut",
       "playground",
       "city",
-      "cities",
       "urban",
       "urbanism",
       "hab",
