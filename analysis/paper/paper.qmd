@@ -193,6 +193,14 @@ emu_theses_words <- emu_theses |>
 
 ```
 
+```{r}
+#| label: short-stop-words
+
+short_words(emu_theses$text_clean)
+
+```
+
+
 Stemming is a pre-processing step that needs to be carefully thought through, as it might either degrade topic modeling or produce no meaningful results [@hvitfeldt2021a].
 
 ```{r}
