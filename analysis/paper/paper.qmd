@@ -193,10 +193,14 @@ emu_theses_words <- emu_theses |>
 
 ```
 
+Additional checks were made to the document in search for previously undetected stop words. The checks included identifying words consisting of four or less characters that extensively used in the text corpus. 
+
 ```{r}
 #| label: short-stop-words
 
-short_words(emu_theses$text_clean)
+#short_words(emu_theses$text_clean, scope = 'corpus')
+short_words(emu_theses_words$word)
+
 
 ```
 
