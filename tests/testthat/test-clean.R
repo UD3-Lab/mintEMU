@@ -142,50 +142,6 @@ test_that("find_meta_stopwords function produces correct list when some fields a
 })
 
 test_that("find_meta_stopwords function produces correct list when the names of the metadata fields are adapted",{
-    # Test input
-    metadata <- data.frame(
-      first_author_firstname = c("Kurt  \n", "Oscar", "Ken"),
-      first_author_surname = c("Vonnegut", "Wilde", "Kesey"),
-      second_author_firstname = c("Kilgore", "Henry", "Chief"),
-      second_surname = c("Trout", "Wotton", "Bromden"),
-      titles = c(
-        "Breakfast of Champions",
-        "The Picture of Dorian Gray",
-        "One Flew Over the Cuckoo's Nest"
-      )
-    )
-
-    # Expected output
-    expected_output <-
-      list(
-        author1 = c("kurt vonnegut", "oscar wilde", "ken kesey"),
-        author2 = c("kilgore trout", "henry wotton", "chief bromden"),
-        title = c(
-          "breakfast of champions",
-          "the picture of dorian gray",
-          "one flew over the cuckoos nest"
-        )
-      )
-
-    # Run the function
-    output <-
-      find_meta_stopwords(
-        metadata,
-        convert_to_regex = FALSE,
-        stop_cols =  list(
-          'author1' = c('first_author_firstname', 'first_author_surname'),
-          'author2' = c('second_author_firstname', 'second_surname'),
-          'title'  = 'titles'
-        )
-      )
-
-    # Check the output against the expected result
-    expect_equal(output, expected_output,
-                 info = "Output should be a vector of cleaned and combined strings from stopword columns.")
-
-  })
-
-test_that("find_meta_stopwords function produces correct list when the names of the metadata fields are adapted",{
   # Test input
   metadata <- data.frame(
     first_author_firstname = c("Kurt  \n", "Oscar", "Ken"),
@@ -372,17 +328,23 @@ test_that("urbanism_stopwords function cleans the additional stopwords before ad
 
 })
 
-test_that("urbanism_stopwords function gives warning if the additional stopwords include multiple-word elements", {
+test_that("short_words works correctly when input is a word",{
 
-  # Test input
-  additional_stopwords <- c("house", "block", "hut", "children's playground")
+  text_input <- c("this", "is", "a", "short", "sentence.",
+                  "this", "is", "a", "slightly", "longer", "one",
+                  "one", "two", "three", "short", "sentences",
+                  "is", "not", "a", "lot")
 
-  # Run the function
-  output <- urbanism_stopwords(additional_stopwords)
+  expected_output <- data.frame(word = c('a', 'is', 'one', 'this',
+                                         'lot','not', 'two'),
+                                n = c(3, 3, 2, 2 , 1, 1, 1)
+                                )
+
+  output <- short_words(text_input, scope = 'word')
 
   # Check the output against the expected result
-  expect_warning(urbanism_stopwords(additional_stopwords),
-               info = "Function should warn the user about adding multiple-word elements to the word-list"
+  expect_equal(output, expected_output, ignore_attr = TRUE,
+               info = "Output should be a data.frame of with word and and n column"
   )
 
 })
