@@ -60,3 +60,34 @@ convert_to_dtm <- function(data, title_col = NULL, word_col = NULL) {
 
   data_dtm
 }
+
+#' Get topics for a given data frame of documents and words
+#'
+#' @param data Data frame with theses, containing a column with words.
+#' @param k Number of desired clusters.
+#' @param matrix Statistics to be computed. Can be "beta" or "gamma"
+#' @param title_col The name of the column from the input data frame containing the title of the document.
+#' @param word_col Name of the column from the input data frame containing all words.
+#' @param seed Seed to control pseudorandomisation.
+#'
+#' @return An LDA model object.
+#' @export
+get_topics <-
+  function(data,
+           k = 2,
+           seed = 2023,
+           title_col = "title",
+           word_col = "word") {
+    stopifnot("k must be an integer of at least 2" = k >= 2)
+
+    # The {topicmodels} package requires a document-term matrix as input
+    dtm <- convert_to_dtm(data,
+                          title_col = title_col,
+                          word_col = word_col)
+
+    # We will use the Latent Dirichlet Allocation (LDA) algorithm for topic modeling
+    # In LDA, each document is a mixture of topics and each topic is a mixture of words
+    lda <- topicmodels::LDA(dtm,
+                            k = k,
+                            control = list(seed = seed))
+}
