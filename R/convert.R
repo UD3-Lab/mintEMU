@@ -6,7 +6,7 @@
 #' @param pdf_filenames  A vector of paths to input (pdf) files
 #' @return A vector of body of text; one string per pdf file
 #' @export
-convert_pdf_text <-function(pdf_filenames){
+convert_pdf_text <-function(pdf_filenames, by_page = TRUE){
 
   pdf_list<- as.list(pdf_filenames)
 
@@ -24,7 +24,10 @@ convert_pdf_text <-function(pdf_filenames){
   # Load python script with functions to extract texts
   reticulate::source_python(here::here("inst/python","extract-text-pdf-python.py"))
 
-  text_list <- convert_pdf(pdf_list) %>% unlist()
+  if (by_page == TRUE)
+    text_list <- convert_pdf(pdf_list) %>% unlist()
+  else
+    text_list <- convert_pdf(pdf_list, by_page = reticulate::r_to_py(TRUE)) # %>% unlist()
 
   text_list
 }

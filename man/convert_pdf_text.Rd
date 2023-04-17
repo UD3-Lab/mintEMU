@@ -4,7 +4,7 @@
 \alias{convert_pdf_text}
 \title{Convert pdf to text}
 \usage{
-convert_pdf_text(pdf_filenames)
+convert_pdf_text(pdf_filenames, by_page = TRUE)
 }
 \arguments{
 \item{pdf_filenames}{A vector of paths to input (pdf) files}

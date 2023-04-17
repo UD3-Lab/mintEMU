@@ -48,7 +48,7 @@ def check_file_path(file_path):
 
         return(file_list)
         
-def convert_pdf(file_list):
+def convert_pdf(file_list, by_page = True):
     '''
     Function converts the pdf files to text. It allow unusual pdf layout (multiple columns)
 
@@ -71,11 +71,11 @@ def convert_pdf(file_list):
             for page in doc:
                 text = page.get_text()
                 l.append(text)
-        l = ' '.join(l)
+        if not by_page:
+          l = ' '.join(l)
         text_list.append(l)
     
     return(text_list)
-
 
 
 
