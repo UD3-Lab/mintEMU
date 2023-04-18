@@ -48,7 +48,7 @@ def check_file_path(file_path):
 
         return(file_list)
         
-def convert_pdf(file_list, by_page = True):
+def convert_pdf(file_list, by_page = False):
     '''
     Function converts the pdf files to text. It allow unusual pdf layout (multiple columns)
 
@@ -79,5 +79,7 @@ def convert_pdf(file_list, by_page = True):
 
 
 
-
+for file in file_list:
+  with fitz.open(file) as doc:
+    doc.get_toc()
 
