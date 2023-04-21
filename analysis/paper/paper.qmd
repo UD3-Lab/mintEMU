@@ -218,7 +218,7 @@ emu_theses_words %>%
 
 ## Topic model
 
-Similar to clustering on numeric data, topic modeling is a method of unsupervised classification of topics found in a group of documents [@silge2017].
+Similar to clustering on numeric data, topic modeling is a method of unsupervised classification of topics found in a group of documents [@silge2017]. An important distinction from other clustering methods like k-means, is that topic models allow for mixed membership. This means that a topic is a probability distribution over a vocabulary and that all words have a probability of being part of a topic. Typically, words with highest probablities within a topic will be examined to interpret and describe the meaning of a topic.
 
 ```{r}
 emu_theses_topics <- get_topics(emu_theses_words)
