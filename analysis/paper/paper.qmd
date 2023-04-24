@@ -93,6 +93,8 @@ emu_theses <-
 pdf_paths <- here(data_path, emu_theses$file_name)
 ```
 
+Desccription of text extraction; raw data avilable on 4TU.ResearchData at...
+
 ```{r extract-pdf-text}
 #| echo: false
 #| cache: true
