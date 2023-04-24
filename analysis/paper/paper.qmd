@@ -1,14 +1,10 @@
 ---
 title: "The Legacy of the European Post-Master in Urbanism at TU Delft: A Text Mining Approach"
 author:
-  - Jane Doe:
+  - Claudiu Forgaci:
       correspondence: "yes"
       email: janedoe@fosg.org
-      orcid: 0000-0003-1689-0557
-      institute: tud
-  - John Q. Doe:
-      email: johndoe@fosg.org
-      orcid: 0000-0003-1689-0558
+      orcid: 0000-0003-3218-5102
       institute: tud
 institute:
   - tud:
