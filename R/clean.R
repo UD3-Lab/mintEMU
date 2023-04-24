@@ -10,9 +10,9 @@ clean_basic <- function(text) {
 
   out_text <- text |>
     tolower() |>
-    str_replace_all("\\s{1,}", " ") |>
-    str_remove_all("[[:punct:]]") |>
-    str_squish()
+    stringr::str_replace_all("\\s{1,}", " ") |>
+    stringr::str_remove_all("[[:punct:]]") |>
+    stringr::str_squish()
 
   out_text
 
