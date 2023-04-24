@@ -49,8 +49,7 @@ Highlights: `r rmarkdown::metadata$highlights`
 
 <!-- The actual document text starts here: -->
 
-```{r}
-#| label: setup
+```{r setup}
 #| echo: false
 #| warning: false
 
@@ -94,8 +93,7 @@ emu_theses <-
 pdf_paths <- here(data_path, emu_theses$file_name)
 ```
 
-```{r}
-#| label: extract-pdf-text
+```{r extract-pdf-text}
 #| echo: false
 #| cache: true
 
@@ -111,8 +109,7 @@ if (!file.exists(data_path)) {
 
 ```
 
-```{r}
-#| label: clean-text
+```{r clean-text}
 #| echo: false
 
 emu_theses$text_clean <- emu_theses$text |>
@@ -150,8 +147,7 @@ The theses are available in PDF format with complex layouts typical to an urbani
 
 A total number of `r nrow(emu_theses)` out of `r nrow(all_theses)` were analysed.
 
-```{r}
-#| label: fig-map-theses
+```{r fig-map-theses}
 #| warning: false 
 #| echo: false
 #| fig-cap: "Location of EMU theses included in the analysis"
@@ -163,11 +159,9 @@ emu_theses <- geocode_thesis_locations(emu_theses)
 visualize_thesis_locations(emu_theses)
 ```
 
-Figure @fig-map-theses shows the geographic spread of the theses included in the analysis.
+@fig-map-theses shows the geographic spread of the theses included in the analysis.
 
 ## Data analysis
-
-[@silge2017a] [@hvitfeldt2021a]
 
 ### Tokenisation
 
@@ -177,8 +171,7 @@ Word-level tokenisation was applied with the `unnest_tokens()` function of the `
 
 For analyses in which word-level tokenisation was chosen, stop words, i.e., common words or words that do not add much meaning, were removed in the data preparation stage. Global, subject-specific and document stop words [@hvitfeldt2021a] were differentiated. As all theses were written in English, the pre-made "snowball" lexicon was used to remove global stop words. <!-- We tried to create a custom global stop word list on the entire corpus, by removing high-frequency words, starting with 20 words and increasing by 10 until reaching words that are not appropriate as stop words, but no significant imoprvement was observed in the result. --> Subject-specific stop words, we manually constructed a list based on our domain knowledge. Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words on document-level.
 
-```{r}
-#| label: stop-words
+```{r stop-words}
 
 emu_theses$text_clean <- emu_theses$text_clean |>
   str_remove_all(find_meta_stopwords(emu_theses)) |> 
@@ -207,8 +200,7 @@ short_words(emu_theses_words$word)
 
 Stemming is a pre-processing step that needs to be carefully thought through, as it might either degrade topic modeling or produce no meaningful results [@hvitfeldt2021a].
 
-```{r}
-#| label: stemming
+```{r stemming}
 
 emu_theses_words %>% 
   mutate(stem = wordStem(words = word, 
