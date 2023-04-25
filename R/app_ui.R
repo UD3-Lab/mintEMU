@@ -36,44 +36,77 @@ app_ui <- function() {
                                                 choices = c('ALL'),
                                                 multiple = F,
                                                 selected = 'ALL'
-                                                ),
-                             # Tool tips
-                             shinyBS::bsTooltip("year",
-                                                "Filter results by graduation year.",
-                                                "right",
-                                                options = list(container = "body")
-                                                ),
-                             shinyBS::bsTooltip("exchange",
-                                                "Filter results by exchange semester",
-                                                "right",
-                                                options = list(container = "body")
-                                                )
-                             )
+                                                ))
                            ),
 
                          body = bs4Dash::dashboardBody(
                            shinyjs::useShinyjs(),
                            bs4Dash::tabItems(
                              bs4Dash::tabItem(tabName = "intro",
-                                              bs4Dash::box(
-                                                shiny::plotOutput("thesismap")
+                                              shiny::fluidRow(
+                                                bs4Dash::column(12,
+                                                                bs4Dash::box(title = "Links",
+                                                                status = "lightblue",
+                                                                width = NULL)),
+                                                bs4Dash::column(3,
+                                                       bs4Dash::box(title = "Stats 1",
+                                                                    status = "lightblue",
+                                                                    width=NULL)),
+                                                bs4Dash::column(3,
+                                                       bs4Dash::box(title = "Stats 2",
+                                                                    status = "lightblue",
+                                                                    width=NULL)),
+                                                bs4Dash::column(3,
+                                                       bs4Dash::box(title = "Stats 3",
+                                                                    status = "lightblue",
+                                                                    width=NULL)),
+                                                bs4Dash::column(3,
+                                                       bs4Dash::box(title = "Stats 4",
+                                                                    status = "lightblue",
+                                                                    width=NULL)),
+                                                bs4Dash::column(6,
+                                                                bs4Dash::box(title = "Map plot",
+                                                                             width = NULL,
+                                                                             shiny::plotOutput("thesismap")
+                                                                             )),
+                                                bs4Dash::column(6,
+                                                                bs4Dash::box(title = "Paper carousel",
+                                                                             width = NULL)),
+                                                bs4Dash::column(12,
+                                                                bs4Dash::box(title = "FAIR",
+                                                                             status = "teal",
+                                                                             width = NULL)),
                                                 )
                                               ),
-                             bs4Dash::tabItem(tabName = "data"),
+                             bs4Dash::tabItem(tabName = "data",
+                                              shiny::fluidRow(
+                                                bs4Dash::column(6,
+                                                                bs4Dash::box(title = "Top N words",
+                                                                             status = "teal",
+                                                                             width = NULL)),
+                                                bs4Dash::column(6,
+                                                                bs4Dash::box(title = "Evolution of top words",
+                                                                             status = "teal",
+                                                                             width = NULL)),
+                                                bs4Dash::column(12,
+                                                                bs4Dash::box(title = "Top words per paper",
+                                                                             status = "teal",
+                                                                             width = NULL))
+                                                )
+                                              ),
                              bs4Dash::tabItem(tabName = "topic",
                                               shiny::fluidRow(
-                                                bs4Dash::box(
-                                                  shiny::sidebarPanel(
-                                                    shiny::sliderInput("bins",
-                                                                "Number of bins:",
-                                                                min = 1,
-                                                                max = 50,
-                                                                value = 30
-                                                                ))),
-                                                bs4Dash::box(shiny::plotOutput("distPlot"))
-                                                )
+                                                bs4Dash::column(12,
+                                                                bs4Dash::box(title = "Models",
+                                                                             status = "teal",
+                                                                             width = NULL)),
+                                                bs4Dash::column(12,
+                                                                bs4Dash::box(title = "Model evolution",
+                                                                             status = "teal",
+                                                                             width = NULL)),
+                                              )
                                               )
                              )
                            )
-  )
+    )
   }

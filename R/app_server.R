@@ -19,6 +19,19 @@ app_server <- function(session,input, output) {
                                 ),
                     selected='ALL')
 
+  # Tool tips
+  bs4Dash::addTooltip(id = "year",
+                      options = list(
+                        title = "Filter results by graduation year",
+                        placement = "right")
+                      )
+
+  bs4Dash::addTooltip(id = "exchange",
+                      options = list(
+                        title = "Filter results by exchange semester",
+                        placement = "right")
+                      )
+
   # shiny::updateSelectInput(session, "exchange", label = "Select exchange semester:",
   #                   choices = c('ALL',emu_theses$exchange_semester |>
   #                                 as.character() |>
@@ -30,10 +43,10 @@ app_server <- function(session,input, output) {
  emu_reactive <- shiny::reactive({
    emu_theses |>
      dplyr::filter(graduation_year  %in%
-                     if('ALL' %in% input$country)
+                     if('ALL' %in% input$year)
                        unique(emu_theses$graduation_year)
                      else
-                       input$country
+                       input$year
                    )
 
  })
@@ -57,12 +70,12 @@ app_server <- function(session,input, output) {
   })
 
 
-  output$thesismap <- shiny::renderPlot({
-
-    x <- geocode_thesis_locations(emu_reactive())
-
-    visualize_thesis_locations(x)
-
-  })
+  # output$thesismap <- shiny::renderPlot({
+  #
+  #   x <- geocode_thesis_locations(emu_reactive())
+  #
+  #   visualize_thesis_locations(x)
+  #
+  # })
 
   }
