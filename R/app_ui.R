@@ -47,7 +47,9 @@ app_ui <- function() {
                                                 bs4Dash::column(12,
                                                                 bs4Dash::box(title = "Links",
                                                                 status = "lightblue",
-                                                                width = NULL)),
+                                                                width = NULL,
+                                                                plotOutput("distPlot")
+                                                                )),
                                                 bs4Dash::column(3,
                                                        bs4Dash::box(title = "Stats 1",
                                                                     status = "lightblue",
@@ -67,7 +69,7 @@ app_ui <- function() {
                                                 bs4Dash::column(6,
                                                                 bs4Dash::box(title = "Map plot",
                                                                              width = NULL,
-                                                                             shiny::plotOutput("thesismap")
+                                                                             leaflet::leafletOutput("thesis_location")
                                                                              )),
                                                 bs4Dash::column(6,
                                                                 bs4Dash::box(title = "Paper carousel",

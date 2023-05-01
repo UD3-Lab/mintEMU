@@ -1,6 +1,10 @@
 #' @export
 app_server <- function(session,input, output) {
 
+  ## Use the thematic package to adjust plot styles to app theme:
+  thematic::thematic_shiny()
+  bs4Dash::useAutoColor()
+
   ## Get the data  - temporarily added data file in the project. this will mimic the packages final behaviour
 
   # data_path <- here::here("analysis", "data", "derived_data", "emu_theses_with_text.csv")
@@ -56,7 +60,7 @@ app_server <- function(session,input, output) {
   output$distPlot <- shiny::renderPlot({
     # generate bins based on input$bins from ui.R
     x    <- faithful[, 2]
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    bins <- seq(min(x), max(x), length.out = 30)
 
     # draw the histogram with the specified number of bins
     hist(
@@ -70,12 +74,28 @@ app_server <- function(session,input, output) {
   })
 
 
-  # output$thesismap <- shiny::renderPlot({
-  #
-  #   x <- geocode_thesis_locations(emu_reactive())
-  #
-  #   visualize_thesis_locations(x)
-  #
-  # })
+  output$thesis_location <- leaflet::renderLeaflet({
+    data <- emu_reactive()
+
+    icons <- leaflet::awesomeIcons(
+      icon = "pen",
+      iconColor = "#fff",
+      library = "fa",
+      markerColor = "blue"
+    )
+
+    emu_reactive() |>
+      leaflet::leaflet() |>
+      leaflet::addProviderTiles("Stamen.TonerLite") |>
+      leaflet::addAwesomeMarkers(icon = icons,
+                                 label = data$location,
+                                 popup = paste0("<b>Title:</b> ",
+                                                data$title,
+                                                "<br/> <b>Location:</b> ",
+                                                data$location )
+                                 )
+
+
+  })
 
   }
