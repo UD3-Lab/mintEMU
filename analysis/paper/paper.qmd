@@ -100,7 +100,7 @@ if (!file.exists(data_path)) {
   emu_theses$text <- convert_pdf_text(pdf_paths)
   write_csv(emu_theses, data_path)
 } else {
-  emu_theses <- read_csv(data_path)
+  emu_theses$text <- read_csv(data_path)$text
 }
 
 ```
