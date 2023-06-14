@@ -3,7 +3,7 @@ title: "The Legacy of the European Post-Master in Urbanism at TU Delft: A Text M
 author:
   - Claudiu Forgaci:
       correspondence: "yes"
-      email: janedoe@fosg.org
+      email: C.Forgaci@tudelft.nl
       orcid: 0000-0003-3218-5102
       institute: tud
 institute:
