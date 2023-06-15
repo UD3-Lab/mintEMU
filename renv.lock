@@ -175,6 +175,24 @@
         "tidyr"
       ]
     },
+    "bs4Dash": {
+      "Package": "bs4Dash",
+      "Version": "2.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5bdfebde67149093342161c6e748ca0d",
+      "Requirements": [
+        "bslib",
+        "fresh",
+        "htmltools",
+        "httpuv",
+        "httr",
+        "jsonlite",
+        "lifecycle",
+        "shiny",
+        "waiter"
+      ]
+    },
     "bslib": {
       "Package": "bslib",
       "Version": "0.4.1",
@@ -258,10 +276,10 @@
     },
     "commonmark": {
       "Package": "commonmark",
-      "Version": "1.8.1",
+      "Version": "1.9.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b6e3e947d1d7ebf3d2bdcea1bde63fe7",
+      "Hash": "d691c61bff84bd63c383874d2d0c3307",
       "Requirements": []
     },
     "cpp11": {
@@ -520,6 +538,19 @@
         "rlang",
         "tibble",
         "withr"
+      ]
+    },
+    "fresh": {
+      "Package": "fresh",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fa54367040deb4537da49b7ac0ee5770",
+      "Requirements": [
+        "htmltools",
+        "rstudioapi",
+        "sass",
+        "shiny"
       ]
     },
     "fs": {
@@ -1554,6 +1585,18 @@
         "xtable"
       ]
     },
+    "shinyjs": {
+      "Package": "shinyjs",
+      "Version": "2.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "802e4786b353a4bb27116957558548d5",
+      "Requirements": [
+        "digest",
+        "jsonlite",
+        "shiny"
+      ]
+    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7",
@@ -1651,6 +1694,21 @@
       "Requirements": [
         "cpp11",
         "systemfonts"
+      ]
+    },
+    "thematic": {
+      "Package": "thematic",
+      "Version": "0.1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "77ad63ad98b3434a01284dbf1125e404",
+      "Requirements": [
+        "farver",
+        "ggplot2",
+        "rappdirs",
+        "rlang",
+        "rstudioapi",
+        "scales"
       ]
     },
     "tibble": {
@@ -1920,6 +1978,18 @@
         "withr"
       ]
     },
+    "waiter": {
+      "Package": "waiter",
+      "Version": "0.2.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "93e6b6c8ae3f81d4be77a0dc74e5cf5e",
+      "Requirements": [
+        "R6",
+        "htmltools",
+        "shiny"
+      ]
+    },
     "waldo": {
       "Package": "waldo",
       "Version": "0.4.0",
@@ -1966,10 +2036,10 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.35",
+      "Version": "0.39",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f576593107bdf9aa7db48ef75a8c05fb",
+      "Hash": "8f56e9acb54fb525e66464d57ab58bcb",
       "Requirements": []
     },
     "xml2": {
