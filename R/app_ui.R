@@ -47,8 +47,7 @@ app_ui <- function() {
                                                 bs4Dash::column(12,
                                                                 bs4Dash::box(title = "Links",
                                                                 status = "lightblue",
-                                                                width = NULL,
-                                                                plotOutput("distPlot")
+                                                                width = NULL
                                                                 )),
                                                 bs4Dash::column(3,
                                                        bs4Dash::box(title = "Stats 1",
@@ -69,14 +68,14 @@ app_ui <- function() {
                                                 bs4Dash::column(6,
                                                                 bs4Dash::box(title = "Map plot",
                                                                              width = NULL,
-                                                                             leaflet::leafletOutput("thesis_location")
+                                                                             leaflet::leafletOutput("thesis_location_map")
                                                                              )),
                                                 bs4Dash::column(6,
-                                                                bs4Dash::box(title = "Paper carousel",
-                                                                             width = NULL)),
+                                                                shiny::uiOutput("clicked_box")
+                                                                ),
                                                 bs4Dash::column(12,
                                                                 bs4Dash::box(title = "FAIR",
-                                                                             status = "teal",
+                                                                             status = "lightblue",
                                                                              width = NULL)),
                                                 )
                                               ),
@@ -84,27 +83,32 @@ app_ui <- function() {
                                               shiny::fluidRow(
                                                 bs4Dash::column(6,
                                                                 bs4Dash::box(title = "Top N words",
-                                                                             status = "teal",
+                                                                             status = "lightblue",
                                                                              width = NULL)),
                                                 bs4Dash::column(6,
                                                                 bs4Dash::box(title = "Evolution of top words",
-                                                                             status = "teal",
+                                                                             status = "lightblue",
                                                                              width = NULL)),
                                                 bs4Dash::column(12,
                                                                 bs4Dash::box(title = "Top words per paper",
-                                                                             status = "teal",
-                                                                             width = NULL))
+                                                                             status = "lightblue",
+                                                                             width = NULL,
+                                                                             shiny::radioButtons("tfidf",
+                                                                                                 label = "Choose statistic: ",
+                                                                                                 choices = c("TF", "TF-IDF"),
+                                                                                                 inline = TRUE)
+                                                                             ))
                                                 )
                                               ),
                              bs4Dash::tabItem(tabName = "topic",
                                               shiny::fluidRow(
                                                 bs4Dash::column(12,
                                                                 bs4Dash::box(title = "Models",
-                                                                             status = "teal",
+                                                                             status = "lightblue",
                                                                              width = NULL)),
                                                 bs4Dash::column(12,
                                                                 bs4Dash::box(title = "Model evolution",
-                                                                             status = "teal",
+                                                                             status = "lightblue",
                                                                              width = NULL)),
                                               )
                                               )
