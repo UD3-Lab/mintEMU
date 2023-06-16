@@ -10,7 +10,9 @@ app_server <- function(session,input, output) {
   ## temporarily added data file in the project. this will mimic the packages final behaviour
 
   # data_path <- here::here("analysis", "data", "derived_data", "emu_theses_with_text.csv")
+  # Add latitude and longitude information to theses data frame
   # emu_theses <- readr::read_csv(data_path)
+  # emu_theses <- geocode_thesis_locations(emu_theses)
   # usethis::use_data(emu_theses, overwrite = TRUE)
   data("emu_theses")
 
