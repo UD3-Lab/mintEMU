@@ -12,6 +12,7 @@ app_server <- function(session,input, output) {
   # data_path <- here::here("analysis", "data", "derived_data", "emu_theses_with_text.csv")
   # Add latitude and longitude information to theses data frame
   # emu_theses <- readr::read_csv(data_path)
+  # emu_theses$text_clean <- emu_theses$text |> clean_basic()
   # emu_theses <- geocode_thesis_locations(emu_theses)
   # usethis::use_data(emu_theses, overwrite = TRUE)
   data("emu_theses")
@@ -87,12 +88,15 @@ app_server <- function(session,input, output) {
      clicked_thesis <- emu_reactive() |>
        dplyr::filter(id  == clicked_id)
 
+
+
      empty_box <- is.null(clicked_id)
 
-     bs4Dash::box(title = clicked_thesis$title,
+     bs4Dash::box(title = paste(clicked_thesis$id, clicked_thesis$title),
                   status = "lightblue",
                   collapsed = empty_box,
                   width = NULL,
+                  textOutput('clickid'),
                   wordcloud2::wordcloud2Output("wordcloud"))
 
      })  |>
@@ -102,6 +106,7 @@ app_server <- function(session,input, output) {
 
    # Word cloud of the selected thesis
    output$wordcloud <- wordcloud2::renderWordcloud2({
+
      clicked_id <- input$thesis_location_map_marker_click$id
 
      clicked_words <- emu_reactive() |>
@@ -114,9 +119,18 @@ app_server <- function(session,input, output) {
 
      wordcloud2::wordcloud2(clicked_words)
 
-
      })|>
     shiny::bindEvent(input$thesis_location_map_marker_click)
 
+
+   # Word cloud of the selected thesis
+   output$clickid <- renderText({
+
+     clicked_id <- input$thesis_location_map_marker_click$id
+
+     clicked_id
+
+     })|>
+     shiny::bindEvent(input$thesis_location_map_marker_click)
 
   }
