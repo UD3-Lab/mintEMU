@@ -54,7 +54,8 @@ find_meta_stopwords <- function(metadata,
                                   'subtitle' = 'subtitle',
                                   'full_title' = 'full_title'
                                 ),
-                                convert_to_regex = TRUE) {
+                                convert_to_regex = TRUE,
+                                clean_meta = TRUE ) {
   cols_meta <- names(metadata)
 
   cols_meta <- cols_meta[cols_meta %in% unlist(stop_cols)]
@@ -79,8 +80,10 @@ find_meta_stopwords <- function(metadata,
                              colNames <- names(df)
                              do.call(paste, df[colNames])
                            }) |>
-    as.data.frame() |>
-    lapply(clean_basic)
+    as.data.frame()
+
+  if (clean_meta == TRUE)
+    stop_words_df <- lapply(stop_words_df, clean_basic)
 
   if (convert_to_regex == TRUE)
     return(stringr::regex(do.call(paste, c(
@@ -174,3 +177,42 @@ short_words <-
   }
 
 
+#' Create a combination of words
+#'
+#' Function creates a vector that includes combination of words
+#' coming from two vector of strings,
+#' making sure at least one word from each input strings is included in the combination
+#'
+#' @param string1 A vector string to be included in the combination
+#' @param string2 A vector string to be included in the combination
+#'
+#' @return A vector string consisting of combinations of words coming from input vectors
+#' @export
+#'
+word_combos <- function(string1, string2) {
+
+  # Splitting strings into words
+  words1 <- strsplit(string1, "\\s+")[[1]]
+  words2 <- strsplit(string2, "\\s+")[[1]]
+
+  # Combine words from both strings
+  all_words <- (c(words1, words2))
+
+  # Find combinations with the condition
+  combinations <- list()
+  for (length in 2:length(all_words)) {
+    combinations[[length]] <- combn(all_words, length, paste, collapse = " ")
+
+    valid_combinations <- lapply(strsplit(combinations[[length]], "\\s+"),
+                                 function(x) sum(x %in% words1) > 0  & sum(x %in% words2) > 0 ) |>
+      unlist()
+
+    combinations[[length]] <-  combinations[[length]][valid_combinations]
+
+  }
+
+  combinations<- unlist(combinations)
+
+  combinations
+
+}
