@@ -60,3 +60,39 @@ convert_to_dtm <- function(data, title_col = NULL, word_col = NULL) {
 
   data_dtm
 }
+
+#' Get ngrams from a corpus
+#'
+#' @param data Data frame of documents containing a text column
+#' @param n The number of words to include in the token (e.g., n = 2 for bigram)
+#' @param text_col The name of the column where the text to be tokenised is located
+#' @param title_col The name of the title column
+#' @param stem If `TRUE` create additional columns with stemmed version of tokens
+#'
+#' @return A data frame with an "ngram" column and columns for its constituent words
+#' @export
+get_ngrams <- function(data, n, title_col = NULL, text_col = NULL, stem = FALSE) {
+  data_ngrams <- data |>
+    select(title_col, text_col) |>
+    tidytext::unnest_tokens(ngram, text_col, token = "ngrams", n = n) |>
+    tidyr::separate(ngram, into = c("first", "second", "third"),
+                    sep = " ", remove = FALSE) |>
+    dplyr::anti_join(tidytext::stop_words, by = c("first" = "word")) |>
+    dplyr::anti_join(tidytext::stop_words, by = c("second" = "word")) |>
+    dplyr::anti_join(tidytext::stop_words, by = c("third" = "word")) |>
+    dplyr::filter(str_detect(first, "[a-z]") &
+             stringr::str_detect(second, "[a-z]"))
+
+  if (stem) {
+    data_ngrams <- data_ngrams |>
+      dplyr::mutate(first_stem = SnowballC::wordStem(words = first,
+                                                     language = "porter")) |>
+      dplyr::mutate(second_stem = SnowballC::wordStem(words = second,
+                                                      language = "porter")) |>
+      dplyr::mutate(third_stem = SnowballC::wordStem(words = third,
+                                                     language = "porter"))
+  }
+
+  data_ngrams
+
+}
