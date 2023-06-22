@@ -71,8 +71,13 @@ convert_to_dtm <- function(data, title_col = NULL, word_col = NULL) {
 #'
 #' @return A data frame with an "ngram" column and columns for its constituent words
 #' @export
-get_ngrams <- function(data, n, title_col = NULL, text_col = NULL, stem = FALSE) {
-  data_ngrams <- data |>
+get_ngrams <-
+  function(data,
+           n,
+           title_col = NULL,
+           text_col = NULL,
+           stem = FALSE) {
+    data_ngrams <- data |>
     select(title_col, text_col) |>
     tidytext::unnest_tokens(ngram, text_col, token = "ngrams", n = n) |>
     tidyr::separate(ngram, into = c("first", "second", "third"),

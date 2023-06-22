@@ -335,50 +335,47 @@ emu_theses_top_20 <- get_top_words_per_corpus(data = emu_theses_words,
 ```{r}
 #| label: ngrams
 
-## TO DO: generalise bigrams and trigrams into ngrams function
+## Add lemmas as optional column to ngram function
 
 ## Bigrams
 emu_theses_bigrams <- emu_theses |> 
-  unnest_tokens(bigram, text, token = "ngrams", n = 2) |> 
-  separate(bigram, into = c("first", "second"), sep = " ", remove = FALSE) |> 
-  anti_join(stop_words, by = c("first" = "word")) |> 
-  anti_join(stop_words, by = c("second" = "word")) |> 
-  filter(str_detect(first, "[a-z]") & 
-         str_detect(second, "[a-z]"))
+  get_ngrams(n = 2, title_col = "title", text_col = "text_clean", stem = TRUE)
+
+emu_theses_bigrams |>
+  dplyr::mutate(first_lemma =  |> tidytext::unnest_tokens())
+
+spacyr::spacy_parse(emu_theses_bigrams$first)
 
 bigram_counts <- emu_theses_bigrams |> 
   count(first, second, sort = TRUE)
 
+bigram_stem_counts <- emu_theses_bigrams |> 
+  count(first_stem, second_stem, sort = TRUE)
+
 bigram_counts
+bigram_stem_counts
 
 ## Trigrams
 emu_theses_trigrams <- emu_theses |> 
-  unnest_tokens(trigram, text, token = "ngrams", n = 3) |> 
-  separate(trigram, into = c("first", "second", "third"), sep = " ", remove = FALSE) |> 
-  filter(!first %in% stop_words$word,
-         !second %in% stop_words$word,
-         !third %in% stop_words$word) |>  
-  filter(str_detect(first, "[a-z]"), 
-         str_detect(second, "[a-z]"),
-         str_detect(third, "[a-z]"))
+  get_ngrams(n = 3, title_col = "title", text_col = "text")
 
 trigram_counts <- emu_theses_trigrams |> 
-  count(first, second, sort = TRUE)
+  count(first, second, third, sort = TRUE)
 
 trigram_counts
 
 ## Bigram tf-idf
 bigram_tf_idf <- emu_theses_bigrams |> 
-  count(title, bigram) |> 
-  bind_tf_idf(bigram, title, n) |> 
+  count(title, ngram) |> 
+  bind_tf_idf(ngram, title, n) |> 
   arrange(desc(tf_idf))
 
 bigram_tf_idf
 
 ## Trigram tf-idf
 trigram_tf_idf <- emu_theses_trigrams |> 
-  count(title, trigram) |> 
-  bind_tf_idf(trigram, title, n) |> 
+  count(title, ngram) |> 
+  bind_tf_idf(ngram, title, n) |> 
   arrange(desc(tf_idf))
 
 trigram_tf_idf
@@ -396,7 +393,7 @@ a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
   
 ggraph(bigram_graph, layout = "fr") +
   geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, arrow = a) +
-  geom_node_point(color = "lightblue", size = 5) +
+  geom_node_point(color = "lightblue", linewidth = 5) +
   geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
   theme_void()
 
@@ -404,21 +401,21 @@ ggraph(bigram_graph, layout = "fr") +
 
 emu_theses_bigrams_top <- emu_theses_bigrams |>
   group_by(title) |>
-  count(bigram, sort = TRUE) |>
+  count(ngram, sort = TRUE) |>
   slice_max(n, n = 20) |>        ### top_n is superseded; better use slice_max instead
   # filter(n > 50)                ### filter words with a minimum count
   ungroup() |>
-  mutate(bigram = reorder(bigram, n))
+  mutate(bigram = reorder(ngram, n))
 
 emu_theses_bigrams_top_all <- emu_theses_bigrams |>
-  count(bigram, sort = TRUE) |>
+  count(ngram, sort = TRUE) |>
   slice_max(n, n = 20) |>        ### top_n is superseded; better use slice_max instead
   # filter(n > 50)                ### filter words with a minimum count
-  mutate(bigram = reorder(bigram, n))
+  mutate(ngram = reorder(ngram, n))
 
 emu_theses_bigrams_top |>
-  filter(title == unique(title)[1:6]) |> 
-  ggplot(aes(x = bigram, y = n, fill = title)) +
+  filter(title == unique(title)[1:10]) |> 
+  ggplot(aes(x = ngram, y = n, fill = title)) +
   geom_col() +
   xlab(NULL) +
   coord_flip() +
