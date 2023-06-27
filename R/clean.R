@@ -180,25 +180,21 @@ short_words <-
 #' Create a combination of words
 #'
 #' Function creates a vector that includes combination of words
-#' coming from two vector of strings,
-#' making sure at least one word from each input strings is included in the combination
+#' coming from two vectors of words,
+#' making sure at least one word from each input vectors is included in the combination
 #'
-#' @param string1 A vector string to be included in the combination
-#' @param string2 A vector string to be included in the combination
+#' @param words1 A vector containing single words value to be included in the combination
+#' @param words2 A vector containing single words to be included in the combination
 #'
 #' @return A vector string consisting of combinations of words coming from input vectors
-#' @export
 #'
-word_combos <- function(string1, string2) {
-
-  # Splitting strings into words
-  words1 <- strsplit(string1, "\\s+")[[1]]
-  words2 <- strsplit(string2, "\\s+")[[1]]
+word_combos <- function(words1, words2) {
 
   # Combine words from both strings
-  all_words <- (c(words1, words2))
+  all_words <- c(words1, words2)
 
   # Find combinations with the condition
+
   combinations <- list()
   for (length in 2:length(all_words)) {
     combinations[[length]] <- combn(all_words, length, paste, collapse = " ")
@@ -214,5 +210,57 @@ word_combos <- function(string1, string2) {
   combinations<- unlist(combinations)
 
   combinations
+
+
+}
+
+
+#' Create a combination of words
+#'
+#' Function creates a vector that includes combination of words
+#' coming from two vector of strings,
+#' making sure at least one word from each input strings is included in the combination
+#'
+#' @param string1 A vector string to be included in the combination
+#' @param string2 A vector string to be included in the combination
+#'
+#' @return A vector string consisting of combinations of words coming from input vectors
+#' @export
+#'
+word_vec_combos <- function(string1, string2) {
+
+  # Splitting strings into words
+  words1 <- strsplit(string1, "\\s+")
+  words2 <- strsplit(string2, "\\s+")
+
+  # Combine words from both strings
+  all_words <- mapply(c, words1, words2, SIMPLIFY = F)
+
+  # Find combinations with the condition
+
+  combinations <- mapply(word_combos,words1, words2, SIMPLIFY = F ) |>
+    unlist()
+
+  combinations
+
+}
+
+
+#' Check for special Latin letters
+#'
+#' Function checks if the vector of words includes special Latin letters;
+#' if so, add a word with a regular Latin counterpart to the vector
+#'
+#' @param words A vector string to be converted. each element will be treated as a separate word
+#'
+#' @return A vector string with regular letter counterparts added at the end of the string
+#'
+normalise_words <-function(words) {
+
+
+  normalized_text <- c(words, stringi::stri_trans_general(words, "Latin-ASCII")) |>
+    unique()
+
+  normalized_text
 
 }

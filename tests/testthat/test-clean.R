@@ -344,7 +344,90 @@ test_that("short_words works correctly when input is a word",{
 
   # Check the output against the expected result
   expect_equal(output, expected_output, ignore_attr = TRUE,
-               info = "Output should be a data.frame of with word and and n column"
+               info = "Output should be a data.frame of with a word and an n column"
   )
 
 })
+
+
+
+test_that("word_combos works correctly with single strings",{
+
+ string1 <- c("Salvador", "Felipe")
+ string2 <- c("Dali", "Domenech")
+
+
+ expected_output <- c("Salvador Felipe Dali Domenech",
+                      "Salvador Felipe Dali",
+                      "Salvador Felipe Domenech",
+                      "Salvador Dali Domenech",
+                      "Salvador Dali",
+                      "Salvador Domenech",
+                      "Felipe Dali Domenech",
+                      "Felipe Dali",
+                      "Felipe Domenech" )
+
+ output <- word_combos(string1, string2)
+
+ expect_setequal(output, expected_output)
+
+})
+
+
+test_that("word_vec_combos works correctly with vectors of strings",{
+
+  first_name <- c("Salvador Felipe", "Pablo Diego José Francisco",  "El" )
+  last_name <- c("Dali Domenech", "Picasso" ,  "Greco")
+
+
+  expected_output <- c("Salvador Felipe Dali Domenech",
+                       "Salvador Felipe Dali",
+                       "Salvador Felipe Domenech",
+                       "Salvador Dali Domenech",
+                       "Salvador Dali",
+                       "Salvador Domenech",
+                       "Felipe Dali Domenech",
+                       "Felipe Dali",
+                       "Felipe Domenech",
+                       "Pablo Diego José Francisco Picasso",
+                       "Pablo Diego José Picasso",
+                       "Pablo Diego Francisco Picasso",
+                       "Pablo José Francisco Picasso",
+                       "Diego José Francisco Picasso",
+                       "Pablo Diego Picasso",
+                       "Pablo Francisco Picasso",
+                       "Pablo José Picasso",
+                       "Diego José Picasso",
+                       "Diego Francisco Picasso",
+                       "José Francisco Picasso",
+                       "Pablo Picasso",
+                       "Diego Picasso",
+                       "José Picasso",
+                       "Francisco Picasso",
+                       "El Greco"
+                       )
+
+  output <- word_vec_combos(first_name, last_name)
+
+  expect_setequal(output, expected_output)
+
+})
+
+
+
+test_that("normalise_words workd correctly", {
+
+  input <- c("Żeromski","Zafón", "García",
+             "Márquez", "Cărtărescu", "Müller")
+
+  expected_output <- c("Żeromski","Zafón", "García",
+                       "Márquez", "Cărtărescu", "Müller",
+                       "Zeromski","Zafon", "Garcia",
+                       "Marquez", "Cartarescu", "Muller")
+
+  output <- normalise_words(input)
+
+  expect_setequal(output, expected_output)
+
+})
+
