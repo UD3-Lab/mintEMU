@@ -227,7 +227,7 @@ word_combos <- function(words1, words2) {
 #' @return A vector string consisting of combinations of words coming from input vectors
 #' @export
 #'
-word_vec_combos <- function(string1, string2) {
+word_vec_combos <- function(string1, string2, convert_to_regex = TRUE) {
 
   # Splitting strings into words
   words1 <- strsplit(string1, "\\s+")
@@ -238,10 +238,15 @@ word_vec_combos <- function(string1, string2) {
 
   # Find combinations with the condition
 
-  combinations <- mapply(word_combos,words1, words2, SIMPLIFY = F ) |>
-    unlist()
+  combinations <- mapply(word_combos,words1, words2, SIMPLIFY = F )
 
-  combinations
+  if (convert_to_regex)
+    return(
+      lapply(combinations, paste, collapse = "|") |>
+        unlist()
+      )
+  else
+    return(combinations)
 
 }
 
@@ -254,13 +259,19 @@ word_vec_combos <- function(string1, string2) {
 #' @param words A vector string to be converted. each element will be treated as a separate word
 #'
 #' @return A vector string with regular letter counterparts added at the end of the string
+#' @export
 #'
 normalise_words <-function(words) {
 
+  # words <- as.list(words)
 
-  normalized_text <- c(words, stringi::stri_trans_general(words, "Latin-ASCII")) |>
-    unique()
+  # normalized_text <- lapply(words, function(x) unique(c(x, stringi::stri_trans_general(x, "Latin-ASCII"))))
 
-  normalized_text
+  normalised_words <- stringi::stri_trans_general(words, "Latin-ASCII")
 
+  cond <- !normalised_words %in% words
+
+  words[cond] <- paste(words[cond] ,normalised_words[cond])
+
+  words
 }

@@ -380,39 +380,57 @@ test_that("word_vec_combos works correctly with vectors of strings",{
   last_name <- c("Dali Domenech", "Picasso" ,  "Greco")
 
 
-  expected_output <- c("Salvador Felipe Dali Domenech",
-                       "Salvador Felipe Dali",
-                       "Salvador Felipe Domenech",
-                       "Salvador Dali Domenech",
-                       "Salvador Dali",
-                       "Salvador Domenech",
-                       "Felipe Dali Domenech",
-                       "Felipe Dali",
-                       "Felipe Domenech",
-                       "Pablo Diego José Francisco Picasso",
-                       "Pablo Diego José Picasso",
-                       "Pablo Diego Francisco Picasso",
-                       "Pablo José Francisco Picasso",
-                       "Diego José Francisco Picasso",
-                       "Pablo Diego Picasso",
-                       "Pablo Francisco Picasso",
-                       "Pablo José Picasso",
-                       "Diego José Picasso",
-                       "Diego Francisco Picasso",
-                       "José Francisco Picasso",
-                       "Pablo Picasso",
-                       "Diego Picasso",
-                       "José Picasso",
-                       "Francisco Picasso",
-                       "El Greco"
-                       )
+  expected_output <-
+    c("Salvador Felipe Dali Domenech",
+      "Salvador Felipe Dali",
+      "Salvador Felipe Domenech",
+      "Salvador Dali Domenech",
+      "Salvador Dali",
+      "Salvador Domenech",
+      "Felipe Dali Domenech",
+      "Felipe Dali",
+      "Felipe Domenech",
+      "Pablo Diego José Francisco Picasso",
+      "Pablo Diego José Picasso",
+      "Pablo Diego Francisco Picasso",
+      "Pablo José Francisco Picasso",
+      "Diego José Francisco Picasso",
+      "Pablo Diego Picasso",
+      "Pablo Francisco Picasso",
+      "Pablo José Picasso",
+      "Diego José Picasso",
+      "Diego Francisco Picasso",
+      "José Francisco Picasso",
+      "Pablo Picasso",
+      "Diego Picasso",
+      "José Picasso",
+      "Francisco Picasso",
+      "El Greco")
 
-  output <- word_vec_combos(first_name, last_name)
+
+  output <- word_vec_combos(first_name, last_name, convert_to_regex = FALSE) |> unlist()
 
   expect_setequal(output, expected_output)
 
 })
 
+
+# test_that("word_vec_combos works correctly when requesting regex",{
+#
+#   first_name <- c("Salvador Felipe", "Pablo Diego José Francisco",  "El" )
+#   last_name <- c("Dali Domenech", "Picasso" ,  "Greco")
+#
+#
+#   expected_output <- c("Salvador Felipe Dali Domenech|Salvador Felipe Dali|Salvador Felipe Domenech|Salvador Dali Domenech|Salvador Dali|Salvador Domenech|Felipe Dali Domenech|Felipe Dali|Felipe Domenech",
+#                        "Pablo Diego José Francisco Picasso|Pablo Diego José Picasso|Pablo Diego Francisco Picasso|Pablo José Francisco Picasso|Diego José Francisco Picasso|Pablo Diego Picasso|Pablo Francisco Picasso|Pablo José Picasso|Diego José Picasso|Diego Francisco Picasso|José Francisco Picasso|Pablo Picasso|Diego Picasso|José Picasso|Francisco Picasso",
+#                        "El Greco")
+#
+#
+#   output <- word_vec_combos(first_name, last_name, convert_to_regex = FALSE)
+#
+#   expect_setequal(output, expected_output)
+#
+# })
 
 
 test_that("normalise_words workd correctly", {

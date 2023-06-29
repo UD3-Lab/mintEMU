@@ -4,7 +4,7 @@
 \alias{word_vec_combos}
 \title{Create a combination of words}
 \usage{
-word_vec_combos(string1, string2)
+word_vec_combos(string1, string2, convert_to_regex = TRUE)
 }
 \arguments{
 \item{string1}{A vector string to be included in the combination}
