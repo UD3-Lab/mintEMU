@@ -261,17 +261,19 @@ word_vec_combos <- function(string1, string2, convert_to_regex = TRUE) {
 #' @return A vector string with regular letter counterparts added at the end of the string
 #' @export
 #'
-normalise_words <-function(words) {
+normalise_words <-function(string_vec) {
 
   # words <- as.list(words)
+   words <- strsplit(string_vec, "\\s+")
 
   # normalized_text <- lapply(words, function(x) unique(c(x, stringi::stri_trans_general(x, "Latin-ASCII"))))
 
-  normalised_words <- stringi::stri_trans_general(words, "Latin-ASCII")
+  normalised_words <- lapply(words, stringi::stri_trans_general, "Latin-ASCII")
 
-  cond <- !normalised_words %in% words
+  words <- mapply(c, words, normalised_words, SIMPLIFY=FALSE)
 
-  words[cond] <- paste(words[cond] ,normalised_words[cond])
+  words <- lapply(words, unique) |> unlist()
 
   words
+
 }

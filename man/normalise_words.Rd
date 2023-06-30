@@ -4,7 +4,7 @@
 \alias{normalise_words}
 \title{Check for special Latin letters}
 \usage{
-normalise_words(words)
+normalise_words(string_vec)
 }
 \arguments{
 \item{words}{A vector string to be converted. each element will be treated as a separate word}
