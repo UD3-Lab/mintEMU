@@ -90,12 +90,11 @@ get_ngrams <-
 
   if (stem) {
     data_ngrams <- data_ngrams |>
-      dplyr::mutate(first_stem = SnowballC::wordStem(words = first,
-                                                     language = "porter")) |>
-      dplyr::mutate(second_stem = SnowballC::wordStem(words = second,
-                                                      language = "porter")) |>
-      dplyr::mutate(third_stem = SnowballC::wordStem(words = third,
-                                                     language = "porter"))
+      dplyr::mutate(dplyr::across(
+        tidyselect::starts_with("w_"),
+        ~ SnowballC::wordStem(words = .x, language = "porter"),
+        .names = "{.col}_stem"
+      ))
   }
 
   data_ngrams
