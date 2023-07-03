@@ -272,7 +272,7 @@ normalise_words <-function(string_vec) {
 
   words <- mapply(c, words, normalised_words, SIMPLIFY=FALSE)
 
-  words <- lapply(words, unique) |> unlist()
+  words <- lapply(words, function(x) paste(unique(x), collapse = " ") ) |> unlist()
 
   words
 
