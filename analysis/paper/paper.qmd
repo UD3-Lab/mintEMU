@@ -335,19 +335,17 @@ emu_theses_top_20 <- get_top_words_per_corpus(data = emu_theses_words,
 ```{r}
 #| label: ngrams
 
-## Add lemmas as optional column to ngram function
-
 ## Bigrams
 emu_theses_bigrams <- emu_theses |> 
   get_ngrams(n = 2, title_col = "title", text_col = "text_clean", stem = TRUE)
 
-spacyr::spacy_parse(emu_theses_bigrams$first)
+spacyr::spacy_parse(emu_theses_bigrams$w_1)
 
 bigram_counts <- emu_theses_bigrams |> 
-  count(first, second, sort = TRUE)
+  count(w_1, w_2, sort = TRUE)
 
 bigram_stem_counts <- emu_theses_bigrams |> 
-  count(first_stem, second_stem, sort = TRUE)
+  count(w_1_stem, w_2_stem, sort = TRUE)
 
 bigram_counts
 bigram_stem_counts
@@ -357,7 +355,7 @@ emu_theses_trigrams <- emu_theses |>
   get_ngrams(n = 3, title_col = "title", text_col = "text")
 
 trigram_counts <- emu_theses_trigrams |> 
-  count(first, second, third, sort = TRUE)
+  count(w_1, w_2, w_3, sort = TRUE)
 
 trigram_counts
 
