@@ -277,3 +277,49 @@ normalise_words <-function(string_vec) {
   words
 
 }
+
+
+#' Check the result of string replacement
+#'
+#' Function checks if a specific check pattern is included in the string vector  ;
+#' if so, it would print the pattern and the instances of it's occurance in the string
+#'
+#' @param text_vector A vector string to be checked
+#' @param check_pattern A pattern used to check whether the replacement worked. Can be single value or a vector of the same length as text_vector
+#' @param char_before Number of characters to be shown before the start of the check_pattern. Default is 25
+#' @param char_after  Number of characters to be shown after the start of the check_pattern. Default is 25
+#'
+#' @export
+#'
+replacement_checker <- function(text_vector, check_pattern, char_before = 25, char_after = 25 ){
+
+  occur <- str_extract_all(text_vector, check_pattern)
+  not_removed <- which(lengths(occur)>0)
+  loc <- str_locate_all(text_vector, check_pattern )
+
+  if (!(length(check_pattern) == 1 | length(check_pattern) == length(text_vector) ))
+    stop("The `check_pattern` needs to be a string vector of length 1 or of the same length as `text_vector`")
+
+
+  if(length(check_pattern) == 1 )
+    check_pattern <- rep(check_pattern, length(text_vector) )
+
+  for (nr in not_removed) {
+    n_occs <- nrow(loc[[nr]])
+
+    print(paste("PATTERN:", check_pattern[[nr]]))
+
+    for (occ in 1:n_occs) {
+      print(paste(
+        "NON_REMOVED,  NR",
+        nr,
+        ",",
+        occ ,
+        ":",
+        str_sub(text_vector[nr], loc[[nr]][occ] - char_before, loc[[nr]][occ] +
+                  char_after)
+      ))
+    }
+  }
+
+}
