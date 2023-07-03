@@ -53,7 +53,8 @@ Highlights: `r rmarkdown::metadata$highlights`
 ## List packages to be loaded
 packages <- c(
   "here",                                        # Managing paths
-  "tidyverse", "reshape2",                       # Data manipulation and visualisation
+  "tidyverse", "reshape2", "widyr",              # Data manipulation and visualisation
+  "furrr",                                       # Parallel use of purrr::map() functions
   "tidytext", "SnowballC", "tm", "topicmodels",  # Text processing and analysis
   "tidygeocoder",                                # Working with spatial data
   "igraph", "ggraph"                             # Network analysis and visualization
@@ -508,8 +509,12 @@ emu_theses_words_count |>
   coord_flip()
 ```
 
-```{r word-embeddings}
+Describe word embeddings ...
 
+```{r word-embeddings}
+#| include: false
+
+# Prepare tidy data frame for word embeddings
 tidy_emu_theses <- emu_theses |> 
   select(title, text_clean) |> 
   unnest_tokens(word, text_clean) |> 
@@ -517,54 +522,80 @@ tidy_emu_theses <- emu_theses |>
   filter(n >= 50) |> 
   select(-n)
 
+# Create a nested data frame with one row per thesis
 nested_words <- tidy_emu_theses |> 
   nest(words = c(word))
 
-nested_words
+```
 
+
+```{r word-embeddings}
+
+# Create sliding window function to calculate skipgram probabilities,
+# that is, how often each word occurs near each other word.
+# A small window size of 3-4 shows how a word is used, while a larger  
+# window size of, say, 10 gives more information about the domain topic.
 slide_windows <- function(tbl, window_size) {
+  # Iterate through an input vector with a fixed window size
   skipgrams <- slider::slide(
     tbl,
     ~.x,
     .after = window_size - 1,
-    .step = 1,
-    .complete = TRUE
+    .step = 1L,
+    .complete = TRUE  # Only evaluate function on complete windows
   )
 
+  # Run even when unsuccessful
   safe_mutate <- safely(mutate)
   
+  # Map safe_mutate to skipgrams 
   out <- map2(skipgrams,
               1:length(skipgrams),
               ~ safe_mutate(.x, window_id = .y))
   
   out |> 
-    transpose() |> 
-    pluck("result") |> 
-    compact() |> 
-    bind_rows()
+    transpose() |>  # Transpose `result` and `error` into columns,
+    pluck("result") |>  # only keep `result`,
+    compact() |>  # remove any NULL values [is this for the last windows?],
+    bind_rows()  # and bind all rows into a single data frame.
 }
+```
 
-library(widyr)
-library(furrr)
 
-plan(multisession)
+```{r word-embeddings}
 
+# To reduce computation time, we use the {furrr} 
+# and underlying {future} packages for parallel processing
+future::plan(multisession)
+
+# To calculate how often words occur on their own or tigether with other words
+# we use point-wise mutual information (PMI)
 tidy_pmi <- nested_words |> 
-  mutate(words = future_map(words, slide_windows, 10L)) |> 
+  mutate(words = future_map(words, slide_windows, 4L)) |> 
   unnest(words) |> 
   unite(window_id, title, window_id) |> 
   pairwise_pmi(word, window_id)
 
-tidy_pmi
+```
 
+The high-dimensional sparse matrix of word features is projected into reduced, 100-dimensional set of features.
+
+```{r word-embeddings}
+
+# Determine word vectors using SVD, a method for dimensionality reduction
+# The resulting matrix will be of size n_voc * n_dim instead of n_voc * n_voc
 tidy_word_vectors <- tidy_pmi |> 
   widely_svd(
     item1, item2, pmi,
     nv = 100, maxit = 1000
   )
 
-tidy_word_vectors
+```
 
+
+```{r word-embeddings}
+
+# Calculate nearest neighbours of a given word
 nearest_neighbors <- function(df, token) {
   df |> 
     widely(
@@ -581,8 +612,13 @@ nearest_neighbors <- function(df, token) {
 }
 
 tidy_word_vectors |> 
-  nearest_neighbors("resilience")
+  nearest_neighbors("price")
+```
 
+
+```{r word-embeddings}
+
+# The first n components with top words found in the corpus of theses
 tidy_word_vectors |> 
   filter(dimension <= 24) |> 
   group_by(dimension) |> 
@@ -601,6 +637,12 @@ tidy_word_vectors |>
     subtitle = "Top words contributing to the components that explain the most variation"
   )
 
+```
+
+
+```{r word-embeddings}
+
+# Summarise word embeddings into document embeddings for modeling purposes
 word_matrix <- tidy_emu_theses |> 
   count(title, word) |> 
   cast_sparse(title, word, n)
@@ -613,7 +655,9 @@ doc_matrix <- word_matrix %*% embedding_matrix
 dim(doc_matrix)
 
 doc_matrix
+
 ```
+
 
 
 # Discussion
