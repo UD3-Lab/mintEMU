@@ -71,23 +71,28 @@ convert_to_dtm <- function(data, title_col = NULL, word_col = NULL) {
 #'
 #' @return A data frame with an "ngram" column and columns for its constituent words
 #' @export
-get_ngrams <-
-  function(data,
-           n,
-           title_col = NULL,
-           text_col = NULL,
-           stem = FALSE) {
-    data_ngrams <- data |>
+get_ngrams <- function(data,
+                       n,
+                       title_col = NULL,
+                       text_col = NULL,
+                       stem = FALSE) {
+
+  # Create ngrams column and separate columns for each of the n terms
+  data_ngrams <- data |>
     select(title_col, text_col) |>
     tidytext::unnest_tokens(ngram, text_col, token = "ngrams", n = n) |>
-    tidyr::separate(ngram, into = paste("w" , 1:n, sep = "_")
-                    sep = " ", remove = FALSE) |>
-    dplyr::anti_join(tidytext::stop_words, by = c("first" = "word")) |>
-    dplyr::anti_join(tidytext::stop_words, by = c("second" = "word")) |>
-    dplyr::anti_join(tidytext::stop_words, by = c("third" = "word")) |>
-    dplyr::filter(str_detect(first, "[a-z]") &
-             stringr::str_detect(second, "[a-z]"))
+    tidyr::separate(ngram, into = paste("w" , 1:n, sep = "_"),
+                    sep = " ", remove = FALSE)
 
+  # Remove stop words from each column starting with "w_"
+  w_cols <- names(data_ngrams)[grepl("w_", names(data_ngrams))]
+
+  for (i in w_cols) {
+    data_ngrams <- data_ngrams |>
+      anti_join(stop_words, by = set_names("word", i))
+  }
+
+  # Add columns with stemmed versions of individual terms if `stem = TRUE`
   if (stem) {
     data_ngrams <- data_ngrams |>
       dplyr::mutate(dplyr::across(

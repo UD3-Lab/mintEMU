@@ -341,9 +341,6 @@ emu_theses_top_20 <- get_top_words_per_corpus(data = emu_theses_words,
 emu_theses_bigrams <- emu_theses |> 
   get_ngrams(n = 2, title_col = "title", text_col = "text_clean", stem = TRUE)
 
-emu_theses_bigrams |>
-  dplyr::mutate(first_lemma =  |> tidytext::unnest_tokens())
-
 spacyr::spacy_parse(emu_theses_bigrams$first)
 
 bigram_counts <- emu_theses_bigrams |> 
