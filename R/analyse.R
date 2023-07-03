@@ -80,7 +80,7 @@ get_ngrams <-
     data_ngrams <- data |>
     select(title_col, text_col) |>
     tidytext::unnest_tokens(ngram, text_col, token = "ngrams", n = n) |>
-    tidyr::separate(ngram, into = c("first", "second", "third"),
+    tidyr::separate(ngram, into = paste("w" , 1:n, sep = "_")
                     sep = " ", remove = FALSE) |>
     dplyr::anti_join(tidytext::stop_words, by = c("first" = "word")) |>
     dplyr::anti_join(tidytext::stop_words, by = c("second" = "word")) |>
