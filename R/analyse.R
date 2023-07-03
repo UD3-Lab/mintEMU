@@ -94,3 +94,29 @@ convert_to_dtm <- function(data, title_col = NULL, word_col = NULL) {
 
   data_dtm
 }
+
+#' Get `tf-idf` statistic
+#'
+#' @param data Data frame containing colomns with titles, words and word counts
+#' @param title_col Name of the title column of the input data frame
+#' @param word_col Name of the word column of the input data frame
+#'
+#' @return A data frame including the `tf-idf` statistic for each word
+#' @export
+get_tf_idf <- function(data, title_col = NULL, word_col = NULL) {
+  words_counts <- data |>
+    count(!!rlang::sym(title_col), !!rlang::sym(word_col), sort = TRUE) |>
+    ungroup()
+
+  words_total <- words_counts |>
+    group_by(!!rlang::sym(title_col)) |>
+    summarise(total = sum(n))
+
+  words_counts <- left_join(words_counts, words_total)
+
+  words_counts <- words_counts |>
+    bind_tf_idf(!!rlang::sym(word_col), !!rlang::sym(title_col), n) |>
+    select(-total)
+
+  words_counts
+}
