@@ -1,14 +1,10 @@
 ---
 title: "The Legacy of the European Post-Master in Urbanism at TU Delft: A Text Mining Approach"
 author:
-  - Jane Doe:
+  - Claudiu Forgaci:
       correspondence: "yes"
-      email: janedoe@fosg.org
-      orcid: 0000-0003-1689-0557
-      institute: tud
-  - John Q. Doe:
-      email: johndoe@fosg.org
-      orcid: 0000-0003-1689-0558
+      email: C.Forgaci@tudelft.nl
+      orcid: 0000-0003-3218-5102
       institute: tud
 institute:
   - tud:
@@ -49,8 +45,7 @@ Highlights: `r rmarkdown::metadata$highlights`
 
 <!-- The actual document text starts here: -->
 
-```{r}
-#| label: setup
+```{r setup}
 #| echo: false
 #| warning: false
 
@@ -94,8 +89,7 @@ emu_theses <-
 pdf_paths <- here(data_path, emu_theses$file_name)
 ```
 
-```{r}
-#| label: extract-pdf-text
+```{r extract-pdf-text}
 #| echo: false
 #| cache: true
 
@@ -106,13 +100,12 @@ if (!file.exists(data_path)) {
   emu_theses$text <- convert_pdf_text(pdf_paths)
   write_csv(emu_theses, data_path)
 } else {
-  emu_theses <- read_csv(data_path)
+  emu_theses$text <- read_csv(data_path)$text
 }
 
 ```
 
-```{r}
-#| label: clean-text
+```{r clean-text}
 #| echo: false
 
 emu_theses$text_clean <- emu_theses$text |>
@@ -129,7 +122,7 @@ Distinctive features of the program:
 - provides a bridge towards PhD-level research
 - all students had an exchange semester at one of the other three program universities
 
-In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(all_theses)` theses with an average of `r mean(str_length(emu_theses$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(all_theses$grad_year, na.rm = TRUE), "-", max(all_theses$grad_year, na.rm = TRUE))`. The first year of the program was not represented, as PDF files were only available from 2008 onward.
+In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(all_theses)` theses with an average of `r mean(str_length(emu_theses$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(all_theses$grad_year, na.rm = TRUE), "-", max(all_theses$grad_year, na.rm = TRUE))`. 
 
 # Methods
 
@@ -150,8 +143,7 @@ The theses are available in PDF format with complex layouts typical to an urbani
 
 A total number of `r nrow(emu_theses)` out of `r nrow(all_theses)` were analysed.
 
-```{r}
-#| label: fig-map-theses
+```{r fig-map-theses}
 #| warning: false 
 #| echo: false
 #| fig-cap: "Location of EMU theses included in the analysis"
@@ -163,11 +155,9 @@ emu_theses <- geocode_thesis_locations(emu_theses)
 visualize_thesis_locations(emu_theses)
 ```
 
-Figure @fig-map-theses shows the geographic spread of the theses included in the analysis.
+@fig-map-theses shows the geographic spread of the theses included in the analysis.
 
 ## Data analysis
-
-[@silge2017a] [@hvitfeldt2021a]
 
 ### Tokenisation
 
@@ -177,13 +167,12 @@ Word-level tokenisation was applied with the `unnest_tokens()` function of the `
 
 For analyses in which word-level tokenisation was chosen, stop words, i.e., common words or words that do not add much meaning, were removed in the data preparation stage. Global, subject-specific and document stop words [@hvitfeldt2021a] were differentiated. As all theses were written in English, the pre-made "snowball" lexicon was used to remove global stop words. <!-- We tried to create a custom global stop word list on the entire corpus, by removing high-frequency words, starting with 20 words and increasing by 10 until reaching words that are not appropriate as stop words, but no significant imoprvement was observed in the result. --> Subject-specific stop words, we manually constructed a list based on our domain knowledge. Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words on document-level.
 
-```{r}
-#| label: stop-words
+```{r stop-words}
 
 emu_theses$text_clean <- emu_theses$text_clean |>
   str_remove_all(find_meta_stopwords(emu_theses)) |> 
   str_remove_all(urbanism_stopwords(
-    add_stopwords = c("emu", "european postgraduate master in urbanism"))) |>
+    add_stopwords = c("emu", "european postgraduate master in urbanism", "tu delft", "ku leuven", "upcs barcelona", "iuav venice"))) |>
   str_remove_all(thesis_stopwords(add_stopwords = c("advisor", "prof")))
 
 emu_theses_words <- emu_theses |> 
@@ -193,10 +182,21 @@ emu_theses_words <- emu_theses |>
 
 ```
 
-Stemming is a pre-processing step that needs to be carefully thought through, as it might either degrade topic modeling or produce no meaningful results [@hvitfeldt2021a].
+Additional checks were made to the document in search for previously undetected stop words. The checks included identifying words consisting of four or less characters that extensively used in the text corpus. 
 
 ```{r}
-#| label: stemming
+#| label: short-stop-words
+
+#short_words(emu_theses$text_clean, scope = 'corpus')
+short_words(emu_theses_words$word)
+
+
+```
+
+
+Stemming is a pre-processing step that needs to be carefully thought through, as it might either degrade topic modeling or produce no meaningful results [@hvitfeldt2021a].
+
+```{r stemming}
 
 emu_theses_words %>% 
   mutate(stem = wordStem(words = word, 
@@ -210,11 +210,8 @@ Similar to clustering on numeric data, topic modeling is a method of unsupervise
 
 
 ```{r}
-# The topicmodels package requires a document-term matrix as input
-emu_theses_dtm <- emu_theses_words |> 
-  count(title, word, sort = TRUE) |> 
-  cast_dtm(title, word, n)
-
+# The {topicmodels} package requires a document-term matrix as input
+emu_theses_dtm <- convert_to_dtm(emu_theses_words, "title", "word")
 emu_theses_dtm
 
 # Fit LDA model

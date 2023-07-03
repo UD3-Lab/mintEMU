@@ -31,7 +31,7 @@ Our pre-print is online here:
 
 Please cite this compendium as:
 
-> Authors, (`r format(Sys.Date(), "%Y")`). _Compendium of R code and data for `r Title`_. Accessed `r format(Sys.Date(), "%d %b %Y")`. Online at <https://doi.org/xxx/xxx>
+> Forgaci, C., Wilczynska, A., (2023), (`r format(Sys.Date(), "%Y")`). _Compendium of R code and data for `r Title`_. Accessed `r format(Sys.Date(), "%d %b %Y")`. Online at <https://doi.org/xxx/xxx>
 
 ## Contents
 

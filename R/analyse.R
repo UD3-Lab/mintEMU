@@ -21,8 +21,8 @@ get_top_words_per_document <- function(data,
   word <- sym(word_col)
 
   data_top_n <- data |>
-    dplyr::group_by(!!title) |>
-    dplyr::count(!!word, sort = TRUE) |>
+    dplyr::group_by(!!rlang::sym(title_col)) |>
+    dplyr::count(!!rlang::sym(word_col), sort = TRUE) |>
     dplyr::slice_max(n, n = top_n) |>
     dplyr::filter(n > min_count) |>
     dplyr::ungroup()
@@ -77,4 +77,20 @@ get_top_words_per_topic <- function(data,
     dplyr::arrange(!!topic,-beta)
 
   data_top_terms
+}
+
+#' Convert data frame with word frequencies into document term matrix
+#'
+#' @param data Data frame containing colomns with titles, words and word counts
+#' @param title_col Name of the title column of the input data frame
+#' @param word_col Name of the word column of the input data frame
+#'
+#' @return A document term matrix
+#' @export
+convert_to_dtm <- function(data, title_col = NULL, word_col = NULL) {
+  data_dtm <- data |>
+    dplyr::count(!!rlang::sym(title_col), !!rlang::sym(word_col), sort = TRUE) |>
+    tidytext::cast_dtm(!!rlang::sym(title_col), !!rlang::sym(word_col), n)
+
+  data_dtm
 }

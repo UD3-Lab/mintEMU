@@ -10,9 +10,9 @@ clean_basic <- function(text) {
 
   out_text <- text |>
     tolower() |>
-    str_replace_all("\\s{1,}", " ") |>
-    str_remove_all("[[:punct:]]") |>
-    str_squish()
+    stringr::str_replace_all("\\s{1,}", " ") |>
+    stringr::str_remove_all("[[:punct:]]") |>
+    stringr::str_squish()
 
   out_text
 
@@ -132,5 +132,45 @@ thesis_stopwords <- function(add_stopwords = NULL, convert_to_regex = TRUE) {
 }
 
 
+#' Produces the table with the most popular short words in the body of text
+#'
+#' Function creates a vector of stopwords associated with master theses
+#' @param text_vector A string vector
+#' @param l_word length of words to be detected
+#' @param l_list number of top words to be retrieved
+#' @param scope either 'word' or 'corpus'. should be search be performed on individual words or a corpus?
+#' @param print_kable logical value. If TRUE (default), a kable with results is printed out
+#' @return A table with the short words and its prevalance in the body of text
+#' @export
+short_words <-
+  function(text_vector,
+           l_word = 4,
+           l_list = 50,
+           scope = 'word',
+           print_kable = TRUE) {
+    if (scope == 'word') {
+
+      out_table <-
+        tibble::tibble(word = text_vector[nchar(text_vector) <= l_word])
+
+    } else if (scope == 'corpus') {
+      out_table <-
+        tibble::tibble(word = unlist(
+          stringr::str_extract_all(text_vector, '\\b[\\w]{1,4}\\b')
+        ))
+    } else
+      stop("The scope needs to be either 'word' or 'corpus'")
+
+    out_table <- out_table |>
+      dplyr::count(word) |>
+      dplyr::arrange(dplyr::desc(n)) |>
+      head(l_list)
+
+    if (print_kable == TRUE)
+      print(kableExtra::kable_styling(knitr::kable(out_table)))
+
+    out_table
+
+  }
 
 
