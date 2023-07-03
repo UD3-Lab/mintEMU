@@ -89,18 +89,25 @@ emu_theses <-
 pdf_paths <- here(data_path, emu_theses$file_name)
 ```
 
-```{r extract-pdf-text}
+```{r get-pdf-text}
 #| echo: false
 #| cache: true
 
-data_path <- here("analysis", "data", "derived_data", "emu_theses_with_text.csv")
+data_path <- here("analysis", "data", "derived_data", "emu_theses_with_text_and_location.csv")
 
 if (!file.exists(data_path)) {
   # On the first run, this function might take extra time as a Python environment needs to be set up
   emu_theses$text <- convert_pdf_text(pdf_paths)
+  
+  # Add latitude and longitude information to theses data frame
+  emu_theses <- geocode_thesis_locations(emu_theses)
+
+  # Write thesis dataframe to file
   write_csv(emu_theses, data_path)
 } else {
   emu_theses$text <- read_csv(data_path)$text
+  emu_theses$longitude <- read_csv(data_path)$longitude
+  emu_theses$latitude <- read_csv(data_path)$latitude
 }
 
 ```
@@ -147,9 +154,6 @@ A total number of `r nrow(emu_theses)` out of `r nrow(all_theses)` were analysed
 #| warning: false 
 #| echo: false
 #| fig-cap: "Location of EMU theses included in the analysis"
-
-# Add latitude and longitude information to theses data frame
-emu_theses <- geocode_thesis_locations(emu_theses)
 
 # Show thesis locations on world map
 visualize_thesis_locations(emu_theses)
