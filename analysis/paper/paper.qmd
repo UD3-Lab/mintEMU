@@ -300,40 +300,23 @@ get_top_words_per_document(data = emu_theses_words, top_n = 3)
 
 ```{r}
 # Which are the top n most frequently used words in all theses?
-get_top_words_per_corpus(data = emu_theses_words, top_n = 20)
+n = 20
+
+# TODO add topic to fill aesthetic
+get_top_words_per_corpus(data = emu_theses_words |> 
+                           mutate(word = textstem::lemmatize_words(emu_theses_words$word)), top_n = n) |> 
+  ggplot(aes(reorder(word, n), n)) +
+  geom_col(fill = "orange") +
+  geom_text(aes(label = n), size = 2, hjust = 1.1) +
+  coord_flip() +
+  xlab("Word") +
+  ylab("Frequency") +
+  labs(title = paste0("Top ", n, " most used words in the corpus of theses"))
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+
 ```
 
-<!-- ```{r} -->
-
-<!-- # Which theses contain "fabric" in the top 20 most frequently used words? -->
-
-<!-- emu_theses_top_20 %>%  -->
-
-<!--   filter(word == "fabric") -->
-
-<!-- emu_theses_top_20 %>% -->
-
-<!--   slice(1:40) %>%  -->
-
-<!--   ggplot(aes(x = reorder(word, n), y = n, fill = title)) + -->
-
-<!--   geom_col() + -->
-
-<!--   xlab(NULL) + -->
-
-<!--   coord_flip() + -->
-
-<!--   labs(y = "Count", -->
-
-<!--        x = "Unique words", -->
-
-<!--        title = "Count of unique words found in thesis", -->
-
-<!--        subtitle = "Stop words were removed from the list") + -->
-
-<!--   facet_wrap( ~ title, scales = "free", ncol = 2) -->
-
-<!-- ``` -->
 
 ```{r}
 #| label: ngrams
@@ -343,6 +326,35 @@ emu_theses_bigrams <- emu_theses |>
   get_ngrams(n = 2, title_col = "title", text_col = "text_clean", stem = TRUE)
 
 spacyr::spacy_parse(emu_theses_bigrams$w_1)
+data.frame(emu_theses_bigrams$w_1, textstem::lemmatize_words(emu_theses_bigrams$w_1))
+
+
+set.seed(12345)
+
+# with spacy
+extract_rand_window <- function(x, p){
+    first_index = sample(seq(length(x) - p + 1), 1)
+    x[first_index:(first_index + p -1)]
+    }
+
+example_lemma <-list()
+for (i in 1:10) {
+  example_lemma[[i]] <- extract_rand_window(emu_theses_bigrams$w_1,10)
+}
+
+Original <- unlist(example_lemma)
+Lemmatized <- spacyr::spacy_parse(Original)
+
+# with textstem
+Lemmatized2 <- textstem::lemmatize_words(Original) 
+
+lemma_example <- data.frame(Original, Lemmatized2)
+
+lemma_example
+
+data.frame(Lemmatized$token, Lemmatized$lemma, Lemmatized2)
+
+
 
 bigram_counts <- emu_theses_bigrams |> 
   count(w_1, w_2, sort = TRUE)
