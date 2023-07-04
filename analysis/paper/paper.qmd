@@ -53,7 +53,8 @@ Highlights: `r rmarkdown::metadata$highlights`
 ## List packages to be loaded
 packages <- c(
   "here",                                        # Managing paths
-  "tidyverse", "reshape2",                       # Data manipulation and visualisation
+  "tidyverse", "reshape2", "widyr",              # Data manipulation and visualisation
+  "furrr",                                       # Parallel use of purrr::map() functions
   "tidytext", "SnowballC", "tm", "topicmodels",  # Text processing and analysis
   "tidygeocoder",                                # Working with spatial data
   "igraph", "ggraph"                             # Network analysis and visualization
@@ -493,7 +494,70 @@ emu_theses_words_count |>
   coord_flip()
 ```
 
-The `tf-idf` statistic shows high values for the names of thesis locations that tend to be high-frequency thesis-specific words. As such, it shows words that are the most important to one document in a collection of documents [@silge2017].
+### Word embeddings  
+
+[Describe word embeddings ...]
+
+```{r word-embeddings-pmi}
+#| include: false
+
+# To what extent do words co-occur with other words?
+tidy_pmi <- get_pmi(emu_theses, title_col = "title", text_col = "text_clean")
+
+```
+
+The high-dimensional sparse matrix of word features is projected into reduced, 100-dimensional set of features.
+
+```{r word-embeddings-svd}
+
+# Determine word vectors using SVD, a method for dimensionality reduction
+tidy_word_vectors <- tidy_pmi |> 
+  widely_svd(
+    item1, item2, pmi,
+    nv = 100, maxit = 1000
+  )
+
+```
+
+[What terms should be checked with the function below?]
+
+```{r word-embeddings-nn}
+
+# Calculate nearest neighbours of a given word
+tidy_word_vectors |> 
+  nearest_neighbors("resilience")
+
+```
+
+The first [?] components... [what do they show?]
+
+```{r word-embeddings}
+
+# The first n components with top words found in the corpus of theses
+visualise_first_n_components(tidy_word_vectors, 24, 12)
+
+```
+
+
+```{r word-embeddings}
+
+# Summarise word embeddings into document embeddings for modeling purposes
+word_matrix <- tidy_emu_theses |> 
+  count(title, word) |> 
+  cast_sparse(title, word, n)
+
+embedding_matrix <- tidy_word_vectors |> 
+  cast_sparse(item1, dimension, value)
+
+doc_matrix <- word_matrix %*% embedding_matrix
+
+dim(doc_matrix)
+
+doc_matrix
+
+```
+
+
 
 # Discussion
 
