@@ -190,6 +190,11 @@ short_words <-
 #'
 word_combos <- function(words1, words2) {
 
+  words1[is.na(words1)] <- ""
+
+  words2[is.na(words2)] <- ""
+
+
   # Combine words from both strings
   all_words <- c(words1, words2)
 
@@ -200,7 +205,7 @@ word_combos <- function(words1, words2) {
     combinations[[length]] <- combn(all_words, length, paste, collapse = " ")
 
     valid_combinations <- lapply(strsplit(combinations[[length]], "\\s+"),
-                                 function(x) sum(x %in% words1) > 0  & sum(x %in% words2) > 0 ) |>
+                                 function(x) sum(x %in% words1 | words1 == "") > 0  & sum(x %in% words2 | words2 == "") > 0 ) |>
       unlist()
 
     combinations[[length]] <-  combinations[[length]][valid_combinations]
@@ -223,11 +228,13 @@ word_combos <- function(words1, words2) {
 #'
 #' @param string1 A vector string to be included in the combination
 #' @param string2 A vector string to be included in the combination
+#' @param empty_replacement a replacement of empty patterns. Default is "XXXXXXXXXXXXXXXXXXXXX"
+#' @param convert_to_regex A logical value determining if the final outcome should be a regex input. Default is TRUE
 #'
 #' @return A vector string consisting of combinations of words coming from input vectors
 #' @export
 #'
-word_vec_combos <- function(string1, string2, convert_to_regex = TRUE) {
+word_vec_combos <- function(string1, string2, empty_replacement = "XXXXXXXXXXXXXXXXXXXXX",  convert_to_regex = TRUE) {
 
   # Splitting strings into words
   words1 <- strsplit(string1, "\\s+")
@@ -239,6 +246,8 @@ word_vec_combos <- function(string1, string2, convert_to_regex = TRUE) {
   # Find combinations with the condition
 
   combinations <- mapply(word_combos,words1, words2, SIMPLIFY = F )
+
+  combinations <- lapply(combinations, function(x) dplyr::if_else(x == " ", empty_replacement,x))
 
   if (convert_to_regex)
     return(
@@ -263,18 +272,26 @@ word_vec_combos <- function(string1, string2, convert_to_regex = TRUE) {
 #'
 normalise_words <-function(string_vec) {
 
-  # words <- as.list(words)
+
    words <- strsplit(string_vec, "\\s+")
 
-  # normalized_text <- lapply(words, function(x) unique(c(x, stringi::stri_trans_general(x, "Latin-ASCII"))))
-
+  # Remove Latin special characters
   normalised_words <- lapply(words, stringi::stri_trans_general, "Latin-ASCII")
 
-  words <- mapply(c, words, normalised_words, SIMPLIFY=FALSE)
+  # Change all the words to lower case
+  lowerised_words <- lapply(normalised_words, tolower)
 
-  words <- lapply(words, function(x) paste(unique(x), collapse = " ") ) |> unlist()
+  # Change all the first letters to upper case
+  sentesized_words <- lapply(normalised_words, stringr::str_to_title)
 
-  words
+
+  final_words <- mapply(c, normalised_words, lowerised_words, sentesized_words, SIMPLIFY=FALSE)
+
+  final_words  <- lapply(final_words ,
+                         function(x) dplyr::if_else(is.na(unique(x)), NA_character_,
+                                                    paste( unique(x)  , collapse = " ") ) |> unique() )  |> unlist()
+
+  final_words
 
 }
 

@@ -4,12 +4,21 @@
 \alias{word_vec_combos}
 \title{Create a combination of words}
 \usage{
-word_vec_combos(string1, string2, convert_to_regex = TRUE)
+word_vec_combos(
+  string1,
+  string2,
+  empty_replacement = "XXXXXXXXXXXXXXXXXXXXX",
+  convert_to_regex = TRUE
+)
 }
 \arguments{
 \item{string1}{A vector string to be included in the combination}
 
 \item{string2}{A vector string to be included in the combination}
+
+\item{empty_replacement}{a replacement of empty patterns. Default is "XXXXXXXXXXXXXXXXXXXXX"}
+
+\item{convert_to_regex}{A logical value determining if the final outcome should be a regex input. Default is TRUE}
 }
 \value{
 A vector string consisting of combinations of words coming from input vectors

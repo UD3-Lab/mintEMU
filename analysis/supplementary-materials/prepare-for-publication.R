@@ -10,52 +10,89 @@ library(mintEMU)
 data("emu_theses")
 
 
-# Add ID ( order based on title) ------------
+# Add ID (order based on title) & perform anonymysation ------------
 
-# TODO  remove special Latin characters before anonymisation
+# Remove special Latin characters before anonymisation
+# Remove email addresses
 emu_theses <- emu_theses |>
   arrange(title) |>
   mutate(ID  = seq_len(n()),
-# remove email addresses
-         text_raw = str_replace_all(text,
+         text_raw = stringi::stri_trans_general(text,  "Latin-ASCII")) |>
+  mutate(text_raw = str_replace_all(text_raw,
                                     "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b" ,
                                     "EMAIL_REMOVED"))
 
-# Check if email addresses removed:
-replacement_checker(emu_theses$text_raw, "@")
+# # head_text(emu_theses$text_raw )[9]
+#
+# # Check if email addresses removed:
+# replacement_checker(emu_theses$text_raw, "@")
 
-# Anonymise raw text -----------
+# Remove First name/ last name combination ( for first and second author)
 
-# TODO add combinations of lower and uppercase in word combos
-text_raw <- mapply(str_replace_all, emu_theses$text_raw,
-                  word_vec_combos(normalise_words(emu_theses$first_name),
-                                  normalise_words(emu_theses$last_name)),
-                  "AUTHOR_REMOVED")
-
-# Check the Anonymisation
-head_text(text_raw)
-
-# Checking if still some first names prevailed
 pattern <- word_vec_combos(normalise_words(emu_theses$first_name),
                            normalise_words(emu_theses$last_name))
-pattern[32]
-replacement_checker(text_raw, emu_theses$first_name, char_before = 0)
+
+text_raw <- mapply(str_replace_all, emu_theses$text_raw,pattern,
+                  "AUTHOR_REMOVED")
+
+# # Check the Anonymisation
+# head_text(text_raw,2 )
+# head_text(emu_theses$text_raw ,2)
+# replacement_checker(text_raw, emu_theses$first_name, char_before = 0)
 
 
-# TODO replace firstname with placeholder
+# Removing second author
+pattern2 <- word_vec_combos(normalise_words(emu_theses$first_name_2),
+                           normalise_words(emu_theses$last_name_2))
 
-# TODO replace lastname with placeholder
+text_raw <- mapply(str_replace_all, text_raw,
+                   pattern2,
+                   "AUTHOR_REMOVED")
+
+head_text(text_raw )
+
+replacement_checker(text_raw, emu_theses$first_name_2, char_before = 0)
+
+
+# Replace firstname with placeholder
+pattern_fn <- normalise_words(emu_theses$first_name)
+pattern_fn <- strsplit(pattern_fn, "\\s+")
+pattern_fn <- lapply(pattern_fn, paste, collapse = "|") |>
+  unlist()
+
+
+text_raw <- mapply(str_replace_all, text_raw, pattern_fn,
+                   "FIRST_NAME_REMOVED")
 
 
 
+# Replace lastname with placeholder
+pattern_ln <- normalise_words(emu_theses$last_name)
+pattern_ln <- strsplit(pattern_ln, "\\s+")
+pattern_ln <- lapply(pattern_ln, paste, collapse = "|") |>
+  unlist()
 
-# Attach the text raw variable to the main dataset
+text_raw <- mapply(str_replace_all, text_raw, pattern_ln,
+                   "LAST_NAME_REMOVED")
 
-emu_theses$text_raw <- text_raw
+# replacement_checker(text_raw, emu_theses$last_name, char_before = 0)
+
+# incorporate into the main dataset
+emu_theses$text_raw  <- text_raw
 
 
 
 # Make selection of columns ----------------
-# Clean text -------------
+emu_theses <- emu_theses |>
+  dplyr::select(ID, graduation_year,
+                graduation_semester,
+                title, location, abstract,
+                text_raw)
+
 # Add longitude and latitude columns ---------
+
+emu_theses <- geocode_thesis_locations(emu_theses)
+
 # reorder the columns in the dataset ---------
+
+# write CSV file
