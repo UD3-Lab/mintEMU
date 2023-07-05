@@ -169,51 +169,39 @@ visualize_thesis_locations(emu_theses)
 
 ## Data analysis
 
-### Tokenisation
+### Pre-processing
 
 Word-level tokenisation was applied with the `unnest_tokens()` function of the `tidytext` package. This was preferred over other tokenisers as it produced results that work seamlessly with other `tidyverse` tools used in the analysis.
 
-### Stop words
-
-For analyses in which word-level tokenisation was chosen, stop words, i.e., common words or words that do not add much meaning, were removed in the data preparation stage. Global, subject-specific and document stop words [@hvitfeldt2021a] were differentiated. As all theses were written in English, the pre-made "snowball" lexicon was used to remove global stop words. <!-- We tried to create a custom global stop word list on the entire corpus, by removing high-frequency words, starting with 20 words and increasing by 10 until reaching words that are not appropriate as stop words, but no significant improvement was observed in the result. --> We manually constructed a list of subject-specific stop words based on our domain knowledge. Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words.
+For analyses in which word-level tokens were used, stop words, i.e., common words or words that do not add much meaning, were removed in the pre-processing stage. Global, subject-specific and document stop words [@hvitfeldt2021a] were differentiated. As all theses were written in English, the pre-made "snowball" lexicon was used to remove global stop words. <!-- We tried to create a custom global stop word list on the entire corpus, by removing high-frequency words, starting with 20 words and increasing by 10 until reaching words that are not appropriate as stop words, but no significant improvement was observed in the result. --> We manually constructed a list of subject-specific stop words based on our domain knowledge. Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words. In the next pre-processing step, we normalised the resulting words, that is, reduced them to their canonical dictionary forms, the resulting words were lemmatised [@hvitfeldt2021a]. Lemmatisation was preferred over stemming as the former tends to be more meaningful and less degrading than the latter.
 
 ```{r stop-words}
 
+# Add cleaned text column with removed stop words
 emu_theses$text_clean <- emu_theses$text_clean |>
   str_remove_all(find_meta_stopwords(emu_theses)) |> 
   str_remove_all(urbanism_stopwords(
     add_stopwords = c("emu", "european postgraduate master in urbanism", "tu delft", "ku leuven", "upcs barcelona", "iuav venice"))) |>
   str_remove_all(thesis_stopwords(add_stopwords = c("advisor", "prof")))
 
+# Unnest words and remove words of one and two letters
 emu_theses_words <- emu_theses |> 
   select(title, text_clean) |> 
-  unnest_tokens(output = word, input = text_clean) |>   # remove punctuation, convert to lowercase, separate all words
-  anti_join(tidytext::stop_words, by = "word")
-
-# TODO can we use this instead of the short_words function?
-emu_theses_words <- emu_theses_words |> 
-  filter(nchar(word) > 4)
+  unnest_tokens(output = word, input = text_clean) |>  # remove punctuation, convert to lower-case, separate all words
+  anti_join(tidytext::stop_words, by = "word") |>  # remove stop words
+  mutate(word = textstem::lemmatize_words(word))  # lemmatise words
 
 ```
 
-Additional checks were made to the document in search for previously undetected stop words. The checks included identifying words consisting of four or less characters that extensively used in the text corpus. 
+Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, including "map" and "low", were meaningful and occurring in high frequency.
 
-```{r}
-#| label: short-stop-words
+```{r short-stop-words}
+#| dependson: stop-words
 
-#short_words(emu_theses$text_clean, scope = 'corpus')
-short_words(emu_theses_words$word)
+#short_words(emu_theses_words$word, l_word = 3, l_list = 100)
 
-```
-
-Stemming is a pre-processing step that needs to be carefully thought through, as it might either degrade topic modeling or produce no meaningful results [@hvitfeldt2021a].
-
-```{r stemming}
-
-emu_theses_words %>% 
-  mutate(stem = wordStem(words = word, 
-                         language = "porter")) |>  # Implement the Porter stemming algorithm for English provided by the SnowballC package
-  count(stem, sort = TRUE)
+emu_theses_words <- emu_theses_words |>  
+  filter(nchar(word) >= 3)  # keep only words that are at least three letters long
 
 ```
 
