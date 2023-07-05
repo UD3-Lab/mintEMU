@@ -205,27 +205,160 @@ emu_theses_words <- emu_theses_words |>
 
 ```
 
-## Topic model
+### Topic model
 
-Similar to clustering on numeric data, topic modeling is a method of unsupervised classification of topics found in a group of documents [@silge2017]. We will use the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\gamma$ (gamma) statistic.
+Similar to clustering on numeric data, topic modeling is a method of unsupervised classification of topics found in a group of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\gamma$ (gamma) statistic.
+
+The number of topics was empirically determined with the `ldatuning` package [@???].
 
 ```{r topic-model-lda}
-emu_theses_topics <- get_topics(emu_theses_words)
-
-emu_theses_topics_terms <- tidy(emu_theses_topics, matrix = "beta")
-emu_theses_topics_documents <- tidy(emu_theses_topics, matrix = "gamma")
+#| dependson: short-stop-words
 
 # Prepare document-term matrix as input for LDA model
-emu_dtm <- convert_to_dtm(emu_theses_words, "title", "word")
+# Reduce the size of the DTM by excluding words with a frequency lower than 5
+emu_dtm <- convert_to_dtm(emu_theses_words, 
+                          title_col = "title", 
+                          word_col = "word", 
+                          min_term_freq = 5)
 
-# Create LDA model
-emu_lda <- LDA(emu_dtm, k = 2, control = list(seed = 2023))
+# Fit LDA model with K clusters
+# # Determine K value empirically
+# K = get_number_of_topics(emu_dtm)
+# # This returns K = 23
+# TODO run the model with K = 23 and compare with results using qualitative value
+
+# Determine K value qualitatively
+# K = 5 corresponds to the 2 TUD semesters and the 3 exchange semesters combined 
+emu_lda <- LDA(emu_dtm, k = 5, method="Gibbs",
+               control = list(seed = 2023, iter = 500, verbose = 25))
+
+# Extract beta and theta statistics from LDA model
+beta <- posterior(emu_lda)$terms
+theta <- posterior(emu_lda)$topics 
+
+# Preview 10 terms from each topic
+terms(emu_lda, 10)
+
+# Add topic pseudo-names based on the top 5 words in each topic
+topic_names <- name_topics(beta)
+
+```
+
+
+```{r topic-model-lda}
+
+# What is the dominant topic in each document?
+N = 20
+topic_prop_examples <- theta[1:N,]
+colnames(topic_prop_examples) <- topic_names
+vizDataFrame <- melt(cbind(data.frame(topic_prop_examples), 
+                           document = factor(rownames(topic_prop_examples))), 
+                     variable.name = "topic", id.vars = "document")  
+ggplot(data = vizDataFrame, aes(topic, value, fill = document), ylab = "proportion") + 
+  geom_bar(stat="identity") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  
+  coord_flip() +
+  facet_wrap(~ document, ncol = 5) +
+  theme(legend.position = "none")
+```
+
+```{r}
+
+```
+
+```{r}
+
+# What are the most probable topics in the entire collection?
+topicProportions <- colSums(theta) / nDocs(emu_dtm)  # mean probabilities over all paragraphs
+names(topicProportions) <- topic_names     # assign the topic names we created before
+sort(topicProportions, decreasing = TRUE) # show summed proportions in decreased order
+
+soP <- sort(topicProportions, decreasing = TRUE)
+paste(round(soP, 5), ":", names(soP))
+
+# How many documents are with the highest probability in each topic?
+K = 5
+countsOfPrimaryTopics <- rep(0, K)
+names(countsOfPrimaryTopics) <- topic_names
+for (i in 1:nDocs(emu_dtm)) {
+  topicsPerDoc <- theta[i, ] # select topic distribution for document i
+  # get first element position from ordered list
+  primaryTopic <- order(topicsPerDoc, decreasing = TRUE)[1] 
+  countsOfPrimaryTopics[primaryTopic] <- countsOfPrimaryTopics[primaryTopic] + 1
+}
+sort(countsOfPrimaryTopics, decreasing = TRUE)
+
+so <- sort(countsOfPrimaryTopics, decreasing = TRUE)
+paste(so, ":", names(so))
+```
+
+```{r}
+topicToFilter <- 6  # you can set this manually ...
+# ... or have it selected by a term in the topic name (e.g. 'children')
+topicToFilter <- grep('network', topicNames)[1] 
+topicThreshold <- 0.2
+selectedDocumentIndexes <- which(theta[, topicToFilter] >= topicThreshold)
+filteredCorpus <- corpus[selectedDocumentIndexes]
+# show length of filtered corpus
+filteredCorpus
+```
+
+```{r}
+
+N = 82
+topic_prop_per_year <- theta[1:N,]
+colnames(topic_prop_per_year) <- topic_names
+vizDataFrame <- melt(cbind(data.frame(topic_prop_per_year), 
+                           document = factor(rownames(topic_prop_per_year))), 
+                     variable.name = "topic", id.vars = "document")  
+
+# plot topic proportions per decade as bar plot
+vizDataFrameWithYear <- vizDataFrame |> 
+  left_join(select(emu_theses, title, graduation_year), by = c("document" = "title")) |> 
+  ggplot(aes(x=factor(graduation_year), y=value, fill = topic)) + 
+  geom_bar(stat = "identity", position = "fill") +
+  scale_fill_viridis_d(name = "Topics") +
+  xlab("Graduation year") +
+  ylab("Proportion of topics") +
+  labs(title = "Proportion of summed topic probabilities over the years of the EMU program")
+
+```
+
+
+```{r lda-vis}
+
+topicmodels_json_ldavis <- function(fitted, corpus, doc_term) {
+  
+  phi <- topicmodels::posterior(fitted)$terms |> as.matrix
+  theta <- topicmodels::posterior(fitted)$topics |> as.matrix
+  vocab <- colnames(phi)
+  doc_length <- vector()
+  
+  for (i in 1:length(corpus)) {
+    temp <- paste(corpus[[i]]$content, collapse = " ")
+    doc_length <- c(doc_length, stringi::stri_count(temp, regex = '\\S+'))
+  }
+  
+  temp_frequency <- doc_term |> as.matrix
+  freq_matrix <- data.frame(ST = colnames(temp_frequency),
+                            Freq = colSums(temp_frequency))
+  rm(temp_frequency)
+  
+  json <- LDAvis::createJSON(phi = phi,
+                             theta = theta,
+                             doc.length = doc.length,
+                             vocab = vocab,
+                             term.frequency = freq_matrix$Freq)
+}
+
+LDAvis::serVis(emu_lda_json, out.dir = "vis", open.browser = FALSE)
 
 ```
 
 
 
 ```{r topic-model-beta}
+#| dependson: topic-model-lda
 
 # Extract topics as mixtures of terms from LDA model
 emu_topics <- tidy(emu_lda, matrix = "beta")
