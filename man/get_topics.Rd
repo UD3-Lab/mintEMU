@@ -4,18 +4,26 @@
 \alias{get_topics}
 \title{Get topics for a given data frame of documents and words}
 \usage{
-get_topics(data, k = 2, seed = 2023, title_col = "title", word_col = "word")
+get_topics(
+  data,
+  title_col = "title",
+  word_col = "word",
+  k = 2,
+  min_term_freq = 1,
+  seed = 2023,
+  ...
+)
 }
 \arguments{
 \item{data}{Data frame with theses, containing a column with words.}
 
-\item{k}{Number of desired clusters.}
-
-\item{seed}{Seed to control pseudorandomisation.}
-
 \item{title_col}{The name of the column from the input data frame containing the title of the document.}
 
 \item{word_col}{Name of the column from the input data frame containing all words.}
+
+\item{k}{Number of desired clusters.}
+
+\item{seed}{Seed to control pseudorandomisation.}
 
 \item{matrix}{Statistics to be computed. Can be "beta" or "gamma"}
 }
