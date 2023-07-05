@@ -87,9 +87,10 @@ get_top_words_per_topic <- function(data,
 #'
 #' @return A document term matrix
 #' @export
-convert_to_dtm <- function(data, title_col = NULL, word_col = NULL) {
+convert_to_dtm <- function(data, title_col = NULL, word_col = NULL, min_term_freq = 1) {
   data_dtm <- data |>
     dplyr::count(!!rlang::sym(title_col), !!rlang::sym(word_col), sort = TRUE) |>
+    dplyr::filter(n > min_term_freq) |>
     tidytext::cast_dtm(!!rlang::sym(title_col), !!rlang::sym(word_col), n)
 
   data_dtm
