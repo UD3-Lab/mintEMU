@@ -56,7 +56,7 @@ packages <- c(
   "tidyverse", "reshape2", "widyr",     # Data manipulation and visualisation
   "furrr",                              # Parallel use of purrr::map() functions
   "tidytext", "SnowballC", "tm",        # Text processing and analysis
-  "topicmodels", "LDAvis",              # Topic modeling
+  "topicmodels", "LDAvis", "tsne",      # Topic modeling
   "tidygeocoder",                       # Working with spatial data
   "igraph", "ggraph"                    # Network analysis and visualization
 )
@@ -208,9 +208,9 @@ emu_theses_words <- emu_theses_words |>
 
 ### Topic model
 
-Similar to clustering on numeric data, topic modeling is a method of unsupervised classification of topics found in a group of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\gamma$ (gamma) statistic.
+Similar to clustering on numeric data, topic modeling is a method of unsupervised classification of topics found in a group of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\theta$ (theta) statistic.
 
-The number of topics was empirically determined with the `ldatuning` package [@???].
+The number of topics was qualitatively determined
 
 ```{r topic-model-lda}
 #| dependson: short-stop-words
@@ -240,7 +240,7 @@ theta <- posterior(emu_lda)$topics
 # Preview 10 terms from each topic
 terms(emu_lda, 10)
 
-# Add topic pseudo-names based on the top 5 words in each topic
+# Add pseudo-names to topics based on the top 5 words in each topic
 topic_names <- name_topics(beta)
 
 ```
@@ -261,6 +261,7 @@ ggplot(data = vizDataFrame, aes(topic, value, fill = document), ylab = "proporti
   coord_flip() +
   facet_wrap(~ document, ncol = 5) +
   theme(legend.position = "none")
+
 ```
 
 ```{r}
@@ -328,44 +329,35 @@ vizDataFrameWithYear <- vizDataFrame |>
 
 ```{r lda-vis}
 
-topicmodels_json_ldavis <- function(fitted, corpus, doc_term) {
-  
-  phi <- topicmodels::posterior(fitted)$terms |> as.matrix
-  theta <- topicmodels::posterior(fitted)$topics |> as.matrix
-  vocab <- colnames(phi)
-  doc_length <- vector()
-  
-  for (i in 1:length(corpus)) {
-    temp <- paste(corpus[[i]]$content, collapse = " ")
-    doc_length <- c(doc_length, stringi::stri_count(temp, regex = '\\S+'))
-  }
-  
-  temp_frequency <- doc_term |> as.matrix
-  freq_matrix <- data.frame(ST = colnames(temp_frequency),
-                            Freq = colSums(temp_frequency))
-  rm(temp_frequency)
-  
-  json <- LDAvis::createJSON(phi = phi,
-                             theta = theta,
-                             doc.length = doc.length,
-                             vocab = vocab,
-                             term.frequency = freq_matrix$Freq)
-}
+# TODO check if this can be included in the Shiny dashboard
+# Function to approximate the distance between topics
+svd_tsne <- function(x) tsne(svd(x)$u)
 
-LDAvis::serVis(emu_lda_json, out.dir = "vis", open.browser = FALSE)
+# Convert DTM into JSON required by the LDAvis package
+json <- LDAvis::createJSON(
+  phi = beta, 
+  theta = theta, 
+  doc.length = rowSums(as.matrix(emu_dtm)), 
+  vocab = colnames(emu_dtm), 
+  term.frequency = colSums(as.matrix(emu_dtm)),
+  mds.method = svd_tsne,
+  plot.opts = list(xlab="", ylab="")
+)
+
+# Visualise topics model with LDAvis
+LDAvis::serVis(json)
 
 ```
-
 
 
 ```{r topic-model-beta}
 #| dependson: topic-model-lda
 
 # Extract topics as mixtures of terms from LDA model
-emu_topics <- tidy(emu_lda, matrix = "beta")
+beta_tidy <- tidy(emu_lda, matrix = "beta")
 
 # The top n most common words in each topic
-emu_theses_top_terms <- get_top_words_per_topic(emu_topics, 20)
+emu_theses_top_terms <- get_top_words_per_topic(beta_tidy, 20)
 
 # TODO create visualisation function
 emu_theses_top_terms |> 
