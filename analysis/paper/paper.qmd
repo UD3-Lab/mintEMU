@@ -424,30 +424,27 @@ emu_documents |>
 
 # Results
 
-```{r}
+```{r top-words-document}
 # Which are the top n most frequently used words in each thesis?
 get_top_words_per_document(data = emu_theses_words, top_n = 3)
 ```
 
-```{r}
-# Which are the top n most frequently used words in all theses?
-n = 20
 
-# TODO add topic to fill aesthetic
-get_top_words_per_corpus(data = emu_theses_words |> 
-                           mutate(word = textstem::lemmatize_words(emu_theses_words$word)), top_n = n) |> 
+
+```{r top-words-corpus}
+# Which are the top n most frequently used words in all theses?
+# TODO add `topic` to `fill` aesthetic
+get_top_words_per_corpus(data = emu_theses_words, top_n = 50) |>
   ggplot(aes(reorder(word, n), n)) +
   geom_col(fill = "orange") +
   geom_text(aes(label = n), size = 2, hjust = 1.1) +
   coord_flip() +
   xlab("Word") +
   ylab("Frequency") +
-  labs(title = paste0("Top ", n, " most used words in the corpus of theses"))
+  labs(title = paste0("Top ", n, " most used words in the corpus of theses")) +
   theme_minimal() +
   theme(panel.grid = element_blank())
-
 ```
-
 
 ```{r}
 #| label: ngrams
@@ -571,6 +568,7 @@ emu_theses_bigrams_top |>
 The `tf-idf` statistic shows words that are the most important to one document in a collection of documents [@silge2017]. In this case, it shows high values for the names of thesis locations that tend to be high-frequency thesis-specific words. 
 
 ```{r tf-idf}
+
 ## Calculate tf-idf statistic
 emu_theses_tf_idf <- emu_theses_words |> 
   get_tf_idf(title_col = "title", word_col = "word")
@@ -580,7 +578,9 @@ emu_theses_tf_idf |>
   group_by(title) |> 
   top_n(5, tf_idf) |> 
   arrange(desc(tf_idf), .by_group = TRUE)
+
 ```
+
 
 
 ```{r}
@@ -592,6 +592,7 @@ ggplot(emu_theses_words_count |>
   xlim(NA, 0.0009) +
   facet_wrap(~ title, ncol = 3, scales = "free_y")
 ```
+
 
 
 ```{r}
@@ -674,7 +675,7 @@ tidy_word_vectors |>
 
 The first [?] components... [what do they show?]
 
-```{r word-embeddings}
+```{r word-embeddings-vis}
 
 # The first n components with top words found in the corpus of theses
 visualise_first_n_components(tidy_word_vectors, 24, 12)
@@ -682,7 +683,7 @@ visualise_first_n_components(tidy_word_vectors, 24, 12)
 ```
 
 
-```{r word-embeddings}
+```{r doc-embeddings}
 
 # Summarise word embeddings into document embeddings for modeling purposes
 word_matrix <- tidy_emu_theses |> 

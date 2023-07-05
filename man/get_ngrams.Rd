@@ -4,14 +4,7 @@
 \alias{get_ngrams}
 \title{Get ngrams from a corpus}
 \usage{
-get_ngrams(
-  data,
-  n,
-  title_col = NULL,
-  text_col = NULL,
-  stem = FALSE,
-  lemma = FALSE
-)
+get_ngrams(data, n, title_col = NULL, text_col = NULL, stem = FALSE)
 }
 \arguments{
 \item{data}{Data frame of documents containing a text column}
