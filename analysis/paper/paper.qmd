@@ -294,7 +294,8 @@ get_top_words_per_document(data = emu_theses_words, top_n = 3)
 ```{r top-words-corpus}
 # Which are the top n most frequently used words in all theses?
 # TODO add `topic` to `fill` aesthetic
-get_top_words_per_corpus(data = emu_theses_words, top_n = 50) |>
+n = 50
+get_top_words_per_corpus(data = emu_theses_words, top_n = n) |>
   ggplot(aes(reorder(word, n), n)) +
   geom_col(fill = "orange") +
   geom_text(aes(label = n), size = 2, hjust = 1.1) +
