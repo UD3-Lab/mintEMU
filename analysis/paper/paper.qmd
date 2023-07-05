@@ -151,6 +151,8 @@ Research questions:
 
 The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined. With the exception of a bilingual English-Spanish thesis, all thesis were written in English.
 
+The imported dataset contains the text data in the `text` column and related metadata in the other columns... 
+
 A total number of `r nrow(emu_theses)` out of `r nrow(all_theses)` were analysed.
 
 ```{r fig-map-theses}
