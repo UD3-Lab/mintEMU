@@ -181,8 +181,9 @@ For analyses in which word-level tokens were used, stop words, i.e., common word
 emu_theses$text_clean <- emu_theses$text_clean |>
   str_remove_all(find_meta_stopwords(emu_theses)) |> 
   str_remove_all(urbanism_stopwords(
-    add_stopwords = c("emu", "european postgraduate master in urbanism", "tu delft", "ku leuven", "upcs barcelona", "iuav venice"))) |>
-  str_remove_all(thesis_stopwords(add_stopwords = c("advisor", "prof")))
+    add_stopwords = c("emu", "european postgraduate master in urbanism", "tu delft", "ku leuven", "upcs barcelona", "iuav venice", 
+                      "space", "spatial", "spaces", "plan", "public", "development"))) |>
+  str_remove_all(thesis_stopwords(add_stopwords = c("advisor", "prof", "fig", "ure", "ning")))
 
 # Unnest words and remove words of one and two letters
 emu_theses_words <- emu_theses |> 
