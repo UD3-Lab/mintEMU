@@ -108,23 +108,86 @@ convert_to_dtm <- function(data, title_col = NULL, word_col = NULL) {
 #' @export
 get_topics <-
   function(data,
-           k = 2,
-           seed = 2023,
            title_col = "title",
-           word_col = "word") {
+           word_col = "word",
+           k = 2,
+           min_term_freq = 1,
+           seed = 2023,
+           ...) {
     stopifnot("k must be an integer of at least 2" = k >= 2)
 
     # The {topicmodels} package requires a document-term matrix as input
     dtm <- convert_to_dtm(data,
                           title_col = title_col,
-                          word_col = word_col)
+                          word_col = word_col,
+                          min_term_freq = min_term_freq)
 
     # We will use the Latent Dirichlet Allocation (LDA) algorithm for topic modeling
     # In LDA, each document is a mixture of topics and each topic is a mixture of words
     lda <- topicmodels::LDA(dtm,
                             k = k,
-                            control = list(seed = seed))
+                            control = list(seed = seed, ...))
   }
+
+#' Add pseudo-names to topics in an LDA model
+#'
+#' Pseudo-names are obtained by pasting together the top n terms with
+#' the highest probability within a topic.
+#'
+#' @param beta Prior topic distribution over words
+#' @param n_words Number of words to include in the pseudo-names
+#'
+#' @return Character vector of topic pseudo-names
+#' @export
+#'
+name_topics <- function(beta, n_words = 5) {
+
+  topic_names <- c()
+
+  for (i in 1:nrow(beta)) {
+    name <- paste(names(head(sort(beta[i, ], decreasing = TRUE), n_words)), collapse = " ")
+    topic_names <- c(topic_names, name)
+  }
+
+  topic_names
+}
+
+#' Get number of topics for LDA model empirically
+#'
+#' @param dtm Document term matrix
+#' @param topics Range of number of topics
+#' @param metrics Metrics used to evaluate the number of topics
+#' @param method Method used for fitting the LDA model
+#' @param control Setting tuning parameters
+#' @param verbose Show progress in the console
+#'
+#' @return Plot and possibly a K value
+#' @export
+#'
+get_number_of_topics <- function(dtm,
+                                 topics = seq(from = 2, to = 30, by = 1),
+                                 metrics = c("CaoJuan2009",  "Deveaud2014"),
+                                 method = "Gibbs",
+                                 control = list(seed = 2023),
+                                 verbose = TRUE) {
+
+  result <- ldatuning::FindTopicsNumber(
+    emu_dtm,
+    topics = topics,
+    metrics = metrics,
+    method = method,
+    control = control,
+    verbose = verbose
+  )
+
+  ldatuning::FindTopicsNumber_plot(result)
+
+  if (metrics == c("CaoJuan2009",  "Deveaud2014")) {
+    K = result$topic[which.max(result$Deveaud2014 - result$CaoJuan2009)]
+  } else {
+    NULL
+  }
+}
 
 #' Sliding window
 #'
