@@ -3,12 +3,24 @@ library(tidyverse)
 library(here)
 library(mintEMU)
 
-# TODO Extract text from PDFs (move this step from paper.qmd)
+# Extract text from PDFs ----
+# Read thesis metadata
+data_path <- here("analysis", "data", "raw_data")
+pdf_names <- dir(data_path, pattern = "*.pdf")
 
-# Load data -----------
+## Read metadata for all theses
+all_theses <-
+  readxl::read_xlsx(path = here(data_path, "theses-all.xlsx"))
 
-data("emu_theses")
+## Read only metadata for theses with PDF available
+emu_theses <-
+  read_csv(here(data_path, "theses-metadata.csv")) |>
+  mutate(text = "") |>
+  filter(!is.na(pdf_via))
 
+pdf_paths <- here(data_path, emu_theses$file_name)
+
+emu_theses$text <- convert_pdf_text(pdf_paths)
 
 # Add ID (order based on title) & perform anonymysation ------------
 
@@ -49,10 +61,10 @@ text_raw <- mapply(str_replace_all, text_raw,
                    pattern2,
                    "AUTHOR_REMOVED")
 
-head_text(text_raw )
-
-replacement_checker(text_raw, emu_theses$first_name_2, char_before = 0)
-
+# head_text(text_raw )
+#
+# replacement_checker(text_raw, emu_theses$first_name_2, char_before = 0)
+#
 
 # Replace firstname with placeholder
 pattern_fn <- normalise_words(emu_theses$first_name)
@@ -63,7 +75,6 @@ pattern_fn <- lapply(pattern_fn, paste, collapse = "|") |>
 
 text_raw <- mapply(str_replace_all, text_raw, pattern_fn,
                    "FIRST_NAME_REMOVED")
-
 
 
 # Replace lastname with placeholder
@@ -77,22 +88,33 @@ text_raw <- mapply(str_replace_all, text_raw, pattern_ln,
 
 # replacement_checker(text_raw, emu_theses$last_name, char_before = 0)
 
+# head_text(text_raw)
+
 # incorporate into the main dataset
 emu_theses$text_raw  <- text_raw
 
-
-
 # Make selection of columns ----------------
 emu_theses <- emu_theses |>
-  dplyr::select(ID, graduation_year,
-                graduation_semester,
-                title, location, abstract,
+  select(ID, graduation_year,
+         graduation_semester,
+         title, location, abstract,
                 text_raw)
 
 # Add longitude and latitude columns ---------
-
 emu_theses <- geocode_thesis_locations(emu_theses)
 
 # reorder the columns in the dataset ---------
+emu_theses  <- emu_theses |>
+  select(ID, graduation_year,
+         graduation_semester,
+         title, location, latitude,
+         longitude, abstract,
+         text_raw)
 
-# write CSV file
+# write CSV file ----------------
+
+emu_url <- here("analysis", "data", "derived_data", "emu_raw.csv")
+
+readr::write_csv(emu_theses, emu_url)
+
+
