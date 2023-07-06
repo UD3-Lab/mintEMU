@@ -79,12 +79,10 @@ data_path <- here("analysis", "data", "raw_data")
 pdf_names <- dir(data_path, pattern = "*.pdf")
 
 ## Read metadata for all theses
-all_theses <-
-  readxl::read_xlsx(path = here(data_path, "theses-all.xlsx"))
+all_theses <- read_xlsx(path = here(data_path, "theses-all.xlsx"))
 
 ## Read only metadata for theses with PDF available
-emu <- 
-  read_csv(here(data_path, "theses-metadata.csv")) |>
+emu <- read_csv(here(data_path, "theses-metadata.csv")) |>
   mutate(text = "") |>
   filter(!is.na(pdf_via))
 
