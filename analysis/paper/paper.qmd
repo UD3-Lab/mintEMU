@@ -217,8 +217,6 @@ emu_lda <- LDA(emu_dtm, k = 2, control = list(seed = 2023))
 
 ```
 
-
-
 ```{r topic-model-beta}
 
 # Extract topics as mixtures of terms from LDA model
@@ -311,37 +309,6 @@ get_top_words_per_corpus(data = emu_words, top_n = n) |>
 ## Bigrams
 emu_bigrams <- emu |> 
   get_ngrams(n = 2, title_col = "title", text_col = "text_clean", stem = TRUE)
-
-spacyr::spacy_parse(emu_bigrams$w_1)
-data.frame(emu_bigrams$w_1, textstem::lemmatize_words(emu_bigrams$w_1))
-
-
-set.seed(12345)
-
-# with spacy
-extract_rand_window <- function(x, p){
-    first_index = sample(seq(length(x) - p + 1), 1)
-    x[first_index:(first_index + p -1)]
-    }
-
-example_lemma <-list()
-for (i in 1:10) {
-  example_lemma[[i]] <- extract_rand_window(emu_bigrams$w_1,10)
-}
-
-Original <- unlist(example_lemma)
-Lemmatized <- spacyr::spacy_parse(Original)
-
-# with textstem
-Lemmatized2 <- textstem::lemmatize_words(Original) 
-
-lemma_example <- data.frame(Original, Lemmatized2)
-
-lemma_example
-
-data.frame(Lemmatized$token, Lemmatized$lemma, Lemmatized2)
-
-
 
 bigram_counts <- emu_bigrams |> 
   count(w_1, w_2, sort = TRUE)
