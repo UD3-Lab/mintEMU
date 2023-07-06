@@ -52,13 +52,13 @@ Highlights: `r rmarkdown::metadata$highlights`
 # Load packages ----
 ## List packages to be loaded
 packages <- c(
-  "here",                               # Managing paths
-  "tidyverse", "reshape2", "widyr",     # Data manipulation and visualisation
-  "furrr",                              # Parallel use of purrr::map() functions
-  "tidytext", "SnowballC", "tm",        # Text processing and analysis
-  "topicmodels", "LDAvis", "tsne",      # Topic modeling
-  "tidygeocoder",                       # Working with spatial data
-  "igraph", "ggraph"                    # Network analysis and visualization
+  "here",                                       # Managing paths
+  "tidyverse", "reshape2", "widyr", "readxl",   # Data manipulation and visualisation
+  "furrr",                                      # Parallel use of purrr::map() functions
+  "tidytext", "SnowballC", "tm",                # Text processing and analysis
+  "topicmodels", "LDAvis", "tsne",              # Topic modeling
+  "tidygeocoder",                               # Working with spatial data
+  "igraph", "ggraph"                            # Network analysis and visualization
 )
 
 ## Load required packages, install them if needed
@@ -79,17 +79,17 @@ data_path <- here("analysis", "data", "raw_data")
 pdf_names <- dir(data_path, pattern = "*.pdf")
 
 ## Read metadata for all theses
-all_theses <-
-  readxl::read_xlsx(path = here(data_path, "theses-all.xlsx"))
+all_theses <- read_xlsx(path = here(data_path, "theses-all.xlsx"))
 
 ## Read only metadata for theses with PDF available
-emu_theses <- 
-  read_csv(here(data_path, "theses-metadata.csv")) |>
+emu <- read_csv(here(data_path, "theses-metadata.csv")) |>
   mutate(text = "") |>
   filter(!is.na(pdf_via))
 
-pdf_paths <- here(data_path, emu_theses$file_name)
+pdf_paths <- here(data_path, emu$file_name)
 ```
+
+Description of text extraction; raw data available on 4TU.ResearchData at...
 
 ```{r get-pdf-text}
 #| echo: false
@@ -99,25 +99,26 @@ data_path <- here("analysis", "data", "derived_data", "emu_theses_with_text_and_
 
 if (!file.exists(data_path)) {
   # On the first run, this function might take extra time as a Python environment needs to be set up
-  emu_theses$text <- convert_pdf_text(pdf_paths)
+  emu$text <- convert_pdf_text(pdf_paths)
   
   # Add latitude and longitude information to theses data frame
-  emu_theses <- geocode_thesis_locations(emu_theses)
+  emu <- geocode_thesis_locations(emu)
 
   # Write thesis dataframe to file
-  write_csv(emu_theses, data_path)
+  write_csv(emu, data_path)
 } else {
-  emu_theses$text <- read_csv(data_path)$text
-  emu_theses$longitude <- read_csv(data_path)$longitude
-  emu_theses$latitude <- read_csv(data_path)$latitude
+  emu$text <- read_csv(data_path)$text
+  emu$longitude <- read_csv(data_path)$longitude
+  emu$latitude <- read_csv(data_path)$latitude
 }
 
 ```
 
 ```{r clean-text}
 #| echo: false
+#| dependson: get-pdf-text
 
-emu_theses$text_clean <- emu_theses$text |>
+emu$text_clean <- emu$text |>
   clean_basic() 
   
 ```
@@ -133,7 +134,7 @@ Distinctive features of the program:
 
 
 
-In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(all_theses)` theses with an average of `r mean(str_length(emu_theses$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(all_theses$grad_year, na.rm = TRUE), "-", max(all_theses$grad_year, na.rm = TRUE))`. 
+In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved through the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(all_theses)` theses with an average of `r mean(str_length(emu$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(all_theses$grad_year, na.rm = TRUE), "-", max(all_theses$grad_year, na.rm = TRUE))`. 
 
 # Methods
 
@@ -154,7 +155,7 @@ The theses are available in PDF format with complex layouts typical to an urbani
 
 The imported dataset contains the text data in the `text` column and related metadata in the other columns... 
 
-A total number of `r nrow(emu_theses)` out of `r nrow(all_theses)` were analysed.
+A total number of `r nrow(emu)` out of `r nrow(all_theses)` were analysed.
 
 ```{r fig-map-theses}
 #| warning: false 
@@ -162,7 +163,7 @@ A total number of `r nrow(emu_theses)` out of `r nrow(all_theses)` were analysed
 #| fig-cap: "Location of EMU theses included in the analysis"
 
 # Show thesis locations on world map
-visualize_thesis_locations(emu_theses)
+visualize_thesis_locations(emu)
 ```
 
 @fig-map-theses shows the geographic spread of the theses included in the analysis.
@@ -178,15 +179,15 @@ For analyses in which word-level tokens were used, stop words, i.e., common word
 ```{r stop-words}
 
 # Add cleaned text column with removed stop words
-emu_theses$text_clean <- emu_theses$text_clean |>
-  str_remove_all(find_meta_stopwords(emu_theses)) |> 
+emu$text_clean <- emu$text_clean |>
+  str_remove_all(find_meta_stopwords(emu)) |> 
   str_remove_all(urbanism_stopwords(
     add_stopwords = c("emu", "european postgraduate master in urbanism", "tu delft", "ku leuven", "upcs barcelona", "iuav venice", 
                       "space", "spatial", "spaces", "plan", "public", "development"))) |>
   str_remove_all(thesis_stopwords(add_stopwords = c("advisor", "prof", "fig", "ure", "ning")))
 
 # Unnest words and remove words of one and two letters
-emu_theses_words <- emu_theses |> 
+emu_words <- emu |> 
   select(title, text_clean) |> 
   unnest_tokens(output = word, input = text_clean) |>  # remove punctuation, convert to lower-case, separate all words
   anti_join(tidytext::stop_words, by = "word") |>  # remove stop words
@@ -199,9 +200,9 @@ Finally, additional checks were made to the document in search for previously un
 ```{r short-stop-words}
 #| dependson: stop-words
 
-#short_words(emu_theses_words$word, l_word = 3, l_list = 100)
+#short_words(emu_words$word, l_word = 3, l_list = 100)
 
-emu_theses_words <- emu_theses_words |>  
+emu_words <- emu_words |>  
   filter(nchar(word) >= 3)  # keep only words that are at least three letters long
 
 ```
@@ -216,6 +217,7 @@ The number of topics was qualitatively determined
 #| dependson: short-stop-words
 
 # Prepare document-term matrix as input for LDA model
+
 # Reduce the size of the DTM by excluding words with a frequency lower than 5
 emu_dtm <- convert_to_dtm(emu_theses_words, 
                           title_col = "title", 
@@ -349,6 +351,7 @@ LDAvis::serVis(json)
 ```
 
 
+
 ```{r topic-model-beta}
 #| dependson: topic-model-lda
 
@@ -359,15 +362,15 @@ beta_tidy <- tidy(emu_lda, matrix = "beta")
 emu_theses_top_terms <- get_top_words_per_topic(beta_tidy, 20)
 
 # TODO create visualisation function
-emu_theses_top_terms |> 
+emu_top_terms |> 
   ggplot(aes(reorder(term, beta), beta, fill = factor(topic))) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~ topic, scales = "free") +
   coord_flip()
 
 # TODO can this be generalised to more than two topics?
-# beta_spread <- emu_theses_topics_terms |> 
-beta_spread <- emu_theses_topics |> 
+
+beta_spread <- emu_topics |> 
   mutate(topic = paste0("topic", topic)) |> 
   spread(topic, beta) |> 
   filter(topic1 > 0.001, topic2 > .001) |> 
@@ -396,7 +399,7 @@ emu_documents |>
   coord_flip()
 
 emu_documents |> 
-  inner_join(emu_theses |> 
+  inner_join(emu |> 
                select(title, graduation_year), 
              by = c("document" = "title")) |> 
   ggplot(aes(x = reorder(str_sub(document, 1, 50), gamma), y = gamma, fill = topic)) + 
@@ -405,7 +408,7 @@ emu_documents |>
   facet_wrap(~ graduation_year, ncol = 1, scales = "free", drop = TRUE)
 
 emu_documents |> 
-  inner_join(emu_theses |> 
+  inner_join(emu |> 
                select(title, graduation_year), 
              by = c("document" = "title")) |> 
   ggplot(aes(x = factor(graduation_year), y = topic, fill = factor(topic))) +
@@ -417,7 +420,7 @@ emu_documents |>
 
 ```{r top-words-document}
 # Which are the top n most frequently used words in each thesis?
-get_top_words_per_document(data = emu_theses_words, top_n = 3)
+get_top_words_per_document(data = emu_words, top_n = 3)
 ```
 
 
@@ -425,7 +428,8 @@ get_top_words_per_document(data = emu_theses_words, top_n = 3)
 ```{r top-words-corpus}
 # Which are the top n most frequently used words in all theses?
 # TODO add `topic` to `fill` aesthetic
-get_top_words_per_corpus(data = emu_theses_words, top_n = 50) |>
+n = 50
+get_top_words_per_corpus(data = emu_words, top_n = n) |>
   ggplot(aes(reorder(word, n), n)) +
   geom_col(fill = "orange") +
   geom_text(aes(label = n), size = 2, hjust = 1.1) +
@@ -439,62 +443,35 @@ get_top_words_per_corpus(data = emu_theses_words, top_n = 50) |>
 
 ```{r}
 #| label: ngrams
+#| dependson: clean-text
 
 ## Bigrams
-emu_theses_bigrams <- emu_theses |> 
+emu_bigrams <- emu |> 
   get_ngrams(n = 2, title_col = "title", text_col = "text_clean", stem = TRUE)
 
-spacyr::spacy_parse(emu_theses_bigrams$w_1)
-data.frame(emu_theses_bigrams$w_1, textstem::lemmatize_words(emu_theses_bigrams$w_1))
-
-
-set.seed(12345)
-
-# with spacy
-extract_rand_window <- function(x, p){
-    first_index = sample(seq(length(x) - p + 1), 1)
-    x[first_index:(first_index + p -1)]
-    }
-
-example_lemma <-list()
-for (i in 1:10) {
-  example_lemma[[i]] <- extract_rand_window(emu_theses_bigrams$w_1,10)
-}
-
-Original <- unlist(example_lemma)
-Lemmatized <- spacyr::spacy_parse(Original)
-
-# with textstem
-Lemmatized2 <- textstem::lemmatize_words(Original) 
-
-lemma_example <- data.frame(Original, Lemmatized2)
-
-lemma_example
-
-data.frame(Lemmatized$token, Lemmatized$lemma, Lemmatized2)
-
-
-
-bigram_counts <- emu_theses_bigrams |> 
+bigram_counts <- emu_bigrams |> 
   count(w_1, w_2, sort = TRUE)
 
-bigram_stem_counts <- emu_theses_bigrams |> 
+bigram_stem_counts <- emu_bigrams |> 
   count(w_1_stem, w_2_stem, sort = TRUE)
 
 bigram_counts
 bigram_stem_counts
+```
 
+
+```{r}
 ## Trigrams
-emu_theses_trigrams <- emu_theses |> 
+emu_trigrams <- emu |> 
   get_ngrams(n = 3, title_col = "title", text_col = "text")
 
-trigram_counts <- emu_theses_trigrams |> 
+trigram_counts <- emu_trigrams |> 
   count(w_1, w_2, w_3, sort = TRUE)
 
 trigram_counts
 
 ## Bigram tf-idf
-bigram_tf_idf <- emu_theses_bigrams |> 
+bigram_tf_idf <- emu_bigrams |> 
   count(title, ngram) |> 
   bind_tf_idf(ngram, title, n) |> 
   arrange(desc(tf_idf))
@@ -502,7 +479,7 @@ bigram_tf_idf <- emu_theses_bigrams |>
 bigram_tf_idf
 
 ## Trigram tf-idf
-trigram_tf_idf <- emu_theses_trigrams |> 
+trigram_tf_idf <- emu_trigrams |> 
   count(title, ngram) |> 
   bind_tf_idf(ngram, title, n) |> 
   arrange(desc(tf_idf))
@@ -528,7 +505,7 @@ ggraph(bigram_graph, layout = "fr") +
 
 ## Higgh frequency bigrams ----
 
-emu_theses_bigrams_top <- emu_theses_bigrams |>
+emu_bigrams_top <- emu_bigrams |>
   group_by(title) |>
   count(ngram, sort = TRUE) |>
   slice_max(n, n = 20) |>        ### top_n is superseded; better use slice_max instead
@@ -536,13 +513,13 @@ emu_theses_bigrams_top <- emu_theses_bigrams |>
   ungroup() |>
   mutate(bigram = reorder(ngram, n))
 
-emu_theses_bigrams_top_all <- emu_theses_bigrams |>
+emu_bigrams_top_all <- emu_bigrams |>
   count(ngram, sort = TRUE) |>
   slice_max(n, n = 20) |>        ### top_n is superseded; better use slice_max instead
   # filter(n > 50)                ### filter words with a minimum count
   mutate(ngram = reorder(ngram, n))
 
-emu_theses_bigrams_top |>
+emu_bigrams_top |>
   filter(title == unique(title)[1:10]) |> 
   ggplot(aes(x = ngram, y = n, fill = title)) +
   geom_col() +
@@ -561,11 +538,11 @@ The `tf-idf` statistic shows words that are the most important to one document i
 ```{r tf-idf}
 
 ## Calculate tf-idf statistic
-emu_theses_tf_idf <- emu_theses_words |> 
+emu_tf_idf <- emu_words |> 
   get_tf_idf(title_col = "title", word_col = "word")
 
 ## Get top n words most specific to each thesis 
-emu_theses_tf_idf |> 
+emu_tf_idf |> 
   group_by(title) |> 
   top_n(5, tf_idf) |> 
   arrange(desc(tf_idf), .by_group = TRUE)
@@ -576,7 +553,7 @@ emu_theses_tf_idf |>
 
 ```{r}
 # Preview term frequency distributions in a subset of theses
-ggplot(emu_theses_words_count |> 
+ggplot(emu_words_count |> 
          filter(title == unique(title)[1:6]),
        aes(n/total, fill = title)) +
   geom_histogram(show.legend = FALSE, binwidth = 0.0001) +
@@ -589,7 +566,7 @@ ggplot(emu_theses_words_count |>
 ```{r}
 # Examine Zipf's law for the EMU theses
 ## Calculate rank and term frequency
-freq_by_rank <- emu_theses_words_count |> 
+freq_by_rank <- emu_words_count |> 
   group_by(title) |> 
   mutate(rank = row_number(),
          `term frequency` = n/total)
@@ -615,7 +592,7 @@ freq_by_rank |>
   scale_y_log10()
 
 ## Visualise the top n words with the highest tf-idf values for each of a subset of theses
-emu_theses_words_count |> 
+emu_words_count |> 
   filter(title == unique(title)[1:6]) |> 
   arrange(desc(tf_idf)) |> 
   mutate(word = factor(word, levels = rev(unique(word)))) |> 
@@ -637,7 +614,7 @@ emu_theses_words_count |>
 #| include: false
 
 # To what extent do words co-occur with other words?
-tidy_pmi <- get_pmi(emu_theses, title_col = "title", text_col = "text_clean")
+tidy_pmi <- get_pmi(emu, title_col = "title", text_col = "text_clean")
 
 ```
 
@@ -677,7 +654,7 @@ visualise_first_n_components(tidy_word_vectors, 24, 12)
 ```{r doc-embeddings}
 
 # Summarise word embeddings into document embeddings for modeling purposes
-word_matrix <- tidy_emu_theses |> 
+word_matrix <- tidy_emu |> 
   count(title, word) |> 
   cast_sparse(title, word, n)
 
