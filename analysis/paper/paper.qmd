@@ -114,6 +114,7 @@ if (!file.exists(data_path)) {
 
 ```{r clean-text}
 #| echo: false
+#| dependson: get-pdf-text
 
 emu$text_clean <- emu$text |>
   clean_basic() 
@@ -305,6 +306,7 @@ get_top_words_per_corpus(data = emu_words, top_n = n) |>
 
 ```{r}
 #| label: ngrams
+#| dependson: clean-text
 
 ## Bigrams
 emu_bigrams <- emu |> 
