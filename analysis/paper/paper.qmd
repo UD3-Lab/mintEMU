@@ -320,7 +320,10 @@ bigram_stem_counts <- emu_bigrams |>
 
 bigram_counts
 bigram_stem_counts
+```
 
+
+```{r}
 ## Trigrams
 emu_trigrams <- emu |> 
   get_ngrams(n = 3, title_col = "title", text_col = "text")
