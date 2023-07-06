@@ -89,6 +89,8 @@ emu <- read_csv(here(data_path, "theses-metadata.csv")) |>
 pdf_paths <- here(data_path, emu$file_name)
 ```
 
+Description of text extraction; raw data available on 4TU.ResearchData at...
+
 ```{r get-pdf-text}
 #| echo: false
 #| cache: true
