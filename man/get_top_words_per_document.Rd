@@ -7,8 +7,8 @@
 get_top_words_per_document(
   data,
   top_n,
-  title_col = NULL,
-  word_col = NULL,
+  title_col = "title",
+  word_col = "word",
   min_count = 1
 )
 }
