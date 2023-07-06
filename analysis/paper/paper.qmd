@@ -264,9 +264,7 @@ ggplot(data = vizDataFrame, aes(topic, value, fill = document), ylab = "proporti
 
 ```
 
-```{r}
 
-```
 
 ```{r}
 
@@ -297,10 +295,10 @@ paste(so, ":", names(so))
 ```{r}
 topicToFilter <- 6  # you can set this manually ...
 # ... or have it selected by a term in the topic name (e.g. 'children')
-topicToFilter <- grep('network', topicNames)[1] 
+topicToFilter <- grep('river', topic_names)[1] 
 topicThreshold <- 0.2
 selectedDocumentIndexes <- which(theta[, topicToFilter] >= topicThreshold)
-filteredCorpus <- corpus[selectedDocumentIndexes]
+filteredCorpus <- emu_theses[selectedDocumentIndexes,]
 # show length of filtered corpus
 filteredCorpus
 ```
@@ -310,19 +308,20 @@ filteredCorpus
 N = 82
 topic_prop_per_year <- theta[1:N,]
 colnames(topic_prop_per_year) <- topic_names
-vizDataFrame <- melt(cbind(data.frame(topic_prop_per_year), 
-                           document = factor(rownames(topic_prop_per_year))), 
-                     variable.name = "topic", id.vars = "document")  
 
-# plot topic proportions per decade as bar plot
-vizDataFrameWithYear <- vizDataFrame |> 
-  left_join(select(emu_theses, title, graduation_year), by = c("document" = "title")) |> 
-  ggplot(aes(x=factor(graduation_year), y=value, fill = topic)) + 
+vizDataFrameWithYear <- melt(cbind(data.frame(topic_prop_per_year), 
+                           document = factor(rownames(topic_prop_per_year))), 
+                     variable.name = "topic", id.vars = "document") |> 
+    left_join(select(emu_theses, title, "year" = graduation_year), by = c("document" = "title"))
+
+# Plot topic proportions per year
+vizDataFrameWithYear |> 
+  ggplot(aes(x = factor(year), y = value, fill = topic)) + 
   geom_bar(stat = "identity", position = "fill") +
   scale_fill_viridis_d(name = "Topics") +
   xlab("Graduation year") +
   ylab("Proportion of topics") +
-  labs(title = "Proportion of summed topic probabilities over the years of the EMU program")
+  labs(title = "Topic proportions per year")
 
 ```
 
