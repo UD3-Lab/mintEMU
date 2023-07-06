@@ -1,12 +1,9 @@
-# Download and import the dataset -----------------------------------------
-emu_text_url <- here::here("analysis", "data", "derived_data", "emu_theses_with_text.csv")
-emu_text_raw_df <- readr::read_csv(emu_text_url)
+# Download and import the dataset ----
+emu_url <- here::here("analysis", "data", "derived_data", "emu_raw.csv")
+emu <- readr::read_csv(emu_url)
 
-# Clean and geocode the dataset -------------------------------------------
-
-emu_text_df <- mintEMU::geocode_thesis_locations(emu_text_raw_df)
-
-emu_text_df$text_clean <- emu_text_df$text |>
+# Clean the dataset ----
+emu$text_clean <- emu$text_raw |>
   mintEMU::clean_basic() |>
   stringr::str_remove_all(mintEMU::find_meta_stopwords(emu_theses)) |>
   stringr::str_remove_all(mintEMU::urbanism_stopwords(
@@ -14,4 +11,4 @@ emu_text_df$text_clean <- emu_text_df$text |>
   stringr::str_remove_all(mintEMU::thesis_stopwords(
     add_stopwords = c("advisor", "prof")))
 
-usethis::use_data(emu_text_df, overwrite = TRUE)
+usethis::use_data(emu, overwrite = TRUE)
