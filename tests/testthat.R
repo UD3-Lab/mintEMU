@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(minTEMU)
+library(mintEMU)
 
-test_check("minTEMU")
+test_check("mintEMU")
