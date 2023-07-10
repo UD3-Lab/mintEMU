@@ -45,7 +45,7 @@ emu_theses <- emu_theses |>
 pattern <- word_vec_combos(normalise_words(emu_theses$first_name),
                            normalise_words(emu_theses$last_name))
 
-text_raw <- mapply(str_replace_all, emu_theses$text_raw,pattern,
+text_raw <- mapply(str_replace_all, emu_theses$text_raw, pattern,
                   "AUTHOR_REMOVED")
 
 # # Check the Anonymisation
