@@ -54,7 +54,8 @@ find_meta_stopwords <- function(metadata,
                                   'subtitle' = 'subtitle',
                                   'full_title' = 'full_title'
                                 ),
-                                convert_to_regex = TRUE) {
+                                convert_to_regex = TRUE,
+                                clean_meta = TRUE ) {
   cols_meta <- names(metadata)
 
   cols_meta <- cols_meta[cols_meta %in% unlist(stop_cols)]
@@ -79,8 +80,10 @@ find_meta_stopwords <- function(metadata,
                              colNames <- names(df)
                              do.call(paste, df[colNames])
                            }) |>
-    as.data.frame() |>
-    lapply(clean_basic)
+    as.data.frame()
+
+  if (clean_meta == TRUE)
+    stop_words_df <- lapply(stop_words_df, clean_basic)
 
   if (convert_to_regex == TRUE)
     return(stringr::regex(do.call(paste, c(
@@ -174,3 +177,165 @@ short_words <-
   }
 
 
+#' Create a combination of words
+#'
+#' Function creates a vector that includes combination of words
+#' coming from two vectors of words,
+#' making sure at least one word from each input vectors is included in the combination
+#'
+#' @param words1 A vector of single words to be included in the combination
+#' @param words2 A vector of single words to be included in the combination
+#'
+#' @return A vector string of combinations of words coming from the input vectors
+#'
+word_combos <- function(words1, words2) {
+
+  words1[is.na(words1)] <- ""
+
+  words2[is.na(words2)] <- ""
+
+
+  # Combine words from both strings
+  all_words <- c(words1, words2)
+
+  # Find combinations with the condition
+
+  combinations <- list()
+  for (length in 2:length(all_words)) {
+    combinations[[length]] <- combn(all_words, length, paste, collapse = " ")
+
+    valid_combinations <- lapply(strsplit(combinations[[length]], "\\s+"),
+                                 function(x) sum(x %in% words1 | words1 == "") > 0  & sum(x %in% words2 | words2 == "") > 0 ) |>
+      unlist()
+
+    combinations[[length]] <-  combinations[[length]][valid_combinations]
+
+  }
+
+  combinations <- unlist(combinations)
+
+  combinations
+
+
+}
+
+
+#' Create a combination of words
+#'
+#' Function creates a vector that includes combination of words
+#' coming from two vector of strings,
+#' making sure at least one word from each input strings is included in the combination
+#'
+#' @param string1 A vector string to be included in the combination
+#' @param string2 A vector string to be included in the combination
+#' @param empty_replacement a replacement of empty patterns. Default is "XXXXXXXXXXXXXXXXXXXXX"
+#' @param convert_to_regex A logical value determining if the final outcome should be a regex input. Default is TRUE
+#'
+#' @return A vector string consisting of combinations of words coming from input vectors
+#' @export
+#'
+word_vec_combos <- function(string1, string2, empty_replacement = "XXXXXXXXXXXXXXXXXXXXX",  convert_to_regex = TRUE) {
+
+  # Splitting strings into words
+  words1 <- strsplit(string1, "\\s+")
+  words2 <- strsplit(string2, "\\s+")
+
+  # Combine words from both strings
+  all_words <- mapply(c, words1, words2, SIMPLIFY = F)
+
+  # Find combinations with the condition
+
+  combinations <- mapply(word_combos,words1, words2, SIMPLIFY = F )
+
+  combinations <- lapply(combinations, function(x) dplyr::if_else(x == " ", empty_replacement,x))
+
+  if (convert_to_regex)
+    return(
+      lapply(combinations, paste, collapse = "|") |>
+        unlist()
+      )
+  else
+    return(combinations)
+
+}
+
+
+#' Check for special Latin letters
+#'
+#' Function checks if the vector of words includes special Latin letters;
+#' if so, add a word with a regular Latin counterpart to the vector
+#'
+#' @param words A vector string to be converted. each element will be treated as a separate word
+#'
+#' @return A vector string with regular letter counterparts added at the end of the string
+#' @export
+#'
+normalise_words <- function(string_vec) {
+
+   words <- strsplit(string_vec, "\\s+")
+
+  # Remove Latin special characters
+  normalised_words <- lapply(words, stringi::stri_trans_general, "Latin-ASCII")
+
+  # Change all the words to lower case
+  lowerised_words <- lapply(normalised_words, tolower)
+
+  # Change all the first letters to upper case
+  sentesized_words <- lapply(normalised_words, stringr::str_to_title)
+
+
+  final_words <- mapply(c, normalised_words, lowerised_words, sentesized_words, SIMPLIFY=FALSE)
+
+  final_words  <- lapply(final_words ,
+                         function(x) dplyr::if_else(is.na(unique(x)), NA_character_,
+                                                    paste(unique(x), collapse = " ")) |> unique()) |> unlist()
+
+  final_words
+
+}
+
+
+#' Check the result of string replacement
+#'
+#' Function checks if a specific check pattern is included in the string vector;
+#' if so, it would print the pattern and the instances of it's occurance in the string
+#'
+#' @param text_vector A vector string to be checked
+#' @param check_pattern A pattern used to check whether the replacement worked. Can be single value or a vector of the same length as `text_vector`
+#' @param char_before Number of characters to be shown before the start of `check_pattern`. Default is 25.
+#' @param char_after  Number of characters to be shown after the start of the `check_pattern`. Default is 25.
+#'
+#' @export
+#'
+replacement_checker <- function(text_vector, check_pattern, char_before = 25, char_after = 25 ){
+
+  occur <- str_extract_all(text_vector, check_pattern)
+  not_removed <- which(lengths(occur) > 0)
+  loc <- str_locate_all(text_vector, check_pattern )
+
+  if (!(length(check_pattern) == 1 | length(check_pattern) == length(text_vector) ))
+    stop("The `check_pattern` needs to be a string vector of length 1 or of the same length as `text_vector`")
+
+
+  if(length(check_pattern) == 1 )
+    check_pattern <- rep(check_pattern, length(text_vector))
+
+  for (nr in not_removed) {
+    n_occs <- nrow(loc[[nr]])
+
+    print(paste("PATTERN:", check_pattern[[nr]]))
+
+    for (occ in 1:n_occs) {
+      print(paste(
+        "NON_REMOVED,  NR",
+        nr,
+        ",",
+        occ ,
+        ":",
+        str_sub(text_vector[nr], loc[[nr]][occ] - char_before, loc[[nr]][occ] +
+                  char_after)
+      ))
+    }
+  }
+
+}
