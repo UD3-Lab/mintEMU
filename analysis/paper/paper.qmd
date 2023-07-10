@@ -312,6 +312,7 @@ N = 82
 topic_prop_per_year <- theta[1:N,]
 colnames(topic_prop_per_year) <- topic_names
 
+# TODO change to pivot_longer
 vizDataFrameWithYear <- melt(cbind(data.frame(topic_prop_per_year), 
                            document = factor(rownames(topic_prop_per_year))), 
                      variable.name = "topic", id.vars = "document") |> 
