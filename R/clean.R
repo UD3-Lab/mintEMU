@@ -270,7 +270,7 @@ word_vec_combos <- function(string1, string2, empty_replacement = "XXXXXXXXXXXXX
 #' @return A vector string with regular letter counterparts added at the end of the string
 #' @export
 #'
-normalise_words <-function(string_vec) {
+normalise_words <- function(string_vec) {
 
    words <- strsplit(string_vec, "\\s+")
 
