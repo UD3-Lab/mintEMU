@@ -254,6 +254,7 @@ topic_names <- name_topics(beta)
 N = 20
 topic_prop_examples <- theta[1:N,]
 colnames(topic_prop_examples) <- topic_names
+# TODO change to pivot_longer
 vizDataFrame <- melt(cbind(data.frame(topic_prop_examples), 
                            document = factor(rownames(topic_prop_examples))), 
                      variable.name = "topic", id.vars = "document")  
