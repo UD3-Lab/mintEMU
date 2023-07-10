@@ -272,7 +272,6 @@ word_vec_combos <- function(string1, string2, empty_replacement = "XXXXXXXXXXXXX
 #'
 normalise_words <-function(string_vec) {
 
-
    words <- strsplit(string_vec, "\\s+")
 
   # Remove Latin special characters
