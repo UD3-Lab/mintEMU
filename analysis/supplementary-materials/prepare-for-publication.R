@@ -11,7 +11,7 @@ pdf_names <- dir(data_path, pattern = "*.pdf")
 
 ## Read metadata for all theses
 all_theses <-
-  readxl::read_xlsx(path = here(data_path, "theses-all.xlsx"))
+  read_xlsx(path = here(data_path, "theses-all.xlsx"))
 
 ## Read only metadata for theses with PDF available
 emu_theses <-
