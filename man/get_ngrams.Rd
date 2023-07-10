@@ -4,7 +4,15 @@
 \alias{get_ngrams}
 \title{Get ngrams from a corpus}
 \usage{
-get_ngrams(data, n, title_col = NULL, text_col = NULL, stem = FALSE)
+get_ngrams(
+  data,
+  n,
+  title_col = NULL,
+  text_col = NULL,
+  rm_n_short_words = 2,
+  stem = FALSE,
+  lemma = FALSE
+)
 }
 \arguments{
 \item{data}{Data frame of documents containing a text column}
@@ -16,6 +24,8 @@ get_ngrams(data, n, title_col = NULL, text_col = NULL, stem = FALSE)
 \item{text_col}{The name of the column where the text to be tokenised is located}
 
 \item{stem}{If \code{TRUE} create additional columns with stemmed version of tokens}
+
+\item{lemma}{If \code{TRUE} create additional columns with lemmatised version of tokens}
 }
 \value{
 A data frame with an "ngram" column and columns for its constituent words
