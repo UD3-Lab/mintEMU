@@ -449,8 +449,7 @@ get_top_words_per_corpus(data = emu_words, top_n = n) |>
   theme(panel.grid = element_blank())
 ```
 
-```{r ngrams}
-#| dependson: clean-text
+```{r bigrams}
 
 ## Bigrams
 emu_bigrams <- emu |> 
@@ -486,9 +485,7 @@ system.time(
 
 ```
 
-
-
-```{r}
+```{r trigrams}
 
 ## Trigrams
 emu_trigrams <- emu |> 
@@ -502,8 +499,7 @@ trigram_lemma_counts <- emu_trigrams |>
 
 ```
 
-
-```{r}
+```{r bigram-tfidf}
 ## Bigram tf-idf
 bigram_tf_idf <- emu_bigrams |> 
   count(title, ngram) |> 
@@ -513,7 +509,7 @@ bigram_tf_idf <- emu_bigrams |>
 bigram_tf_idf
 ```
 
-```{r}
+```{r trigram-tfidf}
 ## Trigram tf-idf
 trigram_tf_idf <- emu_trigrams |> 
   count(title, ngram) |> 
