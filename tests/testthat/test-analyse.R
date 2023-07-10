@@ -32,6 +32,10 @@ test_that("get_top_words_per_document returns top word for each title", {
 
 })
 
+test_that("get_topics throws an error if k is less than 2", {
+  expect_error(get_topics(mtcars, k = 1))
+})
+
 test_that("get_ngrams returns correct data frame", {
   df_input <- tibble(
     title = "Title",
@@ -51,5 +55,4 @@ test_that("get_ngrams returns correct data frame", {
                           text_col = "text")
 
   expect_equal(expected_output, df_output)
-
 })

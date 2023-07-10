@@ -4,7 +4,7 @@
 \alias{convert_to_dtm}
 \title{Convert data frame with word frequencies into document term matrix}
 \usage{
-convert_to_dtm(data, title_col = NULL, word_col = NULL)
+convert_to_dtm(data, title_col = NULL, word_col = NULL, min_term_freq = 1)
 }
 \arguments{
 \item{data}{Data frame containing colomns with titles, words and word counts}
