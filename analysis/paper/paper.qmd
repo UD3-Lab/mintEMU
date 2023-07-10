@@ -252,7 +252,6 @@ beta_spread %>%
   labs(x = "Log2 ratio of beta in topic 2 / topic 1", y = NULL)
 ```
 
-
 ```{r topic-model-gamma}
 
 # Extract documents as mixtures of topics from LDA model
@@ -288,8 +287,6 @@ emu_documents |>
 get_top_words_per_document(data = emu_words, top_n = 3)
 ```
 
-
-
 ```{r top-words-corpus}
 # Which are the top n most frequently used words in all theses?
 # TODO add `topic` to `fill` aesthetic
@@ -306,35 +303,61 @@ get_top_words_per_corpus(data = emu_words, top_n = n) |>
   theme(panel.grid = element_blank())
 ```
 
-```{r}
-#| label: ngrams
+```{r ngrams}
 #| dependson: clean-text
 
 ## Bigrams
 emu_bigrams <- emu |> 
-  get_ngrams(n = 2, title_col = "title", text_col = "text_clean", stem = TRUE)
-
+  get_ngrams(n = 2, title_col = "title", text_col = "text_clean", lemma = TRUE) |> 
+  unite(ngram_lemma, w_1_lemma, w_2_lemma, sep = "_", remove = FALSE)
+  
 bigram_counts <- emu_bigrams |> 
-  count(w_1, w_2, sort = TRUE)
+  count(ngram, sort = TRUE) |> 
+  filter(n > 20)
 
-bigram_stem_counts <- emu_bigrams |> 
-  count(w_1_stem, w_2_stem, sort = TRUE)
+emu_bigrams <- emu_bigrams |> 
+  filter(ngram %in% bigram_counts$ngram)
 
-bigram_counts
-bigram_stem_counts
+bigram_lemma_counts <- emu_bigrams |> 
+  count(w_1_lemma, w_2_lemma, sort = TRUE) |> 
+  filter(n > 5)
+
+# Concatenate bigrams
+
+# # First attempt using a named vector in `str_replace_all()`
+c_bigrams <- paste(emu_bigrams$ngram_lemma, sep = "_")
+names(c_bigrams) <- emu_bigrams$ngram
+
+system.time(
+  emu$text_clean <- emu$text_clean |>
+    str_replace_all(fixed(c_bigrams))
+)
+
+# Second attempt with `mgsub::mgsub()`
+# emu$text_clean <- mgsub(emu$text_clean,
+#                         pattern = emu_bigrams$ngram,
+#                         replacement = emu_bigrams$ngram_lemma)
+
 ```
 
 
+
 ```{r}
+
 ## Trigrams
 emu_trigrams <- emu |> 
-  get_ngrams(n = 3, title_col = "title", text_col = "text")
+  get_ngrams(n = 3, title_col = "title", text_col = "text_clean", lemma = TRUE)
 
 trigram_counts <- emu_trigrams |> 
   count(w_1, w_2, w_3, sort = TRUE)
 
-trigram_counts
+trigram_lemma_counts <- emu_trigrams |> 
+  count(w_1_lemma, w_2_lemma, w_3_lemma, sort = TRUE)
 
+```
+
+
+```{r}
 ## Bigram tf-idf
 bigram_tf_idf <- emu_bigrams |> 
   count(title, ngram) |> 
@@ -342,7 +365,9 @@ bigram_tf_idf <- emu_bigrams |>
   arrange(desc(tf_idf))
 
 bigram_tf_idf
+```
 
+```{r}
 ## Trigram tf-idf
 trigram_tf_idf <- emu_trigrams |> 
   count(title, ngram) |> 
@@ -350,7 +375,9 @@ trigram_tf_idf <- emu_trigrams |>
   arrange(desc(tf_idf))
 
 trigram_tf_idf
+```
 
+```{r}
 ## Show network of bigrams
 bigram_graph <- bigram_counts |> 
   filter(n > 100) |> 
