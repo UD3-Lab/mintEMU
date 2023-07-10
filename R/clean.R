@@ -212,7 +212,7 @@ word_combos <- function(words1, words2) {
 
   }
 
-  combinations<- unlist(combinations)
+  combinations <- unlist(combinations)
 
   combinations
 
