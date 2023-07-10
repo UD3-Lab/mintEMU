@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.3.0",
+    "Version": "4.2.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -9,14 +9,6 @@
     ]
   },
   "Packages": {
-    "BH": {
-      "Package": "BH",
-      "Version": "1.81.0-1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "68122010f01c4dcfbe58ce7112f2433d",
-      "Requirements": []
-    },
     "DBI": {
       "Package": "DBI",
       "Version": "1.1.3",
@@ -35,10 +27,10 @@
     },
     "MASS": {
       "Package": "MASS",
-      "Version": "7.3-58.4",
+      "Version": "7.3-56",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "a3142b2a022b8174ca675bc8b80cdc4e",
+      "Hash": "af0e1955cb80bb36b7988cc657db261e",
       "Requirements": []
     },
     "Matrix": {
@@ -293,6 +285,14 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "3f038e5ac7f41d4ac41ce658c85e3042",
+      "Requirements": []
+    },
+    "clisymbols": {
+      "Package": "clisymbols",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "96c01552bfd5661b9bbdefbc762f4bcd",
       "Requirements": []
     },
     "codetools": {
@@ -1296,14 +1296,6 @@
         "vctrs"
       ]
     },
-    "modeltools": {
-      "Package": "modeltools",
-      "Version": "0.2-23",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "f5a957c02222589bdf625a67be68b2a9",
-      "Requirements": []
-    },
     "munsell": {
       "Package": "munsell",
       "Version": "0.5.0",
@@ -1796,6 +1788,32 @@
       "Hash": "1de7ab598047a87bba48434ba35d497d",
       "Requirements": []
     },
+    "rrtools": {
+      "Package": "rrtools",
+      "Version": "0.1.5",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "rrtools",
+      "RemoteUsername": "benmarwick",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "acbae5ee9f9ad099ffa645b2b64a6966e40933b7",
+      "Hash": "99234187afbbb50770a4c8d28b3e5f32",
+      "Requirements": [
+        "clisymbols",
+        "crayon",
+        "devtools",
+        "git2r",
+        "glue",
+        "here",
+        "httr",
+        "jsonlite",
+        "rmarkdown",
+        "rstudioapi",
+        "usethis",
+        "whisker"
+      ]
+    },
     "rstudioapi": {
       "Package": "rstudioapi",
       "Version": "0.14",
@@ -1964,17 +1982,6 @@
       "Hash": "ca27b2643e3593b7688244d035f2cd92",
       "Requirements": [
         "lattice"
-      ]
-    },
-    "spacyr": {
-      "Package": "spacyr",
-      "Version": "1.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "91d7138ab33fd6425700ec778206050c",
-      "Requirements": [
-        "data.table",
-        "reticulate"
       ]
     },
     "stopwords": {
@@ -2332,20 +2339,6 @@
         "xfun"
       ]
     },
-    "tm": {
-      "Package": "tm",
-      "Version": "0.7-11",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "625329dd66ec8e8fbeb5ea6003e9be0a",
-      "Requirements": [
-        "BH",
-        "NLP",
-        "Rcpp",
-        "slam",
-        "xml2"
-      ]
-    },
     "tokenizers": {
       "Package": "tokenizers",
       "Version": "0.3.0",
@@ -2356,18 +2349,6 @@
         "Rcpp",
         "SnowballC",
         "stringi"
-      ]
-    },
-    "topicmodels": {
-      "Package": "topicmodels",
-      "Version": "0.2-14",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "95bbc3bd6826656ae5e73dfc84da3fd8",
-      "Requirements": [
-        "modeltools",
-        "slam",
-        "tm"
       ]
     },
     "tzdb": {
