@@ -297,7 +297,7 @@ normalise_words <- function(string_vec) {
 
 #' Check the result of string replacement
 #'
-#' Function checks if a specific check pattern is included in the string vector  ;
+#' Function checks if a specific check pattern is included in the string vector;
 #' if so, it would print the pattern and the instances of it's occurance in the string
 #'
 #' @param text_vector A vector string to be checked
