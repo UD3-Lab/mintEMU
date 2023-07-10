@@ -184,7 +184,7 @@ short_words <-
 #' making sure at least one word from each input vectors is included in the combination
 #'
 #' @param words1 A vector of single words to be included in the combination
-#' @param words2 A vector containing single words to be included in the combination
+#' @param words2 A vector of single words to be included in the combination
 #'
 #' @return A vector string consisting of combinations of words coming from input vectors
 #'
