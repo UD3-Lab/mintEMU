@@ -124,7 +124,7 @@ emu_raw <- emu_theses |>
 # emu raw text file
 emu_raw_path <- here("analysis", "data", "derived_data", "emu_raw.csv")
 
-readr::write_csv(emu_raw, emu_path)
+readr::write_csv(emu_raw, emu_raw_path)
 
 # emu metadata file
 emu_meta_path <- here("analysis", "data", "derived_data", "emu_metadata.csv")
