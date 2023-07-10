@@ -48,15 +48,17 @@ Highlights: `r rmarkdown::metadata$highlights`
 ```{r setup}
 #| echo: false
 #| warning: false
+#| message: false
 
 # Load packages ----
 ## List packages to be loaded
 packages <- c(
   "here",                                       # Managing paths
-  "tidyverse", "reshape2", "widyr", "readxl",  # Data manipulation and visualisation
+  # TODO remove reshape2 if `melt()` is replaced by`pivot_longer()`
+  "tidyverse", "reshape2", "widyr", "readxl",   # Data manipulation and visualisation
   "furrr",                                      # Parallel use of purrr::map() functions
   "tidytext", "SnowballC", "tm",                # Text processing and analysis
-  "topicmodels", "LDAvis",                      # Topic modeling
+  "topicmodels", "LDAvis", "tsne",              # Topic modeling
   "tidygeocoder",                               # Working with spatial data
   "igraph", "ggraph"                            # Network analysis and visualization
 )
@@ -78,14 +80,18 @@ devtools::load_all(".")
 data_path <- here("analysis", "data", "raw_data")
 pdf_names <- dir(data_path, pattern = "*.pdf")
 
+# TODO replace the following lines with the metadata included in the package
+# emu_metadata <- data(emu_metadata)
 ## Read metadata for all theses
 all_theses <- read_xlsx(path = here(data_path, "theses-all.xlsx"))
 
 ## Read only metadata for theses with PDF available
 emu <- read_csv(here(data_path, "theses-metadata.csv")) |>
-  mutate(text = "") |>
+  mutate(text_raw = "") |>
   filter(!is.na(pdf_via))
 
+# TODO replace this and next code chunk with reading `text_raw` from the package
+# emu <- data(emu_raw)
 pdf_paths <- here(data_path, emu$file_name)
 ```
 
@@ -94,12 +100,13 @@ Description of text extraction; raw data available on 4TU.ResearchData at...
 ```{r get-pdf-text}
 #| echo: false
 #| cache: true
+#| message: false
 
 data_path <- here("analysis", "data", "derived_data", "emu_theses_with_text_and_location.csv")
 
 if (!file.exists(data_path)) {
   # On the first run, this function might take extra time as a Python environment needs to be set up
-  emu$text <- convert_pdf_text(pdf_paths)
+  emu$text_raw <- convert_pdf_text(pdf_paths)
   
   # Add latitude and longitude information to theses data frame
   emu <- geocode_thesis_locations(emu)
@@ -107,7 +114,7 @@ if (!file.exists(data_path)) {
   # Write thesis dataframe to file
   write_csv(emu, data_path)
 } else {
-  emu$text <- read_csv(data_path)$text
+  emu$text_raw <- read_csv(data_path)$text
   emu$longitude <- read_csv(data_path)$longitude
   emu$latitude <- read_csv(data_path)$latitude
 }
@@ -182,8 +189,9 @@ For analyses in which word-level tokens were used, stop words, i.e., common word
 emu$text_clean <- emu$text_clean |>
   str_remove_all(find_meta_stopwords(emu)) |> 
   str_remove_all(urbanism_stopwords(
-    add_stopwords = c("emu", "european postgraduate master in urbanism", "tu delft", "ku leuven", "upcs barcelona", "iuav venice"))) |>
-  str_remove_all(thesis_stopwords(add_stopwords = c("advisor", "prof")))
+    add_stopwords = c("emu", "european postgraduate master in urbanism", "tu delft", "ku leuven", "upcs barcelona", "iuav venice", 
+                      "space", "spatial", "spaces", "plan", "public", "development"))) |>
+  str_remove_all(thesis_stopwords(add_stopwords = c("advisor", "prof", "fig", "ure", "ning")))
 
 # Unnest words and remove words of one and two letters
 emu_words <- emu |> 
@@ -206,27 +214,162 @@ emu_words <- emu_words |>
 
 ```
 
-## Topic model
+### Topic model
 
-Similar to clustering on numeric data, topic modeling is a method of unsupervised classification of topics found in a group of documents [@silge2017]. We will use the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\gamma$ (gamma) statistic.
+Similar to clustering on numeric data, topic modeling is a method of unsupervised classification of topics found in a group of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\theta$ (theta) statistic.
 
-```{r topic-model-lda}
+The number of topics was qualitatively determined
+
+```{r topic-model-lda-1}
+#| dependson: short-stop-words
 
 # Prepare document-term matrix as input for LDA model
-emu_dtm <- convert_to_dtm(emu_words, "title", "word")
 
-# Create LDA model
-emu_lda <- LDA(emu_dtm, k = 2, control = list(seed = 2023))
+# Reduce the size of the DTM by excluding words with a frequency lower than 5
+emu_dtm <- convert_to_dtm(emu_theses_words, 
+                          title_col = "title", 
+                          word_col = "word", 
+                          min_term_freq = 5)
+
+# Fit LDA model with K clusters
+# # Determine K value empirically
+# K = get_number_of_topics(emu_dtm)
+# # This returns K = 23
+# TODO run the model with K = 23 and compare with results using qualitative value
+
+# Determine K value qualitatively
+# K = 5 corresponds to the 2 TUD semesters and the 3 exchange semesters combined 
+emu_lda <- LDA(emu_dtm, k = 5, method="Gibbs",
+               control = list(seed = 2023, iter = 500, verbose = 25))
+
+# Extract beta and theta statistics from LDA model
+beta <- posterior(emu_lda)$terms
+theta <- posterior(emu_lda)$topics 
+
+# Preview 10 terms from each topic
+terms(emu_lda, 10)
+
+# Add pseudo-names to topics based on the top 5 words in each topic
+topic_names <- name_topics(beta)
 
 ```
 
+
+```{r topic-model-lda-2}
+
+# What is the dominant topic in each document?
+N = 20
+topic_prop_examples <- theta[1:N,]
+colnames(topic_prop_examples) <- topic_names
+# TODO change to pivot_longer
+vizDataFrame <- melt(cbind(data.frame(topic_prop_examples), 
+                           document = factor(rownames(topic_prop_examples))), 
+                     variable.name = "topic", id.vars = "document")  
+ggplot(data = vizDataFrame, aes(topic, value, fill = document), ylab = "proportion") + 
+  geom_bar(stat="identity") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  
+  coord_flip() +
+  facet_wrap(~ document, ncol = 5) +
+  theme(legend.position = "none")
+
+```
+
+
+
+```{r}
+
+# What are the most probable topics in the entire collection?
+topicProportions <- colSums(theta) / nDocs(emu_dtm)  # mean probabilities over all paragraphs
+names(topicProportions) <- topic_names     # assign the topic names we created before
+sort(topicProportions, decreasing = TRUE) # show summed proportions in decreased order
+
+soP <- sort(topicProportions, decreasing = TRUE)
+paste(round(soP, 5), ":", names(soP))
+
+# How many documents are with the highest probability in each topic?
+K = 5
+countsOfPrimaryTopics <- rep(0, K)
+names(countsOfPrimaryTopics) <- topic_names
+for (i in 1:nDocs(emu_dtm)) {
+  topicsPerDoc <- theta[i, ] # select topic distribution for document i
+  # get first element position from ordered list
+  primaryTopic <- order(topicsPerDoc, decreasing = TRUE)[1] 
+  countsOfPrimaryTopics[primaryTopic] <- countsOfPrimaryTopics[primaryTopic] + 1
+}
+sort(countsOfPrimaryTopics, decreasing = TRUE)
+
+so <- sort(countsOfPrimaryTopics, decreasing = TRUE)
+paste(so, ":", names(so))
+```
+
+```{r}
+topicToFilter <- 6  # you can set this manually ...
+# ... or have it selected by a term in the topic name (e.g. 'children')
+topicToFilter <- grep('river', topic_names)[1] 
+topicThreshold <- 0.2
+selectedDocumentIndexes <- which(theta[, topicToFilter] >= topicThreshold)
+filteredCorpus <- emu_theses[selectedDocumentIndexes,]
+# show length of filtered corpus
+filteredCorpus
+```
+
+```{r}
+
+N = 82
+topic_prop_per_year <- theta[1:N,]
+colnames(topic_prop_per_year) <- topic_names
+
+# TODO change to pivot_longer
+vizDataFrameWithYear <- melt(cbind(data.frame(topic_prop_per_year), 
+                           document = factor(rownames(topic_prop_per_year))), 
+                     variable.name = "topic", id.vars = "document") |> 
+    left_join(select(emu_theses, title, "year" = graduation_year), by = c("document" = "title"))
+
+# Plot topic proportions per year
+vizDataFrameWithYear |> 
+  ggplot(aes(x = factor(year), y = value, fill = topic)) + 
+  geom_bar(stat = "identity", position = "fill") +
+  scale_fill_viridis_d(name = "Topics") +
+  xlab("Graduation year") +
+  ylab("Proportion of topics") +
+  labs(title = "Topic proportions per year")
+
+```
+
+
+```{r lda-vis}
+
+# TODO check if this can be included in the Shiny dashboard
+# Function to approximate the distance between topics
+svd_tsne <- function(x) tsne(svd(x)$u)
+
+# Convert DTM into JSON required by the LDAvis package
+json <- LDAvis::createJSON(
+  phi = beta, 
+  theta = theta, 
+  doc.length = rowSums(as.matrix(emu_dtm)), 
+  vocab = colnames(emu_dtm), 
+  term.frequency = colSums(as.matrix(emu_dtm)),
+  mds.method = svd_tsne,
+  plot.opts = list(xlab="", ylab="")
+)
+
+# Visualise topics model with LDAvis
+LDAvis::serVis(json)
+
+```
+
+
+
 ```{r topic-model-beta}
 
+# TODO Explore including concatenated collocations in the topic model
+
 # Extract topics as mixtures of terms from LDA model
-emu_topics <- tidy(emu_lda, matrix = "beta")
+beta_tidy <- tidy(emu_lda, matrix = "beta")
 
 # The top n most common words in each topic
-emu_top_terms <- get_top_words_per_topic(emu_topics, 20)
+emu_theses_top_terms <- get_top_words_per_topic(beta_tidy, 20)
 
 # TODO create visualisation function
 emu_top_terms |> 
@@ -236,6 +379,7 @@ emu_top_terms |>
   coord_flip()
 
 # TODO can this be generalised to more than two topics?
+
 beta_spread <- emu_topics |> 
   mutate(topic = paste0("topic", topic)) |> 
   spread(topic, beta) |> 
@@ -251,6 +395,8 @@ beta_spread %>%
   geom_col() +
   labs(x = "Log2 ratio of beta in topic 2 / topic 1", y = NULL)
 ```
+
+
 
 ```{r topic-model-gamma}
 
