@@ -288,7 +288,7 @@ normalise_words <- function(string_vec) {
 
   final_words  <- lapply(final_words ,
                          function(x) dplyr::if_else(is.na(unique(x)), NA_character_,
-                                                    paste( unique(x)  , collapse = " ") ) |> unique() )  |> unlist()
+                                                    paste(unique(x), collapse = " ")) |> unique()) |> unlist()
 
   final_words
 
