@@ -310,7 +310,7 @@ normalise_words <- function(string_vec) {
 replacement_checker <- function(text_vector, check_pattern, char_before = 25, char_after = 25 ){
 
   occur <- str_extract_all(text_vector, check_pattern)
-  not_removed <- which(lengths(occur)>0)
+  not_removed <- which(lengths(occur) > 0)
   loc <- str_locate_all(text_vector, check_pattern )
 
   if (!(length(check_pattern) == 1 | length(check_pattern) == length(text_vector) ))
