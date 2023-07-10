@@ -2,6 +2,7 @@
 library(tidyverse)
 library(here)
 library(mintEMU)
+library(readxl)
 
 # Extract text from PDFs ----
 # Read thesis metadata
