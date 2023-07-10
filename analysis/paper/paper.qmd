@@ -451,10 +451,9 @@ get_top_words_per_corpus(data = emu_words, top_n = n) |>
 
 ```{r bigrams}
 
-## Bigrams
 emu_bigrams <- emu |> 
   get_ngrams(n = 2, title_col = "title", text_col = "text_clean", lemma = TRUE) |> 
-  unite(ngram_lemma, w_1_lemma, w_2_lemma, sep = "_", remove = FALSE)
+  unite(ngram_lemma, w_1_lemma, w_2_lemma, sep = " ", remove = FALSE)
   
 bigram_counts <- emu_bigrams |> 
   count(ngram, sort = TRUE) |> 
