@@ -105,7 +105,7 @@ emu_theses <- emu_theses |>
 emu_theses <- geocode_thesis_locations(emu_theses)
 
 # reorder the columns in the dataset ---------
-emu_theses  <- emu_theses |>
+emu_theses <- emu_theses |>
   select(ID, graduation_year,
          graduation_semester,
          title, location, latitude,
