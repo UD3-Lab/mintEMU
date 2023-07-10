@@ -186,7 +186,7 @@ short_words <-
 #' @param words1 A vector of single words to be included in the combination
 #' @param words2 A vector of single words to be included in the combination
 #'
-#' @return A vector string consisting of combinations of words coming from input vectors
+#' @return A vector string of combinations of words coming from the input vectors
 #'
 word_combos <- function(words1, words2) {
 
