@@ -48,11 +48,13 @@ Highlights: `r rmarkdown::metadata$highlights`
 ```{r setup}
 #| echo: false
 #| warning: false
+#| message: false
 
 # Load packages ----
 ## List packages to be loaded
 packages <- c(
   "here",                                       # Managing paths
+  # TODO remove reshape2 if `melt()` is replaced by`pivot_longer()`
   "tidyverse", "reshape2", "widyr", "readxl",   # Data manipulation and visualisation
   "furrr",                                      # Parallel use of purrr::map() functions
   "tidytext", "SnowballC", "tm",                # Text processing and analysis
@@ -85,7 +87,7 @@ all_theses <- read_xlsx(path = here(data_path, "theses-all.xlsx"))
 
 ## Read only metadata for theses with PDF available
 emu <- read_csv(here(data_path, "theses-metadata.csv")) |>
-  mutate(text = "") |>
+  mutate(text_raw = "") |>
   filter(!is.na(pdf_via))
 
 # TODO replace this and next code chunk with reading `text_raw` from the package
@@ -98,12 +100,13 @@ Description of text extraction; raw data available on 4TU.ResearchData at...
 ```{r get-pdf-text}
 #| echo: false
 #| cache: true
+#| message: false
 
 data_path <- here("analysis", "data", "derived_data", "emu_theses_with_text_and_location.csv")
 
 if (!file.exists(data_path)) {
   # On the first run, this function might take extra time as a Python environment needs to be set up
-  emu$text <- convert_pdf_text(pdf_paths)
+  emu$text_raw <- convert_pdf_text(pdf_paths)
   
   # Add latitude and longitude information to theses data frame
   emu <- geocode_thesis_locations(emu)
@@ -111,7 +114,7 @@ if (!file.exists(data_path)) {
   # Write thesis dataframe to file
   write_csv(emu, data_path)
 } else {
-  emu$text <- read_csv(data_path)$text
+  emu$text_raw <- read_csv(data_path)$text
   emu$longitude <- read_csv(data_path)$longitude
   emu$latitude <- read_csv(data_path)$latitude
 }
@@ -217,7 +220,7 @@ Similar to clustering on numeric data, topic modeling is a method of unsupervise
 
 The number of topics was qualitatively determined
 
-```{r topic-model-lda}
+```{r topic-model-lda-1}
 #| dependson: short-stop-words
 
 # Prepare document-term matrix as input for LDA model
@@ -252,7 +255,7 @@ topic_names <- name_topics(beta)
 ```
 
 
-```{r topic-model-lda}
+```{r topic-model-lda-2}
 
 # What is the dominant topic in each document?
 N = 20
@@ -359,7 +362,6 @@ LDAvis::serVis(json)
 
 
 ```{r topic-model-beta}
-#| dependson: topic-model-lda
 
 # TODO Explore including concatenated collocations in the topic model
 
