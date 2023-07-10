@@ -102,7 +102,7 @@ find_meta_stopwords <- function(metadata,
 #' @return A vector of urbanism-related stopwords
 #' @export
 urbanism_stopwords <- function(add_stopwords = NULL, convert_to_regex = TRUE) {
-  stop_words <- c(add_stopwords, "city", "cities", "urban", "urbanism", "hab", "km")
+  stop_words <- c(add_stopwords, "city", "cities", "urban\\b", "urbanism", "hab", "km")
 
   if (convert_to_regex) return(paste(stop_words, collapse = "|"))
   else return(stop_words)

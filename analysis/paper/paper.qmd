@@ -78,6 +78,8 @@ devtools::load_all(".")
 data_path <- here("analysis", "data", "raw_data")
 pdf_names <- dir(data_path, pattern = "*.pdf")
 
+# TODO replace the following lines with the metadata included in the package
+# emu_metadata <- data(emu_metadata)
 ## Read metadata for all theses
 all_theses <- read_xlsx(path = here(data_path, "theses-all.xlsx"))
 
@@ -86,6 +88,8 @@ emu <- read_csv(here(data_path, "theses-metadata.csv")) |>
   mutate(text = "") |>
   filter(!is.na(pdf_via))
 
+# TODO replace this and next code chunk with reading `text_raw` from the package
+# emu <- data(emu_raw)
 pdf_paths <- here(data_path, emu$file_name)
 ```
 
@@ -356,6 +360,8 @@ LDAvis::serVis(json)
 
 ```{r topic-model-beta}
 #| dependson: topic-model-lda
+
+# TODO Explore including concatenated collocations in the topic model
 
 # Extract topics as mixtures of terms from LDA model
 beta_tidy <- tidy(emu_lda, matrix = "beta")
