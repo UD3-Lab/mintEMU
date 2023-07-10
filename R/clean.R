@@ -301,7 +301,7 @@ normalise_words <- function(string_vec) {
 #' if so, it would print the pattern and the instances of it's occurance in the string
 #'
 #' @param text_vector A vector string to be checked
-#' @param check_pattern A pattern used to check whether the replacement worked. Can be single value or a vector of the same length as text_vector
+#' @param check_pattern A pattern used to check whether the replacement worked. Can be single value or a vector of the same length as `text_vector`
 #' @param char_before Number of characters to be shown before the start of the check_pattern. Default is 25
 #' @param char_after  Number of characters to be shown after the start of the check_pattern. Default is 25
 #'
