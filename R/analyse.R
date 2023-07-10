@@ -356,8 +356,8 @@ get_ngrams <- function(data,
 
   # Create vector of short words to be removed
   short_words <- data |>
-    select(text) |>
-    unnest_tokens(output = word, input = text) |>
+    select(text_raw) |>
+    unnest_tokens(output = word, input = text_raw) |>
     anti_join(tidytext::stop_words, by = "word") |>  # remove stop words
     mutate(word = textstem::lemmatize_words(word)) |>  # lemmatise words
     filter(nchar(word) <= rm_n_short_words)
