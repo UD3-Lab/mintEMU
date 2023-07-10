@@ -318,7 +318,7 @@ replacement_checker <- function(text_vector, check_pattern, char_before = 25, ch
 
 
   if(length(check_pattern) == 1 )
-    check_pattern <- rep(check_pattern, length(text_vector) )
+    check_pattern <- rep(check_pattern, length(text_vector))
 
   for (nr in not_removed) {
     n_occs <- nrow(loc[[nr]])
