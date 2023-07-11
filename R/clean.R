@@ -1,6 +1,6 @@
 #' Clean body of text
 #'
-#' Function removes white space, punctuation and  converts the strings to lowercase
+#' Function removes white space, punctuation and converts the strings to lowercase
 #'
 #' @param text A vector string to be converted
 #' @return A cleaned vector string
@@ -37,7 +37,7 @@ head_text <- function(text_vector, head_n = 10, sub_start = 1 , sub_end = 500 ){
   head_text
 }
 
-
+# TODO Should we remove the author names from this function as anonymisation has already been performed on the raw data?
 #' Find custom stop-phrases based on metadata file
 #'
 #' Function scans the dataset with metadata for fields that can be removed from the body fo text before the text analysis
@@ -102,7 +102,9 @@ find_meta_stopwords <- function(metadata,
 #' @return A vector of urbanism-related stopwords
 #' @export
 urbanism_stopwords <- function(add_stopwords = NULL, convert_to_regex = TRUE) {
-  stop_words <- c(add_stopwords, "city", "cities", "urban\\b", "urbanism", "hab", "km")
+  stop_words <- paste("\\b",
+                      c(add_stopwords, "city", "cities", "urban", "urbanism", "hab", "km"),
+                      "\\b", sep = "")
 
   if (convert_to_regex) return(paste(stop_words, collapse = "|"))
   else return(stop_words)
@@ -116,19 +118,14 @@ urbanism_stopwords <- function(add_stopwords = NULL, convert_to_regex = TRUE) {
 #' @return A vector of thesis-related stopwords
 #' @export
 thesis_stopwords <- function(add_stopwords = NULL, convert_to_regex = TRUE) {
-  stop_words <- c(
-        add_stopwords,
-        "preface",
-        "foreword",
-        "introduction",
-        "conclusion",
-        "thesis",
-        "source",
-        "author",
-        "colophon",
-        "acknowledgements",
-        "references"
-        )
+  stop_words <- paste("\\b", c(add_stopwords,
+                               "preface", "foreword", "acknowledgements",
+                               "colophon", "introduction", "conclusion",
+                               "thesis",
+                               "source",
+                               "author", "advisor",
+                               "references", "bibliography"),
+                      "\\b", sep = "")
 
   if (convert_to_regex) return(paste(stop_words, collapse = "|"))
   else return(stop_words)
