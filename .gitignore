@@ -13,3 +13,5 @@ analysis/paper/paper_*
 inst/python/pyvenv
 
 .DS_Store
+
+/.luarc.json

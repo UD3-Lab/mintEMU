@@ -13,5 +13,5 @@ clean_basic(text)
 A cleaned vector string
 }
 \description{
-Function removes white space, punctuation and  converts the strings to lowercase
+Function removes white space, punctuation and converts the strings to lowercase
 }
