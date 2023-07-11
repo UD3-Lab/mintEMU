@@ -112,10 +112,22 @@ emu_theses <- emu_theses |>
          longitude, abstract,
          text_raw)
 
-# write CSV file ----------------
+# separate text file and metadata file ----------------
+emu_metadata <- emu_theses |>
+  select(-text_raw)
 
-emu_url <- here("analysis", "data", "derived_data", "emu_raw.csv")
+emu_raw <- emu_theses |>
+  select(ID, text_raw)
 
-readr::write_csv(emu_theses, emu_url)
+# write CSV files ----------------
 
+# emu raw text file
+emu_raw_path <- here("analysis", "data", "derived_data", "emu_raw.csv")
+
+readr::write_csv(emu_raw, emu_raw_path)
+
+# emu metadata file
+emu_meta_path <- here("analysis", "data", "derived_data", "emu_metadata.csv")
+
+readr::write_csv(emu_metadata, emu_meta_path)
 
