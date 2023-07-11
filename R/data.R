@@ -32,4 +32,4 @@
 #'   \item{abstract}{Abstract of the thesis.}
 #'
 #' @source <https://repository.tudelft.nl/islandora/search/?collection=education>
-"emu_raw"
+"emu_metadata"

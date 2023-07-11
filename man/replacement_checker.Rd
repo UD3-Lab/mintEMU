@@ -14,13 +14,13 @@ replacement_checker(
 \arguments{
 \item{text_vector}{A vector string to be checked}
 
-\item{check_pattern}{A pattern used to check whether the replacement worked. Can be single value or a vector of the same length as text_vector}
+\item{check_pattern}{A pattern used to check whether the replacement worked. Can be single value or a vector of the same length as \code{text_vector}}
 
-\item{char_before}{Number of characters to be shown before the start of the check_pattern. Default is 25}
+\item{char_before}{Number of characters to be shown before the start of \code{check_pattern}. Default is 25.}
 
-\item{char_after}{Number of characters to be shown after the start of the check_pattern. Default is 25}
+\item{char_after}{Number of characters to be shown after the start of the \code{check_pattern}. Default is 25.}
 }
 \description{
-Function checks if a specific check pattern is included in the string vector  ;
+Function checks if a specific check pattern is included in the string vector;
 if so, it would print the pattern and the instances of it's occurance in the string
 }
