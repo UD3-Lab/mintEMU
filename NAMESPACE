@@ -2,6 +2,7 @@
 
 export(app_server)
 export(app_ui)
+export(c_ngrams)
 export(clean_basic)
 export(convert_pdf_text)
 export(convert_to_dtm)
