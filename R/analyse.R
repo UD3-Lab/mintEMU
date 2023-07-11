@@ -37,8 +37,8 @@ get_top_words_per_document <- function(data, top_n, title_col = NULL, word_col =
 #' @export
 get_top_words_per_corpus <- function(data, top_n, word_col = NULL) {
   data_top_n <- data |>
-    dplyr::group_by(!!sym(word_col)) |>
-    dplyr::count(!!sym(word_col), sort = TRUE) |>
+    dplyr::group_by(!!rlang::sym(word_col)) |>
+    dplyr::count(!!rlang::sym(word_col), sort = TRUE) |>
     dplyr::ungroup() |>
     dplyr::slice_max(n, n = top_n)
 

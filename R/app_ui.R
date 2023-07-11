@@ -73,7 +73,12 @@ app_ui <- function() {
                                                 bs4Dash::column(6,
                                                                 shiny::uiOutput("clicked_box")
                                                                 ),
-                                                bs4Dash::column(12,
+                                                bs4Dash::column(6,
+                                                                bs4Dash::box(title = "wordcloud",
+                                                                             width = NULL,
+                                                                             wordcloud2::wordcloud2Output("wordcloud")
+                                                                )),
+                                                bs4Dash::column(6,
                                                                 bs4Dash::box(title = "FAIR",
                                                                              status = "lightblue",
                                                                              width = NULL)),

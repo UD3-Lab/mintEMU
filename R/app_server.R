@@ -15,7 +15,9 @@ app_server <- function(session,input, output) {
   # emu_theses$text_clean <- emu_theses$text |> clean_basic()
   # emu_theses <- geocode_thesis_locations(emu_theses)
   # usethis::use_data(emu_theses, overwrite = TRUE)
-  data("emu_theses")
+  data("emu_clean")
+  data("emu_metadata")
+  emu_theses <- dplyr::left_join(emu_clean, emu_metadata, by = "ID")
 
 
   # Update filters -------------------------------------------------------------
@@ -45,6 +47,7 @@ app_server <- function(session,input, output) {
 
   # Create reactive data object ------------------------------------------------
 
+  # dataset responding to filters
   emu_reactive <- shiny::reactive({
    emu_theses |>
      dplyr::filter(graduation_year  %in%
@@ -52,10 +55,21 @@ app_server <- function(session,input, output) {
                        unique(emu_theses$graduation_year)
                       else
                        input$year
-                   ) |>
-     dplyr::mutate(id = seq_len(dplyr::n()))
+                   )
 
    })
+
+  # ID of value clicked on the map
+
+  clicked_id <- shiny::reactive({input$thesis_location_map_marker_click$id}) |>
+    shiny::bindEvent(input$thesis_location_map_marker_click)
+
+  # Thesis selected on the map
+  clicked_thesis <- shiny::reactive({
+    emu_reactive() |>
+    dplyr::filter(ID  == clicked_id())
+  })
+
 
  # Render outputs  ------------------------------------------------------------
 
@@ -73,44 +87,53 @@ app_server <- function(session,input, output) {
     data |>
       leaflet::leaflet() |>
       leaflet::addProviderTiles("Stamen.TonerLite") |>
-      leaflet::addAwesomeMarkers(layerId = data$id,
+      leaflet::addAwesomeMarkers(layerId = data$ID,
                                  icon = icons,
                                  label = data$location,
                                  popup = paste0("<b>Title:</b> ", data$title,
                                                 "<br/>",
-                                                "<b>Location:</b> ", data$location))
+                                                "<b>Location:</b> ", data$location,
+                                                "<br/>",
+                                                "<b>ID:</b> ", data$ID))
     })
 
    # Box generated for a single title
    output$clicked_box <- shiny::renderUI({
-     clicked_id <- input$thesis_location_map_marker_click$id
-
-     clicked_thesis <- emu_reactive() |>
-       dplyr::filter(id  == clicked_id)
 
 
+     empty_box <- is.null(clicked_id())
 
-     empty_box <- is.null(clicked_id)
-
-     bs4Dash::box(title = paste(clicked_thesis$id, clicked_thesis$title),
+     bs4Dash::box(title = paste(clicked_thesis()$ID, clicked_thesis()$title),
                   status = "lightblue",
                   collapsed = empty_box,
                   width = NULL,
                   textOutput('clickid'),
-                  wordcloud2::wordcloud2Output("wordcloud"))
+                  plotOutput("top_words")
+                  #,wordcloud2::wordcloud2Output("wordcloud")
+                  )
+     })
 
-     })  |>
-     shiny::bindEvent(input$thesis_location_map_marker_click)
+   # Graph with top 50 words
+   output$top_words <- renderPlot({
 
+     clicked_words <- clicked_thesis() |>
+       tidytext::unnest_tokens(word, text_clean) |>
+       dplyr::mutate(word = textstem::lemmatize_words(word))|>
+       dplyr::anti_join(tidytext::stop_words, by = "word")
 
+     top_words <- get_top_words_per_corpus(clicked_words , 20, 'word' )
+
+     ggplot2::ggplot(top_words)+
+       ggplot2::aes(x = word, y = n)+
+       ggplot2::geom_col()
+
+   })
 
    # Word cloud of the selected thesis
    output$wordcloud <- wordcloud2::renderWordcloud2({
 
-     clicked_id <- input$thesis_location_map_marker_click$id
 
-     clicked_words <- emu_reactive() |>
-       dplyr::filter(id  == clicked_id) |>
+     clicked_words <- clicked_thesis() |>
        tidytext::unnest_tokens(word, text_clean) |>
        dplyr::mutate(word = textstem::lemmatize_words(word))|>
        dplyr::anti_join(tidytext::stop_words, by = "word") |>
@@ -119,8 +142,7 @@ app_server <- function(session,input, output) {
 
      wordcloud2::wordcloud2(clicked_words)
 
-     })|>
-    shiny::bindEvent(input$thesis_location_map_marker_click)
+     })
 
 
    # Word cloud of the selected thesis
