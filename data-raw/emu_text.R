@@ -6,7 +6,7 @@ emu_raw <- readr::read_csv(emu_raw_path)
 usethis::use_data(emu_raw, overwrite = TRUE)
 
 # emu metadata file
-emu_meta_path <- here("analysis", "data", "derived_data", "emu_metadata.csv")
+emu_meta_path <- here::here("analysis", "data", "derived_data", "emu_metadata.csv")
 
 emu_metadata <- readr::read_csv(emu_meta_path)
 
@@ -25,7 +25,7 @@ emu_raw$text_clean <- emu_raw$text_raw |>
     add_stopwords = c("advisor", "prof")))
 
 emu_clean <- emu_raw |>
-  select(ID, text_clean)
+  dplyr::select(ID, text_clean)
 
 
 usethis::use_data(emu_clean, overwrite = TRUE)
