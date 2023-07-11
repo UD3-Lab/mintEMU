@@ -76,23 +76,7 @@ for (package in packages) {
 devtools::load_all(".")
 
 
-# Read thesis metadata ----
-data_path <- here("analysis", "data", "raw_data")
-pdf_names <- dir(data_path, pattern = "*.pdf")
 
-# TODO replace the following lines with the metadata included in the package
-# emu_metadata <- data(emu_metadata)
-## Read metadata for all theses
-all_theses <- read_xlsx(path = here(data_path, "theses-all.xlsx"))
-
-## Read only metadata for theses with PDF available
-emu <- read_csv(here(data_path, "theses-metadata.csv")) |>
-  mutate(text_raw = "") |>
-  filter(!is.na(pdf_via))
-
-# TODO replace this and next code chunk with reading `text_raw` from the package
-# emu <- data(emu_raw)
-pdf_paths <- here(data_path, emu$file_name)
 ```
 
 Description of text extraction; raw data available on 4TU.ResearchData at...
@@ -102,22 +86,15 @@ Description of text extraction; raw data available on 4TU.ResearchData at...
 #| cache: true
 #| message: false
 
-data_path <- here("analysis", "data", "derived_data", "emu_theses_with_text_and_location.csv")
+# Read thesis metadata ----
+data(emu_metadata)
 
-if (!file.exists(data_path)) {
-  # On the first run, this function might take extra time as a Python environment needs to be set up
-  emu$text_raw <- convert_pdf_text(pdf_paths)
-  
-  # Add latitude and longitude information to theses data frame
-  emu <- geocode_thesis_locations(emu)
+# Load the raw text dataset 
+data(emu_raw) 
 
-  # Write thesis dataframe to file
-  write_csv(emu, data_path)
-} else {
-  emu$text_raw <- read_csv(data_path)$text
-  emu$longitude <- read_csv(data_path)$longitude
-  emu$latitude <- read_csv(data_path)$latitude
-}
+# Join  text with the metadata file  
+emu <- left_join(emu_raw, emu_metadata, by = "ID")
+
 
 ```
 
@@ -125,7 +102,7 @@ if (!file.exists(data_path)) {
 #| echo: false
 #| dependson: get-pdf-text
 
-emu$text_clean <- emu$text |>
+emu$text_clean <- emu$text_raw |>
   clean_basic() 
   
 ```

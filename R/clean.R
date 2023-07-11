@@ -37,6 +37,7 @@ head_text <- function(text_vector, head_n = 10, sub_start = 1 , sub_end = 500 ){
   head_text
 }
 
+
 # TODO Should we remove the author names from this function as anonymisation has already been performed on the raw data?
 #' Find custom stop-phrases based on metadata file
 #'
@@ -78,6 +79,7 @@ find_meta_stopwords <- function(metadata,
                            function(x) {
                              df <- stop_words_list[[x]]
                              colNames <- names(df)
+                             df[is.na(df)]<-""
                              do.call(paste, df[colNames])
                            }) |>
     as.data.frame()
