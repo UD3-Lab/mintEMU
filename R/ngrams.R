@@ -20,7 +20,7 @@ get_ngrams <- function(data,
 
   # Create ngrams column and separate columns for each of the n terms
   data_ngrams <- data |>
-    select(title_col, text_col) |>
+    dplyr::select(title_col, text_col) |>
     tidytext::unnest_tokens(ngram, text_col, token = "ngrams", n = n) |>
     tidyr::separate(ngram, into = paste("w" , 1:n, sep = "_"),
                     sep = " ", remove = FALSE)
