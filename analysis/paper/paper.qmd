@@ -430,7 +430,7 @@ emu_documents |>
 
 ```{r top-words-document}
 # Which are the top n most frequently used words in each thesis?
-get_top_words_per_document(data = emu_words, top_n = 3)
+get_top_words_per_document(data = emu_words, top_n = 10)
 ```
 
 
@@ -563,6 +563,17 @@ emu_tf_idf |>
 
 ```{r}
 # Preview term frequency distributions in a subset of theses
+
+emu_words_count <- emu_words |> 
+  count(title, word, sort = TRUE) |> 
+  ungroup()
+
+emu_words_total <- emu_words_count |> 
+  group_by(title) |> 
+  summarise(total = sum(n))
+
+emu_words_count <- left_join(emu_words_count, emu_words_total)
+
 ggplot(emu_words_count |> 
          filter(title == unique(title)[1:6]),
        aes(n/total, fill = title)) +
