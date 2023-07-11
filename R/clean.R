@@ -37,7 +37,6 @@ head_text <- function(text_vector, head_n = 10, sub_start = 1 , sub_end = 500 ){
   head_text
 }
 
-
 #' Find custom stop-phrases based on metadata file
 #'
 #' Function scans the dataset with metadata for fields that can be removed from the body fo text before the text analysis
@@ -78,6 +77,7 @@ find_meta_stopwords <- function(metadata,
                            function(x) {
                              df <- stop_words_list[[x]]
                              colNames <- names(df)
+                             df[is.na(df)]<-""
                              do.call(paste, df[colNames])
                            }) |>
     as.data.frame()
