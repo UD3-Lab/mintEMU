@@ -156,6 +156,8 @@ urbanism_sw <- urbanism_stopwords(
                       "european postmaster in urbanism",
                       "tu delft", "ku leuven", "upc barcelona", "iuav venice"))
 thesis_sw <- thesis_stopwords(add_stopwords = c("advisor", "prof", "fig", "ure", "ning"))
+ananymisiation_sw <- c("EMAIL_REMOVED", "AUTHOR_REMOVED", "FIRST_NAME_REMOVED", "LAST_NAME_REMOVED") |>
+  paste(collapse = "|")
 custom_sw <- c("space", "spatial", "spaces", "plan", "public", "development") |>
   (\(.) paste0("\\b", ., "\\b"))() |> 
   paste(collapse = "|")
@@ -169,7 +171,9 @@ emu$text_clean <- emu$text_raw |>
   # Remove dataset-specific words
   str_remove_all(urbanism_sw) |>
   # Remove thesis-specific words
-  str_remove_all(thesis_sw)
+  str_remove_all(thesis_sw) |> 
+  # Remove text included with anonymisation
+  str_remove_all(ananymisiation_sw)
 
 # Concatenate ngrams
 emu$text_clean <- emu |> 
