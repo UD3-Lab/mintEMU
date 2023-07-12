@@ -14,8 +14,10 @@ title-block-published: "Last updated"
 date: now
 date-format: long
 format: 
-  docx:
-    reference-doc: "../templates/template.docx" # Insert path for the DOCX file
+  # docx:
+  #   reference-doc: "../templates/template.docx" # Insert path for the DOCX file
+  pdf:
+    template: "../templates/plos_latex_template.tex"
 execute:
   echo: true
   warning: false
