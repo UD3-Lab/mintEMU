@@ -109,13 +109,13 @@ The research presented in this paper was prompted by the closure of the European
 Distinctive features of the program:\
 - as a postmaster, it only accepted applicants with a prior MSc degree and experience in practice - provides a bridge towards PhD-level research - all students had an exchange semester at one of the other three program universities
 
-In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved over the years of the program. To that end, we employed a text mining approach in which we analysed its output: `r nrow(all_theses)` theses with an average of `r mean(str_length(emu$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(all_theses$grad_year, na.rm = TRUE), "-", max(all_theses$grad_year, na.rm = TRUE))`.
+In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved over the years of the program. To that end, we employed a text mining approach in which we analysed its output: 96 theses with an average of `r mean(str_length(emu$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(emu$graduation_year, na.rm = TRUE), "-", max(emu$graduation_year, na.rm = TRUE))`.
 
 <!-- If the focus of the paper shifts to topic modeling the paragraphs below can be swapped with the paragraphs describing the EMU program. -->
 
 This paper leverages topic modeling as an unsupervised machine learning method to reveal latent semantic structure and relationships between the latent topics in a large document collection [@muchene2021].
 
-NLP... and the focus on its subtopic topic modeling
+In Natural Language Processing (NLP) ... and the focus on its subtopic topic modeling
 
 Topic modeling provides a way to generative
 
@@ -167,7 +167,7 @@ Research questions:
 
 ## Data
 
-Of the total of `r nrow(all_theses)` theses published in the EMU program, full-text documents were available and permissions were granted for `r nrow(emu)` <!--# update after removing theses without permission -->. Metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records when unavailable on the repository. The full-text documents were obtained either from the TU Delft Education Repository (an API for downloading a large set of full-text data is not available), when available, or from the authors via email. Even though repository entries are open access, it was unclear if the content of the theses can be mined. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni network, permissions were requested individually. Only PDFs for which permission was obtained were included in the corpus.With the exception of a bilingual English-Spanish thesis, all thesis were written in English. The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined. @tbl-data gives an overview of the data included in the analysis.
+Of the total of 96 theses published in the EMU program, full-text documents were available and permissions were granted for `r nrow(emu)` <!--# update after removing theses without permission -->. Metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records when unavailable on the repository. The full-text documents were obtained either from the TU Delft Education Repository (an API for downloading a large set of full-text data is not available), when available, or from the authors via email. Even though repository entries are open access, it was unclear if the content of the theses can be mined. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni network, permissions were requested individually. Only PDFs for which permission was obtained were included in the corpus.With the exception of a bilingual English-Spanish thesis, all thesis were written in English. The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined. @tbl-data gives an overview of the data included in the analysis.
 
 ```{r tbl-data}
 #| tbl-cap: Overview of theses included in the analysis
@@ -245,6 +245,10 @@ Describe model parameters:
 
 -   collection of M = `r nrow(emu)` documents
 
+-   corpus D
+
+-   N = `r length(emu_words$word)` words
+
 -   vocabulary of V = `r length(unique(emu_words$word))` words
 
 Determining tuning parameters:
@@ -254,12 +258,12 @@ Determining tuning parameters:
 LDA requires a document-term matrix as input.
 
 ```{r topic-model-lda-1}
-#| dependson: short-stop-words
+#| include: false
 
 # Prepare document-term matrix as input for LDA model
 
 # Reduce the size of the DTM by excluding words with a frequency lower than 5
-emu_dtm <- convert_to_dtm(emu_theses_words, 
+emu_dtm <- convert_to_dtm(emu_words, 
                           title_col = "title", 
                           word_col = "word", 
                           min_term_freq = 5)
@@ -287,7 +291,7 @@ topic_names <- name_topics(beta)
 
 ```
 
-```{r topic-model-lda-2}
+```{r fig-topics-per-doc}
 
 # What is the dominant topic in each document?
 N = 20
@@ -297,7 +301,7 @@ colnames(topic_prop_examples) <- topic_names
 vizDataFrame <- melt(cbind(data.frame(topic_prop_examples), 
                            document = factor(rownames(topic_prop_examples))), 
                      variable.name = "topic", id.vars = "document")  
-ggplot(data = vizDataFrame, aes(topic, value, fill = document), ylab = "proportion") + 
+ggplot(data = vizDataFrame, aes(topic, value), ylab = "proportion") + 
   geom_bar(stat="identity") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  
   coord_flip() +
@@ -393,10 +397,10 @@ LDAvis::serVis(json)
 # TODO Explore including concatenated collocations in the topic model
 
 # Extract topics as mixtures of terms from LDA model
-beta_tidy <- tidy(emu_lda, matrix = "beta")
+emu_topics <- tidy(emu_lda, matrix = "beta")
 
 # The top n most common words in each topic
-emu_theses_top_terms <- get_top_words_per_topic(beta_tidy, 20)
+emu_top_terms <- get_top_words_per_topic(emu_topics, 20)
 
 # TODO create visualisation function
 emu_top_terms |> 
@@ -504,7 +508,7 @@ bigram_stem_counts
 ```{r}
 ## Trigrams
 emu_trigrams <- emu |> 
-  get_ngrams(n = 3, title_col = "title", text_col = "text")
+  get_ngrams(n = 3, title_col = "title", text_col = "text_raw")
 
 trigram_counts <- emu_trigrams |> 
   count(w_1, w_2, w_3, sort = TRUE)
@@ -638,10 +642,16 @@ freq_by_rank |>
   geom_abline(intercept = -1.44, slope = -0.7, color = "gray50", linetype = 2) +
   scale_x_log10() +
   scale_y_log10()
+```
+
+
+```{r}
+#| eval: false
 
 ## Visualise the top n words with the highest tf-idf values for each of a subset of theses
 emu_words_count |> 
-  filter(title == unique(title)[1:6]) |> 
+  get_tf_idf(title_col = "title", word_col = "word") |> 
+  filter(title == unique(title)[1:2]) |>  # Keep only the first 6 theses
   arrange(desc(tf_idf)) |> 
   mutate(word = factor(word, levels = rev(unique(word)))) |> 
   group_by(title) |> 
@@ -700,8 +710,15 @@ visualise_first_n_components(tidy_word_vectors, 24, 12)
 
 ```{r doc-embeddings}
 
+tidy_words <- emu |> 
+  select(title, text_clean) |> 
+  unnest_tokens(word, text_clean) |> 
+  add_count(word) |> 
+  filter(n >= 50) |> 
+  select(-n)
+  
 # Summarise word embeddings into document embeddings for modeling purposes
-word_matrix <- tidy_emu |> 
+word_matrix <- tidy_words |> 
   count(title, word) |> 
   cast_sparse(title, word, n)
 
