@@ -24,7 +24,7 @@ convert_pdf_text <-function(pdf_filenames){
   # Load python script with functions to extract texts
   reticulate::source_python(here::here("inst/python","extract-text-pdf-python.py"))
 
-  text_list <- convert_pdf(pdf_list) %>% unlist()
+  text_list <- convert_pdf(pdf_list) |> unlist()
 
   text_list
 }
