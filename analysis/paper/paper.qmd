@@ -44,7 +44,7 @@ abstract: |
   compendium accompanied by a published FAIR dataset of the theses and an interactive
   dashboard, the analysis presented can be both reproduced and applied to other datasets. 
 keywords: |
-  urbanism; education; post-master; text mining; topic 
+  urbanism; education; post-master; text mining; topic modeling
 highlights: |
   These are the highlights. 
 ---
