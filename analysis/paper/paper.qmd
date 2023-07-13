@@ -310,7 +310,10 @@ topic_names <- name_topics(beta)
 ```
 
 ```{r fig-topics-per-doc}
+#| fig-cap: Topic probability distribution per document
 
+# TODO Replace this with a table containing topics, documents, and theta
+#      sorted by theta in decreasing order
 # What is the dominant topic in each document?
 N = 20
 topic_prop_examples <- theta[1:N,]
