@@ -83,7 +83,6 @@ for (package in packages) {
 
 # Load analysis functions ----
 devtools::load_all(".")
-
 ```
 
 Description of text extraction; raw data available on 4TU.ResearchData at...
@@ -99,7 +98,6 @@ data(emu_raw)
 
 # Join text with the metadata file  
 emu <- left_join(emu_raw, emu_metadata, by = "ID")
-
 ```
 
 
@@ -177,7 +175,6 @@ graph LR
     C-->B
     D-->E[Results]
 ")
-
 ```
 
 ## Data
@@ -267,7 +264,6 @@ emu_words <- emu |>
   anti_join(tidytext::stop_words, by = "word") |>  # remove stop words
   mutate(word = textstem::lemmatize_words(word)) |>  # lemmatise words
   filter(nchar(word) >= 3)  # keep only words that are at least three letters long
-
 ```
 
 Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, including "map" and "low", were meaningful and occurring in high frequency.
@@ -379,6 +375,7 @@ paste(so, ":", names(so))
 ```
 
 ```{r}
+
 topicToFilter <- 6  # you can set this manually ...
 # ... or have it selected by a term in the topic name (e.g. 'children')
 topicToFilter <- grep('river', topic_names)[1] 
@@ -409,7 +406,6 @@ vizDataFrameWithYear |>
   xlab("Graduation year") +
   ylab("Proportion of topics") +
   labs(title = "Topic proportions per year")
-
 ```
 
 ```{r lda-vis}
@@ -509,11 +505,13 @@ The tf-idf statistic shows that...
 Topics such as ... have gained importance over the years, while ... have lost prominence.
 
 ```{r top-words-document}
+
 # Which are the top n most frequently used words in each thesis?
 get_top_words_per_document(data = emu_words, top_n = 10)
 ```
 
 ```{r top-words-corpus}
+
 # Which are the top n most frequently used words in all theses?
 # TODO add `topic` to `fill` aesthetic
 n = 50
@@ -628,8 +626,8 @@ emu_tf_idf |>
 ```
 
 ```{r}
-# Preview term frequency distributions in a subset of theses
 
+# Preview term frequency distributions in a subset of theses
 emu_words_count <- emu_words |> 
   count(title, word, sort = TRUE) |> 
   ungroup()
@@ -705,7 +703,6 @@ emu_words_count |>
 
 # To what extent do words co-occur with other words?
 tidy_pmi <- get_pmi(emu, title_col = "title", text_col = "text_clean")
-
 ```
 
 The high-dimensional sparse matrix of word features is projected into reduced, 100-dimensional set of features.
@@ -718,7 +715,6 @@ tidy_word_vectors <- tidy_pmi |>
     item1, item2, pmi,
     nv = 100, maxit = 1000
   )
-
 ```
 
 \[What terms should be checked with the function below?\]
@@ -728,7 +724,6 @@ tidy_word_vectors <- tidy_pmi |>
 # Calculate nearest neighbours of a given word
 tidy_word_vectors |> 
   nearest_neighbors("resilience")
-
 ```
 
 The first \[?\] components... \[what do they show?\]
@@ -737,7 +732,6 @@ The first \[?\] components... \[what do they show?\]
 
 # The first n components with top words found in the corpus of theses
 visualise_first_n_components(tidy_word_vectors, 24, 12)
-
 ```
 
 ```{r doc-embeddings}
@@ -760,9 +754,6 @@ embedding_matrix <- tidy_word_vectors |>
 doc_matrix <- word_matrix %*% embedding_matrix
 
 dim(doc_matrix)
-
-doc_matrix
-
 ```
 
 # Discussion
