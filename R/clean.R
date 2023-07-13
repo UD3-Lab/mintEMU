@@ -283,13 +283,22 @@ normalise_words <- function(string_vec) {
   sentesized_words <- lapply(normalised_words, stringr::str_to_title)
 
 
+  # Final list of words
   final_words <- mapply(c, normalised_words, lowerised_words, sentesized_words, SIMPLIFY=FALSE)
 
+  # Remove punctuation
+  final_words   <- lapply(final_words,
+                          stringr::str_remove_all, '[[:punct:]]+')
+
+
+  # embed in the word boundaries
+  final_words   <- lapply(final_words, \(x) dplyr::if_else(is.na(unique(x)), NA_character_,
+                                                           unique(paste0("\\b", x, "\\b"))))
+
   final_words  <- lapply(final_words ,
-                         function(x) dplyr::if_else(is.na(unique(x)), NA_character_,
+                         \(x) dplyr::if_else(is.na(x), NA_character_,
                                                     paste(unique(x), collapse = " ")) |> unique()) |> unlist()
 
-  final_words
 
 }
 
