@@ -77,6 +77,8 @@ pattern_fn <- lapply(pattern_fn, paste, collapse = "|") |>
 text_raw <- mapply(str_replace_all, text_raw, pattern_fn,
                    "FIRST_NAME_REMOVED")
 
+head_text(text_raw[55:60] )
+
 
 # Replace lastname with placeholder
 pattern_ln <- normalise_words(emu_theses$last_name)
@@ -86,6 +88,9 @@ pattern_ln <- lapply(pattern_ln, paste, collapse = "|") |>
 
 text_raw <- mapply(str_replace_all, text_raw, pattern_ln,
                    "LAST_NAME_REMOVED")
+
+head_text(text_raw[55:60] )
+
 
 # replacement_checker(text_raw, emu_theses$last_name, char_before = 0)
 
