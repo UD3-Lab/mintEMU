@@ -19,7 +19,7 @@ format: pdf
   # pdf:
   #   template: "../templates/plos_latex_template.tex"
 execute:
-  echo: true
+  echo: false
   warning: false
   message: false
   comment: "#>"
@@ -58,9 +58,7 @@ Highlights: `r rmarkdown::metadata$highlights`
 <!-- The actual document text starts here: -->
 
 ```{r setup}
-#| echo: false
-#| warning: false
-#| message: false
+#| include: false
 
 # Load packages ----
 ## List packages to be loaded
@@ -91,10 +89,9 @@ devtools::load_all(".")
 Description of text extraction; raw data available on 4TU.ResearchData at...
 
 ```{r load-data}
-#| echo: false
-#| message: false
+#| include: false
 
-# Read thesis metadata
+# Load thesis metadata
 data(emu_metadata)
 
 # Load raw text data
@@ -106,8 +103,7 @@ emu <- left_join(emu_raw, emu_metadata, by = "ID")
 ```
 
 ```{r clean-text}
-#| echo: false
-#| dependson: get-pdf-text
+#| include: false
 
 emu$text_clean <- emu$text_raw |>
   clean_basic() 
@@ -194,8 +190,6 @@ For each thesis, henceforth referred to as "document", the metadata consisted of
 Both the raw and cleaned data are published in the 4TU.ResearchData repository \[ADD CITATION\].
 
 ```{r fig-map-theses}
-#| warning: false 
-#| echo: false
 #| fig-cap: "Location of EMU theses included in the analysis"
 
 # Show thesis locations on world map
@@ -236,9 +230,9 @@ emu_words <- emu |>
 Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, including "map" and "low", were meaningful and occurring in high frequency.
 
 ```{r short-stop-words}
-#| dependson: stop-words
+#| include: false
 
-#short_words(emu_words$word, l_word = 3, l_list = 100)
+# short_words(emu_words$word, l_word = 3, l_list = 100)
 
 emu_words <- emu_words |>  
   filter(nchar(word) >= 3)  # keep only words that are at least three letters long
@@ -270,7 +264,6 @@ Determining tuning parameters:
 LDA requires a document-term matrix as input.
 
 ```{r topic-model-lda-1}
-#| include: false
 
 # Prepare document-term matrix as input for LDA model
 
@@ -322,7 +315,7 @@ ggplot(data = vizDataFrame, aes(topic, value), ylab = "proportion") +
 
 ```
 
-```{r}
+```{r topics-per-corpus}
 
 # What are the most probable topics in the entire collection?
 topicProportions <- colSums(theta) / nDocs(emu_dtm)  # mean probabilities over all paragraphs
@@ -681,7 +674,6 @@ emu_words_count |>
 \[Describe word embeddings ...\]
 
 ```{r word-embeddings-pmi}
-#| include: false
 
 # To what extent do words co-occur with other words?
 tidy_pmi <- get_pmi(emu, title_col = "title", text_col = "text_clean")
