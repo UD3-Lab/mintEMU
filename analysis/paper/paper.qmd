@@ -215,40 +215,48 @@ For analyses in which word-level tokens were used, stop words, i.e., common word
 
 ```{r pre-process-text}
 
+
 meta_sw <- find_meta_stopwords(emu)
-urbanism_sw <- urbanism_stopwords(
-    add_stopwords = c("emu", "european postgraduate master in urbanism", 
-                      "european post master in urbanism",
-                      "european postmaster in urbanism",
+emu_sw <- urbanism_stopwords(
+    add_stopwords = c("emu", "european post[\\-]?(graduate)?[\\s]?master[s]? in urbanism",
                       "tu delft", "ku leuven", "upc barcelona", "iuav venice"))
-thesis_sw <- thesis_stopwords(add_stopwords = c("advisor", "prof", "fig", "ure", "ning"))
-ananymisiation_sw <- c("EMAIL_REMOVED", "AUTHOR_REMOVED", "FIRST_NAME_REMOVED", "LAST_NAME_REMOVED") |>
+thesis_sw <- thesis_stopwords(add_stopwords = c("advisor", "prof", "fig", "ure", "figure", "ning"))
+anonymisation_sw <- c("EMAIL_REMOVED", "AUTHOR_REMOVED", "FIRST_NAME_REMOVED", "LAST_NAME_REMOVED") |>
   paste(collapse = "|")
-custom_sw <- c("space", "spatial", "spaces", "plan", "public", "development") |>
+custom_sw <- c("space[s]?", "spatial", "plan", "(plann)\\w{0,}", "public", "development",
+               "design", "process[es]?", "project[s]?", "figure[s]?", "map[s]?", "strateg(y|ies)", "intervention[s]?",
+               "create", "exist", "analys(i|e)s") |>
   (\(.) paste0("\\b", ., "\\b"))() |> 
   paste(collapse = "|")
 
 # Add cleaned text column
-emu$text_clean <- emu$text_raw |>
+emu$text_clean <- emu$text_raw |> 
+  # Remove text included with anonymisation
+  str_remove_all(anonymisation_sw) |>
   # Remove white spaces and punctuation, and change text to lower-case
   clean_basic() |>
   # Remove title, subtitle and full title
   str_remove_all(meta_sw) |> 
   # Remove dataset-specific words
-  str_remove_all(urbanism_sw) |>
+  str_remove_all(emu_sw) |>
   # Remove thesis-specific words
-  str_remove_all(thesis_sw) |> 
-  # Remove text included with anonymisation
-  str_remove_all(ananymisiation_sw)
+  str_remove_all(thesis_sw)
 
 # Concatenate ngrams
 emu$text_clean <- emu |> 
   c_ngrams(n_max = 3, text_col = "text_clean",
            title_col = "title", min_freq = 20, lemma = TRUE) 
-  
-  # Words that were not included in ngrams are safe to remove now
+
+# Words that were not included in ngrams are safe to remove now
 emu$text_clean <- emu$text_clean |> 
   str_remove_all(custom_sw)
+
+# # Get all concatenated ngrams
+# unique(unlist(str_match_all(emu$text_clean, "[A-Za-z]+(?:_[A-Za-z]+)+")[1]))
+
+# # Check if the word "space" was removed
+# unique(unlist(str_match_all(emu$text_clean, "\\bspace\\b")))
+# unique(unlist(str_match_all(emu$text_clean, "space(?:_[A-Za-z]+)+")))
 
 ```
 
@@ -265,6 +273,9 @@ emu_words <- emu |>
   anti_join(tidytext::stop_words, by = "word") |>  # remove stop words
   mutate(word = textstem::lemmatize_words(word)) |>  # lemmatise words
   filter(nchar(word) >= 3)  # keep only words that are at least three letters long
+
+# # Check if concatenated ngrams are retained
+# unlist(str_match_all(emu_words$word, "[A-Za-z]+(?:_[A-Za-z]+)+"))
 ```
 
 Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, including "map" and "low", were meaningful and occurring in high frequency.
@@ -319,14 +330,15 @@ emu_lda_5 <- LDA(emu_dtm, k = 5, method="Gibbs",
                control = list(seed = 2023, iter = 500, verbose = 25))
 
 # Extract beta and theta statistics from LDA model
-beta <- posterior(emu_lda)$terms
-theta <- posterior(emu_lda)$topics 
+beta_5 <- posterior(emu_lda_5)$terms
+theta_5 <- posterior(emu_lda_5)$topics 
 
-# Preview 10 terms from each topic
-terms(emu_lda, 10)
+beta_k <- posterior(emu_lda_k)$terms
+theta_k <- posterior(emu_lda_k)$topics 
 
 # Add pseudo-names to topics based on the top 5 words in each topic
-topic_names <- name_topics(beta)
+topic_names_k <- name_topics(beta_k)
+topic_names_5 <- name_topics(beta_5)
 
 ```
 
@@ -336,24 +348,25 @@ topic_names <- name_topics(beta)
 # TODO Replace this with a table containing topics, documents, and theta
 #      sorted by theta in decreasing order
 # What is the dominant topic in each document?
-N = 82
-topic_prop_examples <- theta[1:N,]
-colnames(topic_prop_examples) <- str_sub(topic_names, 1, 40)
+N = 70
+topic_prop_examples <- theta_5[1:N,]
+colnames(topic_prop_examples) <- topic_names_5
 # TODO change to pivot_longer
 vizDataFrame <- melt(cbind(data.frame(topic_prop_examples), 
                            document = factor(str_sub(rownames(topic_prop_examples), 1, 20))), 
-                     variable.name = "topic", id.vars = "document")  
-ggplot(data = vizDataFrame, aes(topic, value), ylab = "proportion") + 
-  geom_bar(stat="identity") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  
-  coord_flip() +
-  facet_wrap(~ document, ncol = 5) +
-  theme(legend.position = "none")
-
-vizDataFrame |> 
+                     variable.name = "topic", id.vars = "document") |> 
   group_by(document) |> 
   mutate(value_max = max(value),
          topic_max = topic[value == value_max])
+ggplot(data = vizDataFrame, aes(topic, value, fill = topic_max), ylab = "proportion") + 
+  geom_bar(stat="identity") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  
+  coord_flip() +
+  facet_wrap(~ document, ncol = 10) +
+  theme(legend.position = "bottom") +
+  scale_fill_viridis_d(name = "Topic") +
+  labs(title = "Theses as distributions over topics",
+       subtitle = "Charts colored by the highest probability")
 
 ```
 
