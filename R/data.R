@@ -27,7 +27,7 @@
 #'   \item{graduation_semester}{Raw text of the thesis.}
 #'   \item{title}{Title of the thesis.}
 #'   \item{location}{The location that the thesis is focused on.}
-#'   \item{latitude}{Latitude of the thesis location.}
+#'   \item{latitude}{Latitude of the thesis location geocoded from `location`.}
 #'   \item{longitude}{Longitude of the thesis location.}
 #'   \item{abstract}{Abstract of the thesis.}
 #'
