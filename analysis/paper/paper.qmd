@@ -85,8 +85,6 @@ for (package in packages) {
 devtools::load_all(".")
 ```
 
-Description of text extraction; raw data available on 4TU.ResearchData at...
-
 ```{r load-data}
 #| include: false
 
@@ -186,9 +184,11 @@ graph LR
 ")
 ```
 
-## Data
+## Data collection
 
 Of the total of 96 theses published in the EMU program, full-text documents were available and permissions were granted for `r nrow(emu)` <!--# update after removing theses without permission -->. Metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records when unavailable on the repository. The full-text documents were obtained either from the TU Delft Education Repository (an API for downloading a large set of full-text data is not available), when available, or from the authors via email. Even though repository entries are open access, it was unclear if the content of the theses can be mined. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni network, permissions were requested individually. Only PDFs for which permission was obtained were included in the corpus.With the exception of a bilingual English-Spanish thesis, all thesis were written in English. The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined. @tbl-data gives an overview of the data included in the analysis.
+
+Description of text extraction; raw data available on 4TU.ResearchData at...
 
 ```{r tbl-data}
 #| tbl-cap: Overview of theses included in the analysis
@@ -200,7 +200,7 @@ The imported dataset contains the text data in the `text` column and related met
 
 For each thesis, henceforth referred to as "document", the metadata consisted of the `ID`, `title`, `graduation_year`, `graduation_semester`, `exchange_semester`, `location`, `latitude`, `longitude`, `abstract`, `text_raw` and `text_clean` <!--# check column names or add them in an inline code chunk with epoxy -->.
 
-Both the raw and cleaned data are published in the 4TU.ResearchData repository \[ADD CITATION\].
+Both the raw and cleaned data are published in the 4TU.ResearchData repository [ADD CITATION].
 
 ```{r fig-map-theses}
 #| fig-cap: "Location of EMU theses included in the analysis"
@@ -211,9 +211,7 @@ visualize_thesis_locations(emu)
 
 @fig-map-theses shows the geographic spread of the theses included in the analysis.
 
-## Data analysis
-
-### Pre-processing
+## Pre-processing
 
 Word-level tokenisation was applied with the `unnest_tokens()` function of the `tidytext` package. This was preferred over other tokenisers as it produced results that work seamlessly with other `tidyverse` tools used in the analysis. `unnest_tokens()` removes punctuation, converts to lower-case, and separate all words into individual tokens.
 
@@ -223,6 +221,7 @@ For analyses in which word-level tokens were used, stop words, i.e., common word
 
 ```{r stop-words}
 
+# TODO replace with cleaning steps including ngram concatenation
 # Add cleaned text column with removed stop words
 emu$text_clean <- emu$text_clean |>
   str_remove_all(find_meta_stopwords(emu)) |> 
