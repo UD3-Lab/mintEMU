@@ -181,13 +181,13 @@ get_number_of_topics <- function(dtm,
     verbose = verbose
   )
 
-  ldatuning::FindTopicsNumber_plot(result)
+  # ldatuning::FindTopicsNumber_plot(result)
 
-  if (metrics == c("CaoJuan2009",  "Deveaud2014")) {
+  # if (metrics == c("CaoJuan2009",  "Deveaud2014")) {
     K = result$topic[which.max(result$Deveaud2014 - result$CaoJuan2009)]
-  } else {
-    NULL
-  }
+  # } else {
+    # NULL
+  # }
 }
 
 #' Sliding window

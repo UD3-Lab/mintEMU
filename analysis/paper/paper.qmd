@@ -44,7 +44,7 @@ abstract: |
   compendium accompanied by a published FAIR dataset of the theses and an interactive
   dashboard, the analysis presented can be both reproduced and applied to other datasets. 
 keywords: |
-  urbanism; education; post-master; text mining; topic 
+  urbanism; education; post-master; text mining; topic modeling
 highlights: |
   These are the highlights. 
 ---
@@ -84,8 +84,6 @@ for (package in packages) {
 # Load analysis functions ----
 devtools::load_all(".")
 ```
-
-Description of text extraction; raw data available on 4TU.ResearchData at...
 
 ```{r load-data}
 #| include: false
@@ -164,8 +162,11 @@ Research questions:
 -   To what extent were the topics and evolution thereof influenced by the exchange semester followed by the students?
 
     -   Use LDA clustering with 3 classes (corresponding to the three exchange universities) to see how well the clustering is aligned with where the student carried out their exchange semester. Use a confusion matrix to visualize the relation between real values and values assigned through clustering.
-    
-```{r process-diagram}
+  
+The research process (@fig-process-diagram)...
+
+```{r fig-process-diagram}
+#| fig-cap: Text mining process
 
 mermaid("
 graph LR
@@ -177,9 +178,11 @@ graph LR
 ")
 ```
 
-## Data
+## Data collection
 
 Of the total of 96 theses published in the EMU program, full-text documents were available and permissions were granted for `r nrow(emu)` <!--# update after removing theses without permission -->. Metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records when unavailable on the repository. The full-text documents were obtained either from the TU Delft Education Repository (an API for downloading a large set of full-text data is not available), when available, or from the authors via email. Even though repository entries are open access, it was unclear if the content of the theses can be mined. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni network, permissions were requested individually. Only PDFs for which permission was obtained were included in the corpus.With the exception of a bilingual English-Spanish thesis, all thesis were written in English. The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined. @tbl-data gives an overview of the data included in the analysis.
+
+Description of text extraction; raw data available on 4TU.ResearchData at...
 
 ```{r tbl-data}
 #| tbl-cap: Overview of theses included in the analysis
@@ -191,7 +194,7 @@ The imported dataset contains the text data in the `text` column and related met
 
 For each thesis, henceforth referred to as "document", the metadata consisted of the `ID`, `title`, `graduation_year`, `graduation_semester`, `exchange_semester`, `location`, `latitude`, `longitude`, `abstract`, `text_raw` and `text_clean` <!--# check column names or add them in an inline code chunk with epoxy -->.
 
-Both the raw and cleaned data are published in the 4TU.ResearchData repository \[ADD CITATION\].
+Both the raw and cleaned data are published in the 4TU.ResearchData repository [ADD CITATION].
 
 ```{r fig-map-theses}
 #| fig-cap: "Location of EMU theses included in the analysis"
@@ -202,9 +205,7 @@ visualize_thesis_locations(emu)
 
 @fig-map-theses shows the geographic spread of the theses included in the analysis.
 
-## Data analysis
-
-### Pre-processing
+## Pre-processing
 
 Word-level tokenisation was applied with the `unnest_tokens()` function of the `tidytext` package. This was preferred over other tokenisers as it produced results that work seamlessly with other `tidyverse` tools used in the analysis. `unnest_tokens()` removes punctuation, converts to lower-case, and separate all words into individual tokens.
 
@@ -269,6 +270,8 @@ emu_words <- emu |>
 Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, including "map" and "low", were meaningful and occurring in high frequency.
 
 
+## Information extraction
+
 ### Topic model
 
 Similar to clustering on numeric data, topic modelling is a method of unsupervised classification of topics found in a group of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\theta$ (theta) statistic.
@@ -296,7 +299,6 @@ LDA requires a document-term matrix as input.
 ```{r topic-model-lda-1}
 
 # Prepare document-term matrix as input for LDA model
-
 # Reduce the size of the DTM by excluding words with a frequency lower than 5
 emu_dtm <- convert_to_dtm(emu_words, 
                           title_col = "title", 
@@ -304,14 +306,16 @@ emu_dtm <- convert_to_dtm(emu_words,
                           min_term_freq = 5)
 
 # Fit LDA model with K clusters
-# # Determine K value empirically
-# K = get_number_of_topics(emu_dtm)
-# # This returns K = 23
-# TODO run the model with K = 23 and compare with results using qualitative value
+## Determine K value empirically
+k = get_number_of_topics(emu_dtm)
+# TODO run the model with the empirically determined k and compare (or combine) with results using qualitative value
+emu_lda_k <- LDA(emu_dtm, k = k, method = "Gibbs",
+               control = list(seed = 2023, iter = 500, verbose = 25))
 
-# Determine K value qualitatively
-# K = 5 corresponds to the 2 TUD semesters and the 3 exchange semesters combined 
-emu_lda <- LDA(emu_dtm, k = 5, method="Gibbs",
+
+## Determine K value qualitatively
+## K = 5 corresponds to the 2 TUD semesters and the 3 exchange semesters combined 
+emu_lda_5 <- LDA(emu_dtm, k = 5, method="Gibbs",
                control = list(seed = 2023, iter = 500, verbose = 25))
 
 # Extract beta and theta statistics from LDA model
@@ -332,12 +336,12 @@ topic_names <- name_topics(beta)
 # TODO Replace this with a table containing topics, documents, and theta
 #      sorted by theta in decreasing order
 # What is the dominant topic in each document?
-N = 20
+N = 82
 topic_prop_examples <- theta[1:N,]
-colnames(topic_prop_examples) <- topic_names
+colnames(topic_prop_examples) <- str_sub(topic_names, 1, 40)
 # TODO change to pivot_longer
 vizDataFrame <- melt(cbind(data.frame(topic_prop_examples), 
-                           document = factor(rownames(topic_prop_examples))), 
+                           document = factor(str_sub(rownames(topic_prop_examples), 1, 20))), 
                      variable.name = "topic", id.vars = "document")  
 ggplot(data = vizDataFrame, aes(topic, value), ylab = "proportion") + 
   geom_bar(stat="identity") +
@@ -345,6 +349,11 @@ ggplot(data = vizDataFrame, aes(topic, value), ylab = "proportion") +
   coord_flip() +
   facet_wrap(~ document, ncol = 5) +
   theme(legend.position = "none")
+
+vizDataFrame |> 
+  group_by(document) |> 
+  mutate(value_max = max(value),
+         topic_max = topic[value == value_max])
 
 ```
 
