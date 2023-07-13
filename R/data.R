@@ -28,7 +28,7 @@
 #'   \item{title}{Title of the thesis.}
 #'   \item{location}{The location that the thesis is focused on.}
 #'   \item{latitude}{Latitude of the thesis location geocoded from `location`.}
-#'   \item{longitude}{Longitude of the thesis location.}
+#'   \item{longitude}{Longitude of the thesis location geocoded from `location`.}
 #'   \item{abstract}{Abstract of the thesis.}
 #'
 #' @source <https://repository.tudelft.nl/islandora/search/?collection=education>
