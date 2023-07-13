@@ -19,7 +19,7 @@ format: pdf
   # pdf:
   #   template: "../templates/plos_latex_template.tex"
 execute:
-  echo: true
+  echo: false
   warning: false
   message: false
   comment: "#>"
@@ -58,9 +58,7 @@ Highlights: `r rmarkdown::metadata$highlights`
 <!-- The actual document text starts here: -->
 
 ```{r setup}
-#| echo: false
-#| warning: false
-#| message: false
+#| include: false
 
 # Load packages ----
 ## List packages to be loaded
@@ -72,7 +70,7 @@ packages <- c(
   "tidytext", "SnowballC", "tm",                # Text processing and analysis
   "topicmodels", "LDAvis", "tsne",              # Topic modeling
   "tidygeocoder",                               # Working with spatial data
-  "igraph", "ggraph"                            # Network analysis and visualization
+  "igraph", "ggraph", "DiagrammeR"              # Network analysis and visualization
 )
 
 ## Load required packages, install them if needed
@@ -91,10 +89,9 @@ devtools::load_all(".")
 Description of text extraction; raw data available on 4TU.ResearchData at...
 
 ```{r load-data}
-#| echo: false
-#| message: false
+#| include: false
 
-# Read thesis metadata
+# Load thesis metadata
 data(emu_metadata)
 
 # Load raw text data
@@ -104,6 +101,7 @@ data(emu_raw)
 emu <- left_join(emu_raw, emu_metadata, by = "ID")
 
 ```
+
 
 
 # Introduction
@@ -168,6 +166,19 @@ Research questions:
 -   To what extent were the topics and evolution thereof influenced by the exchange semester followed by the students?
 
     -   Use LDA clustering with 3 classes (corresponding to the three exchange universities) to see how well the clustering is aligned with where the student carried out their exchange semester. Use a confusion matrix to visualize the relation between real values and values assigned through clustering.
+    
+```{r process-diagram}
+
+mermaid("
+graph LR
+    A[Data collection]-->B[Pre-processing]
+    B-->C[Information extraction]
+    C-->D[Visualisation]
+    C-->B
+    D-->E[Results]
+")
+
+```
 
 ## Data
 
@@ -186,8 +197,6 @@ For each thesis, henceforth referred to as "document", the metadata consisted of
 Both the raw and cleaned data are published in the 4TU.ResearchData repository \[ADD CITATION\].
 
 ```{r fig-map-theses}
-#| warning: false 
-#| echo: false
 #| fig-cap: "Location of EMU theses included in the analysis"
 
 # Show thesis locations on world map
@@ -263,6 +272,7 @@ emu_words <- emu |>
 
 Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, including "map" and "low", were meaningful and occurring in high frequency.
 
+
 ### Topic model
 
 Similar to clustering on numeric data, topic modelling is a method of unsupervised classification of topics found in a group of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\theta$ (theta) statistic.
@@ -288,7 +298,6 @@ Determining tuning parameters:
 LDA requires a document-term matrix as input.
 
 ```{r topic-model-lda-1}
-#| include: false
 
 # Prepare document-term matrix as input for LDA model
 
@@ -322,7 +331,10 @@ topic_names <- name_topics(beta)
 ```
 
 ```{r fig-topics-per-doc}
+#| fig-cap: Topic probability distribution per document
 
+# TODO Replace this with a table containing topics, documents, and theta
+#      sorted by theta in decreasing order
 # What is the dominant topic in each document?
 N = 20
 topic_prop_examples <- theta[1:N,]
@@ -340,7 +352,7 @@ ggplot(data = vizDataFrame, aes(topic, value), ylab = "proportion") +
 
 ```
 
-```{r}
+```{r topics-per-corpus}
 
 # What are the most probable topics in the entire collection?
 topicProportions <- colSums(theta) / nDocs(emu_dtm)  # mean probabilities over all paragraphs
@@ -690,7 +702,6 @@ emu_words_count |>
 \[Describe word embeddings ...\]
 
 ```{r word-embeddings-pmi}
-#| include: false
 
 # To what extent do words co-occur with other words?
 tidy_pmi <- get_pmi(emu, title_col = "title", text_col = "text_clean")
