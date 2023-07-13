@@ -70,7 +70,7 @@ packages <- c(
   "tidytext", "SnowballC", "tm",                # Text processing and analysis
   "topicmodels", "LDAvis", "tsne",              # Topic modeling
   "tidygeocoder",                               # Working with spatial data
-  "igraph", "ggraph"                            # Network analysis and visualization
+  "igraph", "ggraph", "DiagrammeR"              # Network analysis and visualization
 )
 
 ## Load required packages, install them if needed
@@ -172,6 +172,19 @@ Research questions:
 -   To what extent were the topics and evolution thereof influenced by the exchange semester followed by the students?
 
     -   Use LDA clustering with 3 classes (corresponding to the three exchange universities) to see how well the clustering is aligned with where the student carried out their exchange semester. Use a confusion matrix to visualize the relation between real values and values assigned through clustering.
+    
+```{r process-diagram}
+
+mermaid("
+graph LR
+    A[Data collection]-->B[Pre-processing]
+    B-->C[Information extraction]
+    C-->D[Visualisation]
+    C-->B
+    D-->E[Results]
+")
+
+```
 
 ## Data
 
