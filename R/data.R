@@ -25,7 +25,9 @@
 #'   \item{ID}{ID of the thesis}
 #'   \item{graduation_year}{Raw text of the thesis.}
 #'   \item{graduation_semester}{Raw text of the thesis.}
+#'   \item{full_title}{Full title of the thesis.}
 #'   \item{title}{Title of the thesis.}
+#'   \item{subtitle}{Subtitle of the thesis.}
 #'   \item{location}{The location that the thesis is focused on.}
 #'   \item{latitude}{Latitude of the thesis location.}
 #'   \item{longitude}{Longitude of the thesis location.}

@@ -98,18 +98,22 @@ emu_theses$text_raw  <- text_raw
 emu_theses <- emu_theses |>
   select(ID, graduation_year,
          graduation_semester,
-         title, location, abstract,
-                text_raw)
+         title, full_title, subtitle,
+         location,
+         abstract,
+         text_raw)
 
 # Add longitude and latitude columns ---------
 emu_theses <- geocode_thesis_locations(emu_theses)
 
 # reorder the columns in the dataset ---------
 emu_theses <- emu_theses |>
-  select(ID, graduation_year,
+  select(ID,
+         graduation_year,
          graduation_semester,
-         title, location, latitude,
-         longitude, abstract,
+         full_title, title, subtitle,
+         location, latitude, longitude,
+         abstract,
          text_raw)
 
 # separate text file and metadata file ----------------
