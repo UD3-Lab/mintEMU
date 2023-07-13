@@ -250,6 +250,8 @@ emu_words <- emu_words |>
 
 ```
 
+## Information extraction
+
 ### Topic model
 
 Similar to clustering on numeric data, topic modelling is a method of unsupervised classification of topics found in a group of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\theta$ (theta) statistic.
@@ -277,7 +279,6 @@ LDA requires a document-term matrix as input.
 ```{r topic-model-lda-1}
 
 # Prepare document-term matrix as input for LDA model
-
 # Reduce the size of the DTM by excluding words with a frequency lower than 5
 emu_dtm <- convert_to_dtm(emu_words, 
                           title_col = "title", 
@@ -285,14 +286,16 @@ emu_dtm <- convert_to_dtm(emu_words,
                           min_term_freq = 5)
 
 # Fit LDA model with K clusters
-# # Determine K value empirically
-# K = get_number_of_topics(emu_dtm)
-# # This returns K = 23
-# TODO run the model with K = 23 and compare with results using qualitative value
+## Determine K value empirically
+k = get_number_of_topics(emu_dtm)
+# TODO run the model with the empirically determined k and compare (or combine) with results using qualitative value
+emu_lda_k <- LDA(emu_dtm, k = k, method = "Gibbs",
+               control = list(seed = 2023, iter = 500, verbose = 25))
 
-# Determine K value qualitatively
-# K = 5 corresponds to the 2 TUD semesters and the 3 exchange semesters combined 
-emu_lda <- LDA(emu_dtm, k = 5, method="Gibbs",
+
+## Determine K value qualitatively
+## K = 5 corresponds to the 2 TUD semesters and the 3 exchange semesters combined 
+emu_lda_5 <- LDA(emu_dtm, k = 5, method="Gibbs",
                control = list(seed = 2023, iter = 500, verbose = 25))
 
 # Extract beta and theta statistics from LDA model
@@ -313,12 +316,12 @@ topic_names <- name_topics(beta)
 # TODO Replace this with a table containing topics, documents, and theta
 #      sorted by theta in decreasing order
 # What is the dominant topic in each document?
-N = 20
+N = 82
 topic_prop_examples <- theta[1:N,]
-colnames(topic_prop_examples) <- topic_names
+colnames(topic_prop_examples) <- str_sub(topic_names, 1, 40)
 # TODO change to pivot_longer
 vizDataFrame <- melt(cbind(data.frame(topic_prop_examples), 
-                           document = factor(rownames(topic_prop_examples))), 
+                           document = factor(str_sub(rownames(topic_prop_examples), 1, 20))), 
                      variable.name = "topic", id.vars = "document")  
 ggplot(data = vizDataFrame, aes(topic, value), ylab = "proportion") + 
   geom_bar(stat="identity") +
@@ -326,6 +329,11 @@ ggplot(data = vizDataFrame, aes(topic, value), ylab = "proportion") +
   coord_flip() +
   facet_wrap(~ document, ncol = 5) +
   theme(legend.position = "none")
+
+vizDataFrame |> 
+  group_by(document) |> 
+  mutate(value_max = max(value),
+         topic_max = topic[value == value_max])
 
 ```
 
