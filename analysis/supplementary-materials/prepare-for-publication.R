@@ -77,7 +77,6 @@ pattern_fn <- lapply(pattern_fn, paste, collapse = "|") |>
 text_raw <- mapply(str_replace_all, text_raw, pattern_fn,
                    "FIRST_NAME_REMOVED")
 
-head_text(text_raw[55:60] )
 
 
 # Replace lastname with placeholder
