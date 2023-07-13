@@ -32,9 +32,19 @@ filters:
 bibliography: references.bib
 csl: "../templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
 abstract: |
-  Text of abstract
+  Prompted by the closure of the European post-Master of Urbanism (EMU) at TU Delft,
+  this paper aims to describe the legacy of the EMU. To that end, it reports on the
+  analysis of the graduation theses produced over 2007-2021 when the program was running.
+  The text mining approach allows for a close scrutiny of the latent thematic patterns, 
+  and evolutions thereof, found in the full texts of the theses. Results reveal # topics
+  that are to a large extent consistent with the set-up of the program in two thematic 
+  semesters at TU Delft and three possible exchange semester locations, each characterised 
+  by a specific approach. The paper discusses the relevance of the findings for the
+  state of the profession and education in the field. Set up as a reproducible research
+  compendium accompanied by a published FAIR dataset of the theses and an interactive
+  dashboard, the analysis presented can be both reproduced and applied to other datasets. 
 keywords: |
-  urbanism; education; post-master; text mining
+  urbanism; education; post-master; text mining; topic 
 highlights: |
   These are the highlights. 
 ---
