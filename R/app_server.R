@@ -7,14 +7,6 @@ app_server <- function(session,input, output) {
 
   ## Get the data ---------------------- ---------------------------------------
 
-  ## temporarily added data file in the project. this will mimic the packages final behaviour
-
-  # data_path <- here::here("analysis", "data", "derived_data", "emu_theses_with_text.csv")
-  # Add latitude and longitude information to theses data frame
-  # emu_theses <- readr::read_csv(data_path)
-  # emu_theses$text_clean <- emu_theses$text |> clean_basic()
-  # emu_theses <- geocode_thesis_locations(emu_theses)
-  # usethis::use_data(emu_theses, overwrite = TRUE)
   data("emu_clean")
   data("emu_metadata")
   emu_theses <- dplyr::left_join(emu_clean, emu_metadata, by = "ID")
@@ -27,13 +19,6 @@ app_server <- function(session,input, output) {
                                           unique()|>
                                           sort() ),
                            selected='ALL')
-
-  # shiny::updateSelectInput(session, "exchange", label = "Select exchange semester:",
-  #                          choices = c('ALL',emu_theses$exchange_semester |>
-  #                                 as.character() |>
-  #                                 unique()|>
-  #                                 sort()  ),
-  #                          selected='ALL')
 
   # Tool tips ------------------------------------------------------------------
   bs4Dash::addTooltip(id = "year",
@@ -49,15 +34,14 @@ app_server <- function(session,input, output) {
 
   # dataset responding to filters
   emu_reactive <- shiny::reactive({
-   emu_theses |>
-     dplyr::filter(graduation_year  %in%
-                     if('ALL' %in% input$year)
-                       unique(emu_theses$graduation_year)
-                      else
-                       input$year
-                   )
+    emu_theses |>
+      dplyr::filter(graduation_year  %in%
+                      if ('ALL' %in% input$year)
+                        unique(emu_theses$graduation_year)
+                    else
+                      input$year)
 
-   })
+  })
 
   # ID of value clicked on the map
 
@@ -75,7 +59,6 @@ app_server <- function(session,input, output) {
 
   # Map
    output$thesis_location_map <- leaflet::renderLeaflet({
-    data <- emu_reactive()
 
     icons <- leaflet::awesomeIcons(
       icon = "pen",
@@ -84,22 +67,19 @@ app_server <- function(session,input, output) {
       markerColor = "blue"
     )
 
-    data |>
+    emu_reactive() |>
       leaflet::leaflet() |>
       leaflet::addProviderTiles("Stamen.TonerLite") |>
-      leaflet::addAwesomeMarkers(layerId = data$ID,
+      leaflet::addAwesomeMarkers(layerId = emu_reactive()$ID,
                                  icon = icons,
-                                 label = data$location,
-                                 popup = paste0("<b>Title:</b> ", data$title,
+                                 label = emu_reactive()$location,
+                                 popup = paste0("<b>Title:</b> ", emu_reactive()$title,
                                                 "<br/>",
-                                                "<b>Location:</b> ", data$location,
-                                                "<br/>",
-                                                "<b>ID:</b> ", data$ID))
+                                                "<b>Location:</b> ", emu_reactive()$location))
     })
 
    # Box generated for a single title
    output$clicked_box <- shiny::renderUI({
-
 
      empty_box <- is.null(clicked_id())
 
@@ -109,7 +89,6 @@ app_server <- function(session,input, output) {
                   width = NULL,
                   textOutput('clickid'),
                   plotOutput("top_words")
-                  #,wordcloud2::wordcloud2Output("wordcloud")
                   )
      })
 
@@ -118,41 +97,39 @@ app_server <- function(session,input, output) {
 
      clicked_words <- clicked_thesis() |>
        tidytext::unnest_tokens(word, text_clean) |>
-       dplyr::mutate(word = textstem::lemmatize_words(word))|>
+       dplyr::mutate(word = textstem::lemmatize_words(word)) |>
        dplyr::anti_join(tidytext::stop_words, by = "word")
 
-     top_words <- get_top_words_per_corpus(clicked_words , 20, 'word' )
+     top_words <-
+       get_top_words_per_corpus(clicked_words , 20, 'word')
 
-     ggplot2::ggplot(top_words)+
-       ggplot2::aes(x = word, y = n)+
+     ggplot2::ggplot(top_words) +
+       ggplot2::aes(x = word, y = n) +
        ggplot2::geom_col()
 
    })
 
    # Word cloud of the selected thesis
    output$wordcloud <- wordcloud2::renderWordcloud2({
-
-
      clicked_words <- clicked_thesis() |>
        tidytext::unnest_tokens(word, text_clean) |>
-       dplyr::mutate(word = textstem::lemmatize_words(word))|>
+       dplyr::mutate(word = textstem::lemmatize_words(word)) |>
        dplyr::anti_join(tidytext::stop_words, by = "word") |>
-       dplyr::count(word)|>
+       dplyr::count(word) |>
        dplyr::arrange(-n)
 
      wordcloud2::wordcloud2(clicked_words)
 
-     })
+   })
 
 
    # Word cloud of the selected thesis
    output$clickid <- renderText({
-
      clicked_id <- input$thesis_location_map_marker_click$id
 
      clicked_id
 
-     })|>
+   }) |>
      shiny::bindEvent(input$thesis_location_map_marker_click)
 
   }
