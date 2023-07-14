@@ -60,6 +60,13 @@ app_server <- function(session,input, output) {
   # Map
    output$thesis_location_map <- leaflet::renderLeaflet({
 
+    set.seed(2023)
+
+    data <-  emu_reactive() |>
+      dplyr::mutate(longitude = jitter(longitude, factor = 0.01),
+                    latitude  = jitter(latitude , factor = 0.01)
+                    )
+
     icons <- leaflet::awesomeIcons(
       icon = "pen",
       iconColor = "#fff",
@@ -67,15 +74,18 @@ app_server <- function(session,input, output) {
       markerColor = "blue"
     )
 
-    emu_reactive() |>
+    data |>
       leaflet::leaflet() |>
       leaflet::addProviderTiles("Stamen.TonerLite") |>
-      leaflet::addAwesomeMarkers(layerId = emu_reactive()$ID,
+      leaflet::addAwesomeMarkers(layerId = data$ID,
                                  icon = icons,
-                                 label = emu_reactive()$location,
-                                 popup = paste0("<b>Title:</b> ", emu_reactive()$title,
+                                 label = data$location,
+                                 popup = paste0("<b>Title:</b> ", data$title,
                                                 "<br/>",
-                                                "<b>Location:</b> ", emu_reactive()$location))
+                                                "<b>Location:</b> ", data$location),
+                                 clusterOptions = leaflet::markerClusterOptions()
+
+                                 )
     })
 
    # Box generated for a single title
