@@ -4,7 +4,7 @@ test_that("get_ngrams returns correct data frame", {
     text = "This is a short text preparation test."
   )
 
-  expected_output <- tibble(
+  expected_output <- tibble::tibble(
     title = rep("Title", 3),
     text = rep("This is a short text preparation test.", 3),
     ngram = c("short text", "text preparation", "preparation test"),
