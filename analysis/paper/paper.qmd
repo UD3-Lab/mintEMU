@@ -98,13 +98,7 @@ data(emu_raw)
 emu <- left_join(emu_raw, emu_metadata, by = "ID")
 ```
 
-```{r clean-text}
-#| include: false
 
-emu$text_clean <- emu$text_raw |>
-  clean_basic() 
-  
-```
 
 # Introduction
 
@@ -219,7 +213,8 @@ Bigrams such as "public space" and trigrams such as "socio-spatial segregation" 
 
 For analyses in which word-level tokens were used, stop words, i.e., common words or words that do not add much meaning, were removed in the pre-processing stage. Global, subject-specific and document stop words [@hvitfeldt2021a] were differentiated. As all theses were written in English, the pre-made "snowball" lexicon was used to remove global stop words. <!-- We tried to create a custom global stop word list on the entire corpus, by removing high-frequency words, starting with 20 words and increasing by 10 until reaching words that are not appropriate as stop words, but no significant improvement was observed in the result. --> We manually constructed a list of subject-specific stop words based on our domain knowledge. Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words. In the next pre-processing step, we normalised the resulting words, that is, reduced them to their canonical dictionary forms, the resulting words were lemmatised [@hvitfeldt2021a]. Lemmatisation was preferred over stemming as the former tends to be more meaningful and less degrading than the latter.
 
-```{r stop-words}
+```{r pre-process-text}
+
 
 meta_sw <- find_meta_stopwords(emu)
 emu_sw <- urbanism_stopwords(
@@ -285,15 +280,6 @@ emu_words <- emu |>
 
 Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, including "map" and "low", were meaningful and occurring in high frequency.
 
-```{r short-stop-words}
-#| include: false
-
-# short_words(emu_words$word, l_word = 3, l_list = 100)
-
-emu_words <- emu_words |>  
-  filter(nchar(word) >= 3)  # keep only words that are at least three letters long
-
-```
 
 ## Information extraction
 
@@ -563,41 +549,32 @@ get_top_words_per_corpus(data = emu_words, top_n = n) |>
   theme(panel.grid = element_blank())
 ```
 
-```{r}
-#| label: ngrams
-#| dependson: clean-text
+A frequency count of ngrams reveals collocations like "public space" or "socio-spatial segregation" across the corpus. To include these in the topic model, we concatenated them with an underscore, so that they are considered one word during the word-level tokenisation. Only bigrams and trigrams, that is two- and three-word collocations, were extracted from the corpus.
 
-## Bigrams
+```{r bigram-tfidf}
+
 emu_bigrams <- emu |> 
   get_ngrams(n = 2, title_col = "title", text_col = "text_clean", stem = TRUE)
 
 bigram_counts <- emu_bigrams |> 
   count(w_1, w_2, sort = TRUE)
 
-bigram_stem_counts <- emu_bigrams |> 
-  count(w_1_stem, w_2_stem, sort = TRUE)
-
-bigram_counts
-bigram_stem_counts
-
-## Trigrams
-emu_trigrams <- emu |> 
-  get_ngrams(n = 3, title_col = "title", text_col = "text_raw")
-
-trigram_counts <- emu_trigrams |> 
-  count(w_1, w_2, w_3, sort = TRUE)
-
-trigram_counts
-
-## Bigram tf-idf
 bigram_tf_idf <- emu_bigrams |> 
   count(title, ngram) |> 
   bind_tf_idf(ngram, title, n) |> 
   arrange(desc(tf_idf))
 
 bigram_tf_idf
+```
 
-## Trigram tf-idf
+```{r trigram-tfidf}
+
+emu_trigrams <- emu |> 
+  get_ngrams(n = 3, title_col = "title", text_col = "text_raw")
+
+trigram_counts <- emu_trigrams |> 
+  count(w_1, w_2, w_3, sort = TRUE)
+
 trigram_tf_idf <- emu_trigrams |> 
   count(title, ngram) |> 
   bind_tf_idf(ngram, title, n) |> 
