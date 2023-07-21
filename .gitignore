@@ -4,6 +4,7 @@
 # Data
 analysis/data/
 analysis/nul
+data/
 
 #Paper
 analysis/paper/paper_*

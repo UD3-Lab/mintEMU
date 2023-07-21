@@ -24,12 +24,14 @@ app_ui <- function() {
                                                tabName = "topic",
                                                icon = shiny::icon('diagram-project')
                                                ),
-                             # Filters
-                             shiny::selectInput("year",
+
+                             shiny::sliderInput("year",
                                                 label = "Select graduation year:",
-                                                choices = c('ALL'),
-                                                multiple = F,
-                                                selected = 'ALL'
+                                                min = 2007,
+                                                max = 2021,
+                                                value = c(2009, 2011),
+                                                dragRange = T,
+                                                sep = ""
                                                 ),
                              shiny::selectInput("exchange",
                                                 label = "Select exchange semester:",

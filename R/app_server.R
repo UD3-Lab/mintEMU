@@ -7,21 +7,44 @@ app_server <- function(session,input, output) {
 
   ## Get the data  - temporarily added data file in the project. this will mimic the packages final behaviour
 
-  # data_path <- here::here("analysis", "data", "derived_data", "emu_theses_with_text.csv")
-  # emu_theses <- readr::read_csv(data_path)
-  # usethis::use_data(emu_theses, overwrite = TRUE)
-  data("emu_theses")
-
+  data("emu_clean")
+  data("emu_metadata")
+  emu_theses <- dplyr::left_join(emu_clean, emu_metadata, by = "ID")
 
   # Update filters
 
-  shiny::updateSelectInput(session,"year", label = "Select year:",
-                    choices = c('ALL', emu_theses$graduation_year |>
-                                          as.character() |>
-                                          unique()|>
-                                          sort()
-                                ),
-                    selected='ALL')
+  shiny::updateSliderInput(session,"year", label = "Select year:", step = 1,
+                           min = c(emu_theses$graduation_year |>
+                                     as.character() |>
+                                     unique()|>
+                                     sort() |>
+                                     min()
+                           ),
+                           max = c(emu_theses$graduation_year |>
+                                     as.character() |>
+                                     unique()|>
+                                     sort() |>
+                                     max()
+                           ),
+                           value = c(emu_theses$graduation_year |>
+                                       as.character() |>
+                                       unique()|>
+                                       sort() |>
+                                       min(),
+                                     emu_theses$graduation_year |>
+                                       as.character() |>
+                                       unique() |>
+                                       sort() |>
+                                       median())
+                             )
+
+  shiny::updateSelectInput(session,"exchange", label = "Select exchange semester:",
+                           choices = c('ALL', emu_theses$graduation_year |>
+                                         as.character() |>
+                                         unique()|>
+                                         sort()
+                           ),
+                           selected = 'ALL')
 
   # Tool tips
   bs4Dash::addTooltip(id = "year",
@@ -44,17 +67,10 @@ app_server <- function(session,input, output) {
   #                   selected='ALL')
 
   # Create reactive data object
- emu_reactive <- shiny::reactive({
-   emu_theses |>
-     dplyr::filter(graduation_year  %in%
-                     if('ALL' %in% input$year)
-                       unique(emu_theses$graduation_year)
-                     else
-                       input$year
-                   )
-
- })
-
+  emu_reactive <- shiny::reactive({
+    emu_theses |>
+      dplyr::filter(graduation_year > input$year[1] & graduation_year < input$year[2])
+   })
  # Render plots
 
   output$distPlot <- shiny::renderPlot({
