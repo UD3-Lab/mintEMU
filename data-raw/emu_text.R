@@ -16,7 +16,9 @@ usethis::use_data(emu_metadata, overwrite = TRUE)
 # Clean the dataset ----
 # TODO adapt cleaning procedure once all the steps are known (#105)
 
-emu_raw$text_clean <- emu_raw$text_raw |>
+emu_theses <- dplyr::left_join(emu_raw, emu_metadata, by  = "ID")
+
+emu_theses$text_clean <- emu_theses$text_raw |>
   mintEMU::clean_basic() |>
   stringr::str_remove_all(mintEMU::find_meta_stopwords(emu_theses)) |>
   stringr::str_remove_all(mintEMU::urbanism_stopwords(
@@ -24,7 +26,7 @@ emu_raw$text_clean <- emu_raw$text_raw |>
   stringr::str_remove_all(mintEMU::thesis_stopwords(
     add_stopwords = c("advisor", "prof")))
 
-emu_clean <- emu_raw |>
+emu_clean <- emu_theses |>
   dplyr::select(ID, text_clean)
 
 
