@@ -4,6 +4,7 @@
 # Data
 analysis/data/
 analysis/nul
+data/
 
 #Paper
 analysis/paper/paper_*
@@ -15,3 +16,4 @@ inst/python/pyvenv
 .DS_Store
 
 /.luarc.json
+
