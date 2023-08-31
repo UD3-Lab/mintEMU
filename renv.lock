@@ -382,22 +382,6 @@
     "crosstalk": {
       "Package": "crosstalk",
       "Version": "1.2.0",
-<<<<<<< HEAD
-=======
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "6aa54f69598c32177e920eb3402e8293",
-      "Requirements": [
-        "R6",
-        "htmltools",
-        "jsonlite",
-        "lazyeval"
-      ]
-    },
-    "curl": {
-      "Package": "curl",
-      "Version": "4.3.3",
->>>>>>> 28-shinyapp-aw
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6aa54f69598c32177e920eb3402e8293",
@@ -2045,7 +2029,6 @@
       "Hash": "e25793551cbdb843154152e5ee88cbd6",
       "Requirements": []
     },
-<<<<<<< HEAD
     "slider": {
       "Package": "slider",
       "Version": "0.3.0",
