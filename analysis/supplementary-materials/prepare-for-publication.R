@@ -101,7 +101,7 @@ emu_theses$text_raw  <- text_raw
 emu_theses <- emu_theses |>
   select(ID, graduation_year,
          graduation_semester,
-         title, full_title, subtitle,
+         title, full_title, subtitle, link,
          location,
          abstract,
          text_raw)
@@ -114,7 +114,7 @@ emu_theses <- emu_theses |>
   select(ID,
          graduation_year,
          graduation_semester,
-         full_title, title, subtitle,
+         full_title, title, subtitle, link,
          location, latitude, longitude,
          abstract,
          text_raw)
