@@ -100,8 +100,8 @@ emu_theses$text_raw  <- text_raw
 # Make selection of columns ----------------
 emu_theses <- emu_theses |>
   select(ID, graduation_year,
-         graduation_semester, exchange_semester,
-         title, full_title, subtitle,
+         graduation_semester,
+         title, full_title, subtitle, link,
          location,
          abstract,
          text_raw)
@@ -113,8 +113,8 @@ emu_theses <- geocode_thesis_locations(emu_theses)
 emu_theses <- emu_theses |>
   select(ID,
          graduation_year,
-         graduation_semester, exchange_semester,
-         full_title, title, subtitle,
+         graduation_semester,
+         full_title, title, subtitle, link,
          location, latitude, longitude,
          abstract,
          text_raw)

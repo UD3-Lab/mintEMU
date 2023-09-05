@@ -34,7 +34,6 @@ theses_all <-
 theses_repo <-
   read_csv(file = here("analysis", "data", "raw_data", "theses-repository.csv"),
            locale = locale(encoding = "UTF-8")) %>%
-  select(-`repository link`) %>%
   mutate(last_name_split = str_extract(string = author, pattern = "\\w+"),
          last_name_split_year = str_to_lower(paste0(last_name_split, "-", `publication year`))) %>%
   filter(
@@ -82,7 +81,8 @@ theses_meta %>%
          -faculty,
          "title" = thesis_title,
          "graduation_year" = grad_year,
-         "graduation_semester" = grad_sem,) %>%
+         "graduation_semester" = grad_sem,
+         "link" = `repository link`) %>%
   rename(full_title = title) %>%
   separate(full_title, c("title", "subtitle"), sep = ":", remove = FALSE) %>%
   write_csv(file = here("analysis", "data", "raw_data", "theses-metadata.csv"))

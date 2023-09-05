@@ -10,19 +10,34 @@ convert_pdf_text <-function(pdf_filenames){
 
   pdf_list<- as.list(pdf_filenames)
 
+  py_path <- system.file("python", package = 'mintEMU' )
+  py_env_path <- system.file("python/pyvenv", package = 'mintEMU' )
+  pyf_path <- system.file("python","extract-text-pdf-python.py", package = 'mintEMU' )
+
+
   # Create virtual environment
-  if ( !file.exists(here::here("inst/python", "pyvenv") )) {
-    reticulate::install_python(version = '3.9.7')
-    reticulate::virtualenv_create(envname = here::here("inst/python","pyvenv"),
-                                  version = "3.9.7")
-    reticulate::py_install("PyMuPDF == 1.21.0", envname = here::here("inst/python","pyvenv"))
+  if (!file.exists(py_env_path)) {
+    if (is.null(reticulate::py_version())) {
+      t <-  try(reticulate::use_python_version("3.9:latest", required = TRUE))
+
+    if (inherits(t, "try-error"))
+        reticulate::install_python(version = "3.9:latest")
+    }
+    else if (reticulate::py_version() != "3.9" )
+      stop("An incompatible Python version has been initialised. Restart R session to continue.")
+
+
+    py_env_path <- file.path(py_path, "pyvenv")
+    reticulate::virtualenv_create(envname = py_env_path,
+                                  version = "3.9:latest")
+    reticulate::py_install("PyMuPDF == 1.21.0", envname = py_env_path)
   }
 
   # Activate the virtual environment for python
-  reticulate::use_virtualenv(here::here("inst/python","pyvenv"))
+  reticulate::use_virtualenv(py_env_path)
 
   # Load python script with functions to extract texts
-  reticulate::source_python(here::here("inst/python","extract-text-pdf-python.py"))
+  reticulate::source_python(pyf_path)
 
   text_list <- convert_pdf(pdf_list) |> unlist()
 
