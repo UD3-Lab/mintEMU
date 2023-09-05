@@ -14,28 +14,10 @@ app_server <- function(session,input, output) {
   # Update filters
 
   shiny::updateSliderInput(session,"year", label = "Select year:", step = 1,
-                           min = c(emu_theses$graduation_year |>
-                                     as.character() |>
-                                     unique()|>
-                                     sort() |>
-                                     min()
-                           ),
-                           max = c(emu_theses$graduation_year |>
-                                     as.character() |>
-                                     unique()|>
-                                     sort() |>
-                                     max()
-                           ),
-                           value = c(emu_theses$graduation_year |>
-                                       as.character() |>
-                                       unique()|>
-                                       sort() |>
-                                       min(),
-                                     emu_theses$graduation_year |>
-                                       as.character() |>
-                                       unique() |>
-                                       sort() |>
-                                       median())
+                           min = min(emu_theses$graduation_year),
+                           max = max(emu_theses$graduation_year),
+                           value = c(min(emu_theses$graduation_year),
+                                     median(emu_theses$graduation_year))
                              )
 
   shiny::updateSelectInput(session,"exchange", label = "Select exchange semester:",
