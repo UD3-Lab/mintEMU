@@ -9,6 +9,14 @@
     ]
   },
   "Packages": {
+    "BH": {
+      "Package": "BH",
+      "Version": "1.81.0-1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "68122010f01c4dcfbe58ce7112f2433d",
+      "Requirements": []
+    },
     "DBI": {
       "Package": "DBI",
       "Version": "1.1.3",
@@ -24,6 +32,17 @@
       "Repository": "CRAN",
       "Hash": "c4bc79931eab19f1553b31b744aa5ac1",
       "Requirements": []
+    },
+    "LDAvis": {
+      "Package": "LDAvis",
+      "Version": "0.3.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a8e3346fc74f90602c0d78a29265ad5c",
+      "Requirements": [
+        "RJSONIO",
+        "proxy"
+      ]
     },
     "MASS": {
       "Package": "MASS",
@@ -67,12 +86,38 @@
       "Hash": "45f0398006e83a5b10b72a90663d8d8c",
       "Requirements": []
     },
+    "RJSONIO": {
+      "Package": "RJSONIO",
+      "Version": "1.3-1.8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cd79d1874fb20217463451f8c310c526",
+      "Requirements": []
+    },
     "Rcpp": {
       "Package": "Rcpp",
       "Version": "1.0.10",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "e749cae40fa9ef469b6050959517453c",
+      "Requirements": []
+    },
+    "RcppArmadillo": {
+      "Package": "RcppArmadillo",
+      "Version": "0.12.4.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5402c9d935b45fe528538703b5edf680",
+      "Requirements": [
+        "Rcpp"
+      ]
+    },
+    "RcppParallel": {
+      "Package": "RcppParallel",
+      "Version": "5.1.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a45594a00f5dbb073d5ec9f48592a08a",
       "Requirements": []
     },
     "RcppArmadillo": {
@@ -598,6 +643,14 @@
       "Hash": "dabc225759a2c2b241e60e42bf0e8e54",
       "Requirements": []
     },
+    "fastmatch": {
+      "Package": "fastmatch",
+      "Version": "1.1-3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "dabc225759a2c2b241e60e42bf0e8e54",
+      "Requirements": []
+    },
     "fontawesome": {
       "Package": "fontawesome",
       "Version": "0.5.1",
@@ -843,6 +896,16 @@
         "gtable"
       ]
     },
+    "gridExtra": {
+      "Package": "gridExtra",
+      "Version": "2.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7d7f283939f563670a697165b2cf5560",
+      "Requirements": [
+        "gtable"
+      ]
+    },
     "gtable": {
       "Package": "gtable",
       "Version": "0.3.3",
@@ -981,6 +1044,7 @@
         "withr"
       ]
     },
+
     "hunspell": {
       "Package": "hunspell",
       "Version": "3.0.2",
@@ -1296,6 +1360,14 @@
         "vctrs"
       ]
     },
+    "modeltools": {
+      "Package": "modeltools",
+      "Version": "0.2-23",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f5a957c02222589bdf625a67be68b2a9",
+      "Requirements": []
+    },
     "munsell": {
       "Package": "munsell",
       "Version": "0.5.0",
@@ -1507,6 +1579,14 @@
         "rlang"
       ]
     },
+    "proxy": {
+      "Package": "proxy",
+      "Version": "0.4-27",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e0ef355c12942cf7a6b91a6cfaea8b3e",
+      "Requirements": []
+    },
     "ps": {
       "Package": "ps",
       "Version": "1.7.5",
@@ -1527,6 +1607,37 @@
         "magrittr",
         "rlang",
         "vctrs"
+      ]
+    },
+    "qdapRegex": {
+      "Package": "qdapRegex",
+      "Version": "0.7.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "177aa5638b640c669abd6edb0b3e42d8",
+      "Requirements": [
+        "stringi"
+      ]
+    },
+    "quanteda": {
+      "Package": "quanteda",
+      "Version": "3.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5c2beee5353958789160298272b831e8",
+      "Requirements": [
+        "Matrix",
+        "Rcpp",
+        "RcppArmadillo",
+        "RcppParallel",
+        "SnowballC",
+        "fastmatch",
+        "jsonlite",
+        "magrittr",
+        "stopwords",
+        "stringi",
+        "xml2",
+        "yaml"
       ]
     },
     "qdapRegex": {
@@ -1953,6 +2064,14 @@
       "Hash": "e25793551cbdb843154152e5ee88cbd6",
       "Requirements": []
     },
+    "sourcetools": {
+      "Package": "sourcetools",
+      "Version": "0.1.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e25793551cbdb843154152e5ee88cbd6",
+      "Requirements": []
+    },
     "slider": {
       "Package": "slider",
       "Version": "0.3.0",
@@ -2339,6 +2458,20 @@
         "xfun"
       ]
     },
+    "tm": {
+      "Package": "tm",
+      "Version": "0.7-11",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "625329dd66ec8e8fbeb5ea6003e9be0a",
+      "Requirements": [
+        "BH",
+        "NLP",
+        "Rcpp",
+        "slam",
+        "xml2"
+      ]
+    },
     "tokenizers": {
       "Package": "tokenizers",
       "Version": "0.3.0",
@@ -2349,6 +2482,18 @@
         "Rcpp",
         "SnowballC",
         "stringi"
+      ]
+    },
+    "topicmodels": {
+      "Package": "topicmodels",
+      "Version": "0.2-14",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "95bbc3bd6826656ae5e73dfc84da3fd8",
+      "Requirements": [
+        "modeltools",
+        "slam",
+        "tm"
       ]
     },
     "tzdb": {
@@ -2435,13 +2580,14 @@
       "Version": "0.6.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "0d774f552202add033efc43a30293b3f",
+      "Hash": "ee96aee95a7a563e5496f8991e9fde4b",
       "Requirements": [
         "ggplot2",
         "gridExtra",
         "viridisLite"
       ]
     },
+
     "viridisLite": {
       "Package": "viridisLite",
       "Version": "0.4.2",
@@ -2554,6 +2700,17 @@
       "Repository": "CRAN",
       "Hash": "c0e49a9760983e81e55cdd9be92e7182",
       "Requirements": []
+    },
+    "wordcloud2": {
+      "Package": "wordcloud2",
+      "Version": "0.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "10274bd096f5c2ad7471ea0eea0c1424",
+      "Requirements": [
+        "base64enc",
+        "htmlwidgets"
+      ]
     },
     "xfun": {
       "Package": "xfun",
