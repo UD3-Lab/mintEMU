@@ -531,7 +531,7 @@ Topics such as ... have gained importance over the years, while ... have lost pr
 #| eval: false
 
 # Which are the top n most frequently used words in each thesis?
-get_top_words_per_document(data = emu_words, title_col = "ID", top_n = 10)
+get_top_words_per_document(data = emu_words, id_col = "ID", top_n = 10)
 ```
 
 ```{r top-words-corpus}
