@@ -245,7 +245,7 @@ emu$text_clean <- emu$text_raw |>
 # Concatenate ngrams
 emu$text_clean <- emu |> 
   c_ngrams(n_max = 3, text_col = "text_clean",
-           title_col = "title", min_freq = 20, lemma = TRUE) 
+           id_col = "ID", min_freq = 20, lemma = TRUE) 
 
 # Words that were not included in ngrams are safe to remove now
 emu$text_clean <- emu$text_clean |> 
@@ -264,11 +264,9 @@ emu$text_clean <- emu$text_clean |>
 
 ```{r tokenise}
 
-# TODO Replace title column with ID column
-
 # Unnest tokens and remove words of one and two letters
 emu_words <- emu |> 
-  select(title, text_clean) |> 
+  select(ID, text_clean) |> 
   unnest_tokens(output = word, input = text_clean) |>  # remove punctuation, convert to lower-case, separate all words
   anti_join(tidytext::stop_words, by = "word") |>  # remove stop words
   mutate(word = textstem::lemmatize_words(word)) |>  # lemmatise words
@@ -312,7 +310,7 @@ LDA requires a document-term matrix as input.
 # Prepare document-term matrix as input for LDA model
 # Reduce the size of the DTM by excluding words with a frequency lower than 5
 emu_dtm <- convert_to_dtm(emu_words, 
-                          title_col = "title", 
+                          id_col = "ID", 
                           word_col = "word", 
                           min_term_freq = 5)
 
@@ -418,7 +416,7 @@ colnames(topic_prop_per_year) <- topic_names
 vizDataFrameWithYear <- melt(cbind(data.frame(topic_prop_per_year), 
                            document = factor(rownames(topic_prop_per_year))), 
                      variable.name = "topic", id.vars = "document") |> 
-    left_join(select(emu_theses, title, "year" = graduation_year), by = c("document" = "title"))
+    left_join(select(emu_theses, ID, "year" = graduation_year), by = c("document" = "ID"))
 
 # Plot topic proportions per year
 vizDataFrameWithYear |> 
@@ -499,8 +497,8 @@ emu_documents |>
 
 emu_documents |> 
   inner_join(emu |> 
-               select(title, graduation_year), 
-             by = c("document" = "title")) |> 
+               select(ID, graduation_year), 
+             by = c("document" = "ID")) |> 
   ggplot(aes(x = reorder(str_sub(document, 1, 50), gamma), y = gamma, fill = topic)) + 
   geom_bar(stat = "identity") + 
   coord_flip() + 
@@ -508,8 +506,8 @@ emu_documents |>
 
 emu_documents |> 
   inner_join(emu |> 
-               select(title, graduation_year), 
-             by = c("document" = "title")) |> 
+               select(ID, graduation_year), 
+             by = c("document" = "ID")) |> 
   ggplot(aes(x = factor(graduation_year), y = topic, fill = factor(topic))) +
   geom_col()
 ```
@@ -554,14 +552,14 @@ A frequency count of ngrams reveals collocations like "public space" or "socio-s
 ```{r bigram-tfidf}
 
 emu_bigrams <- emu |> 
-  get_ngrams(n = 2, title_col = "title", text_col = "text_clean", stem = TRUE)
+  get_ngrams(n = 2, id_col = "ID", text_col = "text_clean", stem = TRUE)
 
 bigram_counts <- emu_bigrams |> 
   count(w_1, w_2, sort = TRUE)
 
 bigram_tf_idf <- emu_bigrams |> 
-  count(title, ngram) |> 
-  bind_tf_idf(ngram, title, n) |> 
+  count(ID, ngram) |> 
+  bind_tf_idf(ngram, ID, n) |> 
   arrange(desc(tf_idf))
 
 bigram_tf_idf
@@ -570,14 +568,14 @@ bigram_tf_idf
 ```{r trigram-tfidf}
 
 emu_trigrams <- emu |> 
-  get_ngrams(n = 3, title_col = "title", text_col = "text_raw")
+  get_ngrams(n = 3, id_col = "ID", text_col = "text_raw")
 
 trigram_counts <- emu_trigrams |> 
   count(w_1, w_2, w_3, sort = TRUE)
 
 trigram_tf_idf <- emu_trigrams |> 
-  count(title, ngram) |> 
-  bind_tf_idf(ngram, title, n) |> 
+  count(ID, ngram) |> 
+  bind_tf_idf(ngram, ID, n) |> 
   arrange(desc(tf_idf))
 
 trigram_tf_idf
@@ -604,7 +602,7 @@ ggraph(bigram_graph, layout = "fr") +
 ## Higgh frequency bigrams ----
 
 emu_bigrams_top <- emu_bigrams |>
-  group_by(title) |>
+  group_by(ID) |>
   count(ngram, sort = TRUE) |>
   slice_max(n, n = 20) |>        ### top_n is superseded; better use slice_max instead
   # filter(n > 50)                ### filter words with a minimum count
@@ -618,8 +616,8 @@ emu_bigrams_top_all <- emu_bigrams |>
   mutate(ngram = reorder(ngram, n))
 
 emu_bigrams_top |>
-  filter(title == unique(title)[1:10]) |> 
-  ggplot(aes(x = ngram, y = n, fill = title)) +
+  filter(ID == unique(ID)[1:10]) |> 
+  ggplot(aes(x = ngram, y = n, fill = ID)) +
   geom_col() +
   xlab(NULL) +
   coord_flip() +
@@ -627,7 +625,7 @@ emu_bigrams_top |>
        x = "Unique words",
        title = "Count of unique words found in thesis",
        subtitle = "Stop words were removed from the list") +
-  facet_wrap( ~ title, scales = "free", ncol = 2) +
+  facet_wrap( ~ ID, scales = "free", ncol = 2) +
   theme(legend.position = "none") 
 ```
 
@@ -637,11 +635,11 @@ The `tf-idf` statistic shows words that are the most important to one document i
 
 ## Calculate tf-idf statistic
 emu_tf_idf <- emu_words |> 
-  get_tf_idf(title_col = "title", word_col = "word")
+  get_tf_idf(id_col = "ID", word_col = "word")
 
 ## Get top n words most specific to each thesis 
 emu_tf_idf |> 
-  group_by(title) |> 
+  group_by(ID) |> 
   top_n(5, tf_idf) |> 
   arrange(desc(tf_idf), .by_group = TRUE)
 
@@ -651,34 +649,34 @@ emu_tf_idf |>
 
 # Preview term frequency distributions in a subset of theses
 emu_words_count <- emu_words |> 
-  count(title, word, sort = TRUE) |> 
+  count(ID, word, sort = TRUE) |> 
   ungroup()
 
 emu_words_total <- emu_words_count |> 
-  group_by(title) |> 
+  group_by(ID) |> 
   summarise(total = sum(n))
 
 emu_words_count <- left_join(emu_words_count, emu_words_total)
 
 ggplot(emu_words_count |> 
-         filter(title == unique(title)[1:6]),
-       aes(n/total, fill = title)) +
+         filter(ID == unique(ID)[1:6]),
+       aes(n/total, fill = ID)) +
   geom_histogram(show.legend = FALSE, binwidth = 0.0001) +
   xlim(NA, 0.0009) +
-  facet_wrap(~ title, ncol = 3, scales = "free_y")
+  facet_wrap(~ ID, ncol = 3, scales = "free_y")
 ```
 
 ```{r}
 # Examine Zipf's law for the EMU theses
 ## Calculate rank and term frequency
 freq_by_rank <- emu_words_count |> 
-  group_by(title) |> 
+  group_by(ID) |> 
   mutate(rank = row_number(),
          `term frequency` = n/total)
 
 ## Visualise Zipf's law
 freq_by_rank |> 
-  ggplot(aes(rank, `term frequency`, color = title)) +
+  ggplot(aes(rank, `term frequency`, color = ID)) +
   geom_line(size = 1.1, alpha = 0.8, show.legend = FALSE) +
   scale_x_log10() +
   scale_y_log10()
@@ -690,7 +688,7 @@ rank_subset <- freq_by_rank |>
 lm(log10(`term frequency`) ~ log10(rank), data =  rank_subset)
 
 freq_by_rank |> 
-  ggplot(aes(rank, `term frequency`, color = title)) +
+  ggplot(aes(rank, `term frequency`, color = ID)) +
   geom_line(size = 1.1, alpha = 0.8, show.legend = FALSE) +
   geom_abline(intercept = -1.44, slope = -0.7, color = "gray50", linetype = 2) +
   scale_x_log10() +
@@ -703,17 +701,17 @@ freq_by_rank |>
 
 ## Visualise the top n words with the highest tf-idf values for each of a subset of theses
 emu_words_count |> 
-  get_tf_idf(title_col = "title", word_col = "word") |> 
-  filter(title == unique(title)[1:2]) |>  # Keep only the first 6 theses
+  get_tf_idf(id_col = "ID", word_col = "word") |> 
+  filter(ID == unique(ID)[1:2]) |>  # Keep only the first 6 theses
   arrange(desc(tf_idf)) |> 
   mutate(word = factor(word, levels = rev(unique(word)))) |> 
-  group_by(title) |> 
+  group_by(ID) |> 
   top_n(15) |> 
   ungroup() |> 
-  ggplot(aes(word, tf_idf, fill = title)) +
+  ggplot(aes(word, tf_idf, fill = ID)) +
   geom_col(show.legend = FALSE) +
   labs(x = NULL, y = "tf-idf") +
-  facet_wrap(~ title,  ncol = 3, scales = "free") +
+  facet_wrap(~ ID,  ncol = 3, scales = "free") +
   coord_flip()
 ```
 
@@ -724,7 +722,7 @@ emu_words_count |>
 ```{r word-embeddings-pmi}
 
 # To what extent do words co-occur with other words?
-tidy_pmi <- get_pmi(emu, title_col = "title", text_col = "text_clean")
+tidy_pmi <- get_pmi(emu, id_col = "ID", text_col = "text_clean")
 ```
 
 The high-dimensional sparse matrix of word features is projected into reduced, 100-dimensional set of features.
@@ -759,7 +757,7 @@ visualise_first_n_components(tidy_word_vectors, 24, 12)
 ```{r doc-embeddings}
 
 tidy_words <- emu |> 
-  select(title, text_clean) |> 
+  select(ID, text_clean) |> 
   unnest_tokens(word, text_clean) |> 
   add_count(word) |> 
   filter(n >= 50) |> 
@@ -767,8 +765,8 @@ tidy_words <- emu |>
   
 # Summarise word embeddings into document embeddings for modeling purposes
 word_matrix <- tidy_words |> 
-  count(title, word) |> 
-  cast_sparse(title, word, n)
+  count(ID, word) |> 
+  cast_sparse(ID, word, n)
 
 embedding_matrix <- tidy_word_vectors |> 
   cast_sparse(item1, dimension, value)

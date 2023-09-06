@@ -1,12 +1,12 @@
 #' Extract top n words with the highest count per document
 #'
 #' Given a data frame with a column storing the words found in a document
-#' identified with a title column and a positive number top_n, this function
+#' identified with a ID column and a positive number top_n, this function
 #' returns the top n words with the highest count in each document.
 #'
 #' @param data Data frame with theses, containing a column with words.
 #' @param top_n The number of top words to be returned by the function.
-#' @param title_col The name of the column from the input data frame containing the title of the document.
+#' @param id_col The name of the column from the input data frame containing the ID of the document.
 #' @param word_col Name of the column from the input data frame containing all words.
 #' @param min_count Minimum count to be considered. Words below this value will not be included in the returned data frame.
 #'
@@ -14,14 +14,14 @@
 #' @export
 get_top_words_per_document <- function(data,
                                        top_n,
-                                       title_col = "title",
+                                       id_col = "ID",
                                        word_col = "word",
                                        min_count = 1) {
-  title <- sym(title_col)
+  ID <- sym(id_col)
   word <- sym(word_col)
 
   data_top_n <- data |>
-    dplyr::group_by(!!rlang::sym(title_col)) |>
+    dplyr::group_by(!!rlang::sym(id_col)) |>
     dplyr::count(!!rlang::sym(word_col), sort = TRUE) |>
     dplyr::slice_max(n, n = top_n) |>
     dplyr::filter(n > min_count) |>
@@ -81,17 +81,17 @@ get_top_words_per_topic <- function(data,
 
 #' Convert data frame with word frequencies into document term matrix
 #'
-#' @param data Data frame containing colomns with titles, words and word counts
-#' @param title_col Name of the title column of the input data frame
+#' @param data Data frame containing colomns with IDs, words and word counts
+#' @param id_col Name of the ID column of the input data frame
 #' @param word_col Name of the word column of the input data frame
 #'
 #' @return A document term matrix
 #' @export
-convert_to_dtm <- function(data, title_col = NULL, word_col = NULL, min_term_freq = 1) {
+convert_to_dtm <- function(data, id_col = NULL, word_col = NULL, min_term_freq = 1) {
   data_dtm <- data |>
-    dplyr::count(!!rlang::sym(title_col), !!rlang::sym(word_col), sort = TRUE) |>
+    dplyr::count(!!rlang::sym(id_col), !!rlang::sym(word_col), sort = TRUE) |>
     dplyr::filter(n > min_term_freq) |>
-    tidytext::cast_dtm(!!rlang::sym(title_col), !!rlang::sym(word_col), n)
+    tidytext::cast_dtm(!!rlang::sym(id_col), !!rlang::sym(word_col), n)
 
   data_dtm
 }
@@ -101,7 +101,7 @@ convert_to_dtm <- function(data, title_col = NULL, word_col = NULL, min_term_fre
 #' @param data Data frame with theses, containing a column with words.
 #' @param k Number of desired clusters.
 #' @param matrix Statistics to be computed. Can be "beta" or "gamma"
-#' @param title_col The name of the column from the input data frame containing the title of the document.
+#' @param id_col The name of the column from the input data frame containing the ID of the document.
 #' @param word_col Name of the column from the input data frame containing all words.
 #' @param seed Seed to control pseudorandomisation.
 #'
@@ -109,7 +109,7 @@ convert_to_dtm <- function(data, title_col = NULL, word_col = NULL, min_term_fre
 #' @export
 get_topics <-
   function(data,
-           title_col = "title",
+           id_col = "ID",
            word_col = "word",
            k = 2,
            min_term_freq = 1,
@@ -119,7 +119,7 @@ get_topics <-
 
     # The {topicmodels} package requires a document-term matrix as input
     dtm <- convert_to_dtm(data,
-                          title_col = title_col,
+                          id_col = id_col,
                           word_col = word_col,
                           min_term_freq = min_term_freq)
 
@@ -229,7 +229,7 @@ slide_windows <- function(tbl, window_size) {
 #' Pointwise mutual information of pairs of items
 #'
 #' @param data Data frame of theses
-#' @param title_col Name of the title column
+#' @param id_col Name of the ID column
 #' @param text_col Name of the text column to be tokenised
 #' @param parallel If `parallel = TRUE`, compute in parallel
 #'
@@ -237,7 +237,7 @@ slide_windows <- function(tbl, window_size) {
 #' @export
 #'
 get_pmi <- function(data,
-                    title_col = NULL,
+                    id_col = NULL,
                     text_col = NULL,
                     parallel = TRUE,
                     window_size = 4L) {
@@ -250,7 +250,7 @@ get_pmi <- function(data,
 
   # Prepare tidy data frame for word embeddings
   tidy_emu_theses <- data |>
-    dplyr::select(!!rlang::sym(title_col), !!rlang::sym(text_col)) |>
+    dplyr::select(!!rlang::sym(id_col), !!rlang::sym(text_col)) |>
     tidytext::unnest_tokens(word, !!rlang::sym(text_col)) |>
     dplyr::add_count(word) |>
     dplyr::filter(n >= 50) |>
@@ -265,7 +265,7 @@ get_pmi <- function(data,
   tidy_pmi <- nested_words |>
     dplyr::mutate(words = furrr::future_map(words, slide_windows, window_size)) |>
     tidyr::unnest(words) |>
-    tidyr::unite(window_id, title, window_id) |>
+    tidyr::unite(window_id, ID, window_id) |>
     widyr::pairwise_pmi(word, window_id)
 
   tidy_pmi
@@ -327,25 +327,25 @@ visualise_first_n_components <- function(word_vectors, dim = 24, top_n = 12) {
 
 #' Get `tf-idf` statistic
 #'
-#' @param data Data frame containing colomns with titles, words and word counts
-#' @param title_col Name of the title column of the input data frame
+#' @param data Data frame containing colomns with IDs, words and word counts
+#' @param id_col Name of the ID column of the input data frame
 #' @param word_col Name of the word column of the input data frame
 #'
 #' @return A data frame including the `tf-idf` statistic for each word
 #' @export
-get_tf_idf <- function(data, title_col = NULL, word_col = NULL) {
+get_tf_idf <- function(data, id_col = NULL, word_col = NULL) {
   words_counts <- data |>
-    count(!!rlang::sym(title_col), !!rlang::sym(word_col), sort = TRUE) |>
+    count(!!rlang::sym(id_col), !!rlang::sym(word_col), sort = TRUE) |>
     ungroup()
 
   words_total <- words_counts |>
-    group_by(!!rlang::sym(title_col)) |>
+    group_by(!!rlang::sym(id_col)) |>
     summarise(total = sum(n))
 
   words_counts <- left_join(words_counts, words_total)
 
   words_counts <- words_counts |>
-    bind_tf_idf(!!rlang::sym(word_col), !!rlang::sym(title_col), n) |>
+    bind_tf_idf(!!rlang::sym(word_col), !!rlang::sym(id_col), n) |>
     select(-total)
 
   words_counts

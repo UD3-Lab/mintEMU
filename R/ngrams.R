@@ -3,7 +3,7 @@
 #' @param data Data frame of documents containing a text column
 #' @param n The number of words to include in the token (e.g., n = 2 for bigram)
 #' @param text_col The name of the column where the text to be tokenised is located
-#' @param title_col The name of the title column
+#' @param id_col The name of the ID column
 #' @param stem If `TRUE` create additional columns with stemmed version of tokens
 #' @param lemma If `TRUE` create additional columns with lemmatised version of tokens
 #'
@@ -12,7 +12,7 @@
 get_ngrams <- function(data,
                        n,
                        text_col = NULL,
-                       title_col = NULL,
+                       id_col = NULL,
                        rm_n_short_words = 2,
                        min_freq = 5,
                        stem = FALSE,
@@ -20,7 +20,7 @@ get_ngrams <- function(data,
 
   # Create ngrams column and separate columns for each of the n terms
   data_ngrams <- data |>
-    dplyr::select(title_col, text_col) |>
+    dplyr::select(id_col, text_col) |>
     tidytext::unnest_tokens(ngram, text_col, token = "ngrams", n = n) |>
     tidyr::separate(ngram, into = paste("w" , 1:n, sep = "_"),
                     sep = " ", remove = FALSE)
