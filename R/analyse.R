@@ -265,7 +265,7 @@ get_pmi <- function(data,
   tidy_pmi <- nested_words |>
     dplyr::mutate(words = furrr::future_map(words, slide_windows, window_size)) |>
     tidyr::unnest(words) |>
-    tidyr::unite(window_id, title, window_id) |>
+    tidyr::unite(window_id, !!rlang::sym(title_col), window_id) |>
     widyr::pairwise_pmi(word, window_id)
 
   tidy_pmi
