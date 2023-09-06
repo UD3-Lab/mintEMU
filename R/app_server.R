@@ -54,22 +54,6 @@ app_server <- function(session,input, output) {
    })
  # Render plots
 
-  output$distPlot <- shiny::renderPlot({
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2]
-    bins <- seq(min(x), max(x), length.out = 30)
-
-    # draw the histogram with the specified number of bins
-    hist(
-      x,
-      breaks = bins,
-      col = 'darkgray',
-      border = 'white',
-      xlab = 'Waiting time to next eruption (in mins)',
-      main = 'Histogram of waiting times'
-    )
-  })
-
   # ID of value clicked on the map
 
   clicked_id <- shiny::reactive({input$thesis_location_map_marker_click$id}) |>
@@ -168,5 +152,8 @@ app_server <- function(session,input, output) {
 
    }) |>
      shiny::bindEvent(input$thesis_location_map_marker_click)
+
+
+
 
   }
