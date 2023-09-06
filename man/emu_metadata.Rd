@@ -16,8 +16,8 @@ A data frame with 83 rows and 8 columns:
 \item{title}{Title of the thesis.}
 \item{subtitle}{Subtitle of the thesis.}
 \item{location}{The location that the thesis is focused on.}
-\item{latitude}{Latitude of the thesis location.}
-\item{longitude}{Longitude of the thesis location.}
+\item{latitude}{Latitude of the thesis location geocoded from \code{location}.}
+\item{longitude}{Longitude of the thesis location geocoded from \code{location}.}
 \item{abstract}{Abstract of the thesis.}
 }
 }
