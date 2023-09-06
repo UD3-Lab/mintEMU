@@ -98,8 +98,6 @@ data(emu_raw)
 emu <- left_join(emu_raw, emu_metadata, by = "ID")
 ```
 
-
-
 # Introduction
 
 The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. The EMU was an advanced master ran jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia. <!-- Complete paragraph about the program -->
@@ -167,6 +165,7 @@ The research process (@fig-process-diagram)...
 
 ```{r fig-process-diagram}
 #| fig-cap: Text mining process
+#| eval: false
 
 mermaid("
 graph LR
@@ -259,8 +258,6 @@ emu$text_clean <- emu$text_clean |>
 # unique(unlist(str_match_all(emu$text_clean, "space(?:_[A-Za-z]+)+")))
 
 ```
-
-
 
 ```{r tokenise}
 
@@ -371,6 +368,7 @@ ggplot(data = vizDataFrame, aes(topic, value, fill = topic_max), ylab = "proport
 ```
 
 ```{r topics-per-corpus}
+#| eval: false
 
 # What are the most probable topics in the entire collection?
 topicProportions <- colSums(theta) / nDocs(emu_dtm)  # mean probabilities over all paragraphs
@@ -397,6 +395,7 @@ paste(so, ":", names(so))
 ```
 
 ```{r}
+#| eval: false
 
 topicToFilter <- 6  # you can set this manually ...
 # ... or have it selected by a term in the topic name (e.g. 'children')
@@ -409,6 +408,7 @@ filteredCorpus
 ```
 
 ```{r}
+#| eval: false
 
 N = 82
 topic_prop_per_year <- theta[1:N,]
@@ -431,6 +431,7 @@ vizDataFrameWithYear |>
 ```
 
 ```{r lda-vis}
+#| eval: false
 
 # TODO check if this can be included in the Shiny dashboard
 # Function to approximate the distance between topics
@@ -457,7 +458,7 @@ LDAvis::serVis(json)
 # TODO Explore including concatenated collocations in the topic model
 
 # Extract topics as mixtures of terms from LDA model
-emu_topics <- tidy(emu_lda, matrix = "beta")
+emu_topics <- tidy(emu_lda_5, matrix = "beta")
 
 # The top n most common words in each topic
 emu_top_terms <- get_top_words_per_topic(emu_topics, 20)
@@ -488,19 +489,21 @@ beta_spread %>%
 ```
 
 ```{r topic-model-gamma}
+#| eval: false
 
 # Extract documents as mixtures of topics from LDA model
-emu_documents <- tidy(emu_lda, matrix = "gamma")
+emu_documents <- tidy(emu_lda_5, matrix = "gamma")
 
 emu_documents |> 
   ggplot(aes(x = reorder(str_sub(document, 1, 50), gamma), y = gamma, fill = topic)) + 
   geom_bar(stat = "identity") + 
   coord_flip()
 
-emu_documents |> 
+emu_documents |>
+  mutate(document = as.numeric(document)) |> 
   inner_join(emu |> 
-               select(title, graduation_year), 
-             by = c("document" = "title")) |> 
+               select(ID, graduation_year), 
+             by = c("document" = "ID")) |> 
   ggplot(aes(x = reorder(str_sub(document, 1, 50), gamma), y = gamma, fill = topic)) + 
   geom_bar(stat = "identity") + 
   coord_flip() + 
@@ -527,9 +530,10 @@ The tf-idf statistic shows that...
 Topics such as ... have gained importance over the years, while ... have lost prominence.
 
 ```{r top-words-document}
+#| eval: false
 
 # Which are the top n most frequently used words in each thesis?
-get_top_words_per_document(data = emu_words, top_n = 10)
+get_top_words_per_document(data = emu_words, title_col = "ID", top_n = 10)
 ```
 
 ```{r top-words-corpus}
@@ -637,11 +641,11 @@ The `tf-idf` statistic shows words that are the most important to one document i
 
 ## Calculate tf-idf statistic
 emu_tf_idf <- emu_words |> 
-  get_tf_idf(title_col = "title", word_col = "word")
+  get_tf_idf(title_col = "ID", word_col = "word")
 
 ## Get top n words most specific to each thesis 
 emu_tf_idf |> 
-  group_by(title) |> 
+  group_by(ID) |> 
   top_n(5, tf_idf) |> 
   arrange(desc(tf_idf), .by_group = TRUE)
 
@@ -651,34 +655,34 @@ emu_tf_idf |>
 
 # Preview term frequency distributions in a subset of theses
 emu_words_count <- emu_words |> 
-  count(title, word, sort = TRUE) |> 
+  count(ID, word, sort = TRUE) |> 
   ungroup()
 
 emu_words_total <- emu_words_count |> 
-  group_by(title) |> 
+  group_by(ID) |> 
   summarise(total = sum(n))
 
 emu_words_count <- left_join(emu_words_count, emu_words_total)
 
 ggplot(emu_words_count |> 
-         filter(title == unique(title)[1:6]),
-       aes(n/total, fill = title)) +
+         filter(ID == unique(ID)[1:6]),
+       aes(n/total, fill = ID)) +
   geom_histogram(show.legend = FALSE, binwidth = 0.0001) +
   xlim(NA, 0.0009) +
-  facet_wrap(~ title, ncol = 3, scales = "free_y")
+  facet_wrap(~ ID, ncol = 3, scales = "free_y")
 ```
 
 ```{r}
 # Examine Zipf's law for the EMU theses
 ## Calculate rank and term frequency
 freq_by_rank <- emu_words_count |> 
-  group_by(title) |> 
+  group_by(ID) |> 
   mutate(rank = row_number(),
          `term frequency` = n/total)
 
 ## Visualise Zipf's law
 freq_by_rank |> 
-  ggplot(aes(rank, `term frequency`, color = title)) +
+  ggplot(aes(rank, `term frequency`, color = ID)) +
   geom_line(size = 1.1, alpha = 0.8, show.legend = FALSE) +
   scale_x_log10() +
   scale_y_log10()
@@ -690,41 +694,40 @@ rank_subset <- freq_by_rank |>
 lm(log10(`term frequency`) ~ log10(rank), data =  rank_subset)
 
 freq_by_rank |> 
-  ggplot(aes(rank, `term frequency`, color = title)) +
+  ggplot(aes(rank, `term frequency`, color = ID)) +
   geom_line(size = 1.1, alpha = 0.8, show.legend = FALSE) +
   geom_abline(intercept = -1.44, slope = -0.7, color = "gray50", linetype = 2) +
   scale_x_log10() +
   scale_y_log10()
 ```
 
-
 ```{r}
 #| eval: false
 
 ## Visualise the top n words with the highest tf-idf values for each of a subset of theses
 emu_words_count |> 
-  get_tf_idf(title_col = "title", word_col = "word") |> 
-  filter(title == unique(title)[1:2]) |>  # Keep only the first 6 theses
+  get_tf_idf(title_col = "ID", word_col = "word") |> 
+  filter(ID == unique(ID)[1:2]) |>  # Keep only the first 6 theses
   arrange(desc(tf_idf)) |> 
   mutate(word = factor(word, levels = rev(unique(word)))) |> 
-  group_by(title) |> 
+  group_by(ID) |> 
   top_n(15) |> 
   ungroup() |> 
-  ggplot(aes(word, tf_idf, fill = title)) +
+  ggplot(aes(word, tf_idf, fill = ID)) +
   geom_col(show.legend = FALSE) +
   labs(x = NULL, y = "tf-idf") +
-  facet_wrap(~ title,  ncol = 3, scales = "free") +
+  facet_wrap(~ ID,  ncol = 3, scales = "free") +
   coord_flip()
 ```
 
 ### Word embeddings
 
-\[Describe word embeddings ...\]
+Describe word embeddings ...
 
 ```{r word-embeddings-pmi}
 
 # To what extent do words co-occur with other words?
-tidy_pmi <- get_pmi(emu, title_col = "title", text_col = "text_clean")
+tidy_pmi <- get_pmi(emu, title_col = "ID", text_col = "text_clean")
 ```
 
 The high-dimensional sparse matrix of word features is projected into reduced, 100-dimensional set of features.
@@ -739,7 +742,7 @@ tidy_word_vectors <- tidy_pmi |>
   )
 ```
 
-\[What terms should be checked with the function below?\]
+What terms should be checked with the function below?
 
 ```{r word-embeddings-nn}
 
@@ -748,7 +751,7 @@ tidy_word_vectors |>
   nearest_neighbors("resilience")
 ```
 
-The first \[?\] components... \[what do they show?\]
+The first # components... what do they show?
 
 ```{r word-embeddings-vis}
 
@@ -759,7 +762,7 @@ visualise_first_n_components(tidy_word_vectors, 24, 12)
 ```{r doc-embeddings}
 
 tidy_words <- emu |> 
-  select(title, text_clean) |> 
+  select(ID, text_clean) |> 
   unnest_tokens(word, text_clean) |> 
   add_count(word) |> 
   filter(n >= 50) |> 
@@ -767,8 +770,8 @@ tidy_words <- emu |>
   
 # Summarise word embeddings into document embeddings for modeling purposes
 word_matrix <- tidy_words |> 
-  count(title, word) |> 
-  cast_sparse(title, word, n)
+  count(ID, word) |> 
+  cast_sparse(ID, word, n)
 
 embedding_matrix <- tidy_word_vectors |> 
   cast_sparse(item1, dimension, value)
@@ -780,7 +783,7 @@ dim(doc_matrix)
 
 # Discussion
 
--   Although the focus of this study is on describing a fixed corpus though unsupervised machine learning, it can provide input into supervised predictive models.
+Although the focus of this study is on describing a fixed corpus though unsupervised machine learning, it can provide input into supervised predictive models. 
 
 # Conclusion
 
