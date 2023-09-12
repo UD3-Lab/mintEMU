@@ -17,8 +17,8 @@ get_top_words_per_document <- function(data,
                                        id_col = "ID",
                                        word_col = "word",
                                        min_count = 1) {
-  ID <- sym(id_col)
-  word <- sym(word_col)
+  ID <- rlang::sym(id_col)
+  word <- rlang::sym(word_col)
 
   data_top_n <- data |>
     dplyr::group_by(!!rlang::sym(id_col)) |>
@@ -43,7 +43,7 @@ get_top_words_per_document <- function(data,
 #' @return A data frame with the top n words across all documents.
 #' @export
 get_top_words_per_corpus <- function(data, top_n, word_col = "word") {
-  word <- sym(word_col)
+  word <- rlang::sym(word_col)
 
   data_top_n <- data |>
     dplyr::group_by(!!word) |>
