@@ -153,6 +153,42 @@ app_server <- function(session,input, output) {
    }) |>
      shiny::bindEvent(input$thesis_location_map_marker_click)
 
+   # Graph with top N words
+   output$Top_n_words <- renderPlot({
+
+     emu_words <- emu_reactive() |>
+       tidytext::unnest_tokens(word, text_clean) |>
+       dplyr::mutate(word = textstem::lemmatize_words(word)) |>
+       dplyr::anti_join(tidytext::stop_words, by = "word")
+
+     words_per_year = data.frame()
+
+     for (grad_year in sort(unique(emu_words$graduation_year))) {
+       result <- get_top_words_per_corpus(emu_words[emu_words$graduation_year == grad_year,], 5, word_col = "word")
+       result$year <- grad_year
+       words_per_year <- rbind(words_per_year, result)
+     }
+
+     word_order <- words_per_year |>
+       dplyr::group_by(word) |>
+       dplyr::mutate(m = sum(n)) |>
+       dplyr::select(-year, -n)|>
+       unique() |>
+       dplyr::arrange(-m) |>
+       dplyr::select(word)
+
+     words_per_year$word <- factor(x = words_per_year$word,  levels = word_order[["word"]])
+
+     ggplot2::ggplot(words_per_year) +
+       ggplot2::aes(x = word, y = n, fill = as.factor(year)) +
+       ggplot2::geom_bar(position = "stack", stat = "identity") +
+       colorspace::scale_fill_discrete_sequential(palette = c("BluGrn"), name = "Year") +
+       ggplot2::xlab("Words") + ggplot2::ylab("Count") + ggplot2::ggtitle("Most Used 5 Words per Year") +
+       ggplot2::theme_minimal() +
+       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, vjust = 1.4)) +
+       ggplot2::theme(axis.line.y = ggplot2::element_blank(), panel.grid = ggplot2::element_blank())
+
+   })
 
 
 
