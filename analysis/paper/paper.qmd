@@ -94,8 +94,13 @@ data(emu_metadata)
 # Load raw text data
 data(emu_raw) 
 
+# Load cleaned text data
+data(emu_clean)
+
 # Join text with the metadata file  
-emu <- left_join(emu_raw, emu_metadata, by = "ID")
+emu <- emu_raw |> 
+  left_join(emu_metadata, by = "ID") |> 
+  left_join(emu_clean, by = "ID")
 ```
 
 # Introduction
@@ -211,53 +216,6 @@ Word-level tokenisation was applied with the `unnest_tokens()` function of the `
 Bigrams such as "public space" and trigrams such as "socio-spatial segregation" identified during preliminarey EDA were concatenated by replacing white spaces with underscores.
 
 For analyses in which word-level tokens were used, stop words, i.e., common words or words that do not add much meaning, were removed in the pre-processing stage. Global, subject-specific and document stop words [@hvitfeldt2021a] were differentiated. As all theses were written in English, the pre-made "snowball" lexicon was used to remove global stop words. <!-- We tried to create a custom global stop word list on the entire corpus, by removing high-frequency words, starting with 20 words and increasing by 10 until reaching words that are not appropriate as stop words, but no significant improvement was observed in the result. --> We manually constructed a list of subject-specific stop words based on our domain knowledge. Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words. In the next pre-processing step, we normalised the resulting words, that is, reduced them to their canonical dictionary forms, the resulting words were lemmatised [@hvitfeldt2021a]. Lemmatisation was preferred over stemming as the former tends to be more meaningful and less degrading than the latter.
-
-```{r pre-process-text}
-
-
-meta_sw <- find_meta_stopwords(emu)
-emu_sw <- urbanism_stopwords(
-    add_stopwords = c("emu", "european post[\\-]?(graduate)?[\\s]?master[s]? in urbanism",
-                      "tu delft", "ku leuven", "upc barcelona", "iuav venice"))
-thesis_sw <- thesis_stopwords(add_stopwords = c("advisor", "prof", "fig", "ure", "figure", "ning"))
-anonymisation_sw <- c("EMAIL_REMOVED", "AUTHOR_REMOVED", "FIRST_NAME_REMOVED", "LAST_NAME_REMOVED") |>
-  paste(collapse = "|")
-custom_sw <- c("space[s]?", "spatial", "plan", "(plann)\\w{0,}", "public", "development",
-               "design", "process[es]?", "project[s]?", "figure[s]?", "map[s]?", "strateg(y|ies)", "intervention[s]?",
-               "create", "exist", "analys(i|e)s") |>
-  (\(.) paste0("\\b", ., "\\b"))() |> 
-  paste(collapse = "|")
-
-# Add cleaned text column
-emu$text_clean <- emu$text_raw |> 
-  # Remove text included with anonymisation
-  str_remove_all(anonymisation_sw) |>
-  # Remove white spaces and punctuation, and change text to lower-case
-  clean_basic() |>
-  # Remove title, subtitle and full title
-  str_remove_all(meta_sw) |> 
-  # Remove dataset-specific words
-  str_remove_all(emu_sw) |>
-  # Remove thesis-specific words
-  str_remove_all(thesis_sw)
-
-# Concatenate ngrams
-emu$text_clean <- emu |> 
-  c_ngrams(n_max = 3, text_col = "text_clean",
-           id_col = "ID", min_freq = 20, lemma = TRUE) 
-
-# Words that were not included in ngrams are safe to remove now
-emu$text_clean <- emu$text_clean |> 
-  str_remove_all(custom_sw)
-
-# # Get all concatenated ngrams
-# unique(unlist(str_match_all(emu$text_clean, "[A-Za-z]+(?:_[A-Za-z]+)+")[1]))
-
-# # Check if the word "space" was removed
-# unique(unlist(str_match_all(emu$text_clean, "\\bspace\\b")))
-# unique(unlist(str_match_all(emu$text_clean, "space(?:_[A-Za-z]+)+")))
-
-```
 
 ```{r tokenise}
 

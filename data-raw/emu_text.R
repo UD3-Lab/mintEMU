@@ -14,20 +14,52 @@ emu_metadata <- readr::read_csv(emu_meta_path)
 usethis::use_data(emu_metadata, overwrite = TRUE)
 
 # Clean the dataset ----
-# TODO adapt cleaning procedure once all the steps are known (#105)
 
-emu_theses <- dplyr::left_join(emu_raw, emu_metadata, by  = "ID")
+emu <- dplyr::left_join(emu_raw, emu_metadata, by  = "ID")
 
-emu_theses$text_clean <- emu_theses$text_raw |>
-  mintEMU::clean_basic() |>
-  stringr::str_remove_all(mintEMU::find_meta_stopwords(emu_theses)) |>
-  stringr::str_remove_all(mintEMU::urbanism_stopwords(
-    add_stopwords = c("emu", "european postgraduate master in urbanism"))) |>
-  stringr::str_remove_all(mintEMU::thesis_stopwords(
-    add_stopwords = c("advisor", "prof")))
+meta_sw <- find_meta_stopwords(emu)
+emu_sw <- urbanism_stopwords(
+  add_stopwords = c("emu", "european post[\\-]?(graduate)?[\\s]?master[s]? in urbanism",
+                    "tu delft", "ku leuven", "upc barcelona", "iuav venice"))
+thesis_sw <- thesis_stopwords(add_stopwords = c("advisor", "prof", "fig", "ure", "figure", "ning"))
+anonymisation_sw <- c("EMAIL_REMOVED", "AUTHOR_REMOVED", "FIRST_NAME_REMOVED", "LAST_NAME_REMOVED") |>
+  paste(collapse = "|")
+custom_sw <- c("space[s]?", "spatial", "plan", "(plann)\\w{0,}", "public", "development",
+               "design", "process[es]?", "project[s]?", "figure[s]?", "map[s]?", "strateg(y|ies)", "intervention[s]?",
+               "create", "exist", "analys(i|e)s") |>
+  (\(.) paste0("\\b", ., "\\b"))() |>
+  paste(collapse = "|")
 
-emu_clean <- emu_theses |>
+# Add cleaned text column
+emu$text_clean <- emu$text_raw |>
+  # Remove text included with anonymisation
+  str_remove_all(anonymisation_sw) |>
+  # Remove white spaces and punctuation, and change text to lower-case
+  clean_basic() |>
+  # Remove title, subtitle and full title
+  str_remove_all(meta_sw) |>
+  # Remove dataset-specific words
+  str_remove_all(emu_sw) |>
+  # Remove thesis-specific words
+  str_remove_all(thesis_sw)
+
+# Concatenate ngrams
+emu$text_clean <- emu |>
+  c_ngrams(n_max = 3, text_col = "text_clean",
+           id_col = "ID", min_freq = 20, lemma = TRUE)
+
+# Words that were not included in ngrams are safe to remove now
+emu$text_clean <- emu$text_clean |>
+  str_remove_all(custom_sw)
+
+# # Get all concatenated ngrams
+# unique(unlist(str_match_all(emu$text_clean, "[A-Za-z]+(?:_[A-Za-z]+)+")[1]))
+
+# # Check if the word "space" was removed
+# unique(unlist(str_match_all(emu$text_clean, "\\bspace\\b")))
+# sort(table(unlist(str_match_all(emu$text_clean, "space(?:_[A-Za-z]+)+"))), decreasing = TRUE)
+
+emu_clean <- emu |>
   dplyr::select(ID, text_clean)
-
 
 usethis::use_data(emu_clean, overwrite = TRUE)
