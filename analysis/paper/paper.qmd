@@ -270,7 +270,7 @@ emu_words <- emu |>
   filter(nchar(word) >= 3)  # keep only words that are at least three letters long
 
 # # Check if concatenated ngrams are retained
-# unlist(str_match_all(emu_words$word, "[A-Za-z]+(?:_[A-Za-z]+)+"))
+# sort(table(unlist(str_match_all(emu_words$word, "[A-Za-z]+(?:_[A-Za-z]+)+"))), decreasing = TRUE)
 ```
 
 Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, including "map" and "low", were meaningful and occurring in high frequency.
