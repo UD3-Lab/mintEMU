@@ -28,10 +28,52 @@ Imports:
     ggplot2,
     here,
     reticulate,
-    tidygeocoder
+    tidygeocoder,
+    base (>= 4.2.0),
+    bs4Dash (>= 2.2.1),
+    dplyr (>= 1.1.2),
+    furrr (>= 0.3.1),
+    future (>= 1.32.0),
+    git2r (>= 0.32.0),
+    grid (>= 4.2.0),
+    jsonlite (>= 1.8.5),
+    kableExtra (>= 1.3.4),
+    knitr (>= 1.43),
+    ldatuning (>= 1.0.2),
+    LDAvis (>= 0.3.2),
+    leaflet (>= 2.1.2),
+    plyr (>= 1.8.8),
+    purrr (>= 1.0.1),
+    readr (>= 2.1.4),
+    readxl (>= 1.4.2),
+    renv (>= 0.16.0),
+    rlang (>= 1.1.1),
+    rmarkdown (>= 2.22),
+    rrtools (>= 0.1.5),
+    shiny (>= 1.7.4),
+    shinyjs (>= 2.1.0),
+    slider (>= 0.3.0),
+    SnowballC (>= 0.7.1),
+    stringi (>= 1.7.12),
+    stringr (>= 1.5.0),
+    textstem (>= 0.1.4),
+    thematic (>= 0.1.2.1),
+    tibble (>= 3.2.1),
+    tidyr (>= 1.3.0),
+    tidyselect (>= 1.2.0),
+    tidytext (>= 0.4.1),
+    tidyverse (>= 2.0.0),
+    tools (>= 4.2.0),
+    topicmodels (>= 0.2-14),
+    utils (>= 4.2.0),
+    widyr (>= 0.1.5),
+    wordcloud2 (>= 0.2.1)
 Suggests: 
     devtools,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    usethis
+Remotes:
+  benmarwick/rrtools    
 Config/testthat/edition: 3
 Depends: 
     R (>= 2.10)
