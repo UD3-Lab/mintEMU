@@ -7,7 +7,6 @@ library(tidyverse)
 theses_all <-
   readxl::read_xlsx(path = here("analysis", "data", "raw_data", "theses-all.xlsx")) %>%
   select(-email,
-         -contains("permission_"),
          -contains("pdf_requested"),
          -pdf_exists,
          -`Current Employmment`) %>%
@@ -62,6 +61,7 @@ theses_meta %>%
   arrange(last_name) %>%
   select(-title, -uuid, -count_na,
          -contains("last_name_split"), -author,
+         -contains("permission_re"), -contains("granted_2"),
          -`publication year`,
          -`publication type`,
          -publisher,

@@ -9,9 +9,10 @@ library(readxl)
 data_path <- here("analysis", "data", "raw_data")
 pdf_names <- dir(data_path, pattern = "*.pdf")
 
+# TODO clean script of unneeded lines such as 13-15 and check that it still works
 ## Read metadata for all theses
-all_theses <-
-  read_xlsx(path = here(data_path, "theses-all.xlsx"))
+# all_theses <-
+#   read_xlsx(path = here(data_path, "theses-all.xlsx"))
 
 ## Read only metadata for theses with PDF available
 emu_theses <-
@@ -23,7 +24,7 @@ pdf_paths <- here(data_path, emu_theses$file_name)
 
 emu_theses$text <- convert_pdf_text(pdf_paths)
 
-# Add ID (order based on title) & perform anonymysation ------------
+# Add ID (order based on title) & perform anonymisation ------------
 
 # Remove special Latin characters before anonymisation
 # Remove email addresses
@@ -99,6 +100,7 @@ emu_theses$text_raw  <- text_raw
 
 # Make selection of columns ----------------
 emu_theses <- emu_theses |>
+  filter(as.logical(permission_granted) == TRUE) |>
   select(ID, graduation_year,
          graduation_semester,
          title, full_title, subtitle, link,
