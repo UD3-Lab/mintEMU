@@ -257,6 +257,8 @@ Describe model parameters:
 Determining tuning parameters:
 
 -   The number of topics was qualitatively determined
+-   Evaluating the number of topics quantitatively requires can be done through
+the measure of **topic coherence**
 
 LDA requires a document-term matrix as input.
 
