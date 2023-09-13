@@ -100,6 +100,7 @@ emu_theses$text_raw  <- text_raw
 
 # Make selection of columns ----------------
 emu_theses <- emu_theses |>
+  filter(as.logical(permission_granted) == TRUE) |>
   select(ID, graduation_year,
          graduation_semester,
          title, full_title, subtitle, link,

@@ -61,6 +61,7 @@ theses_meta %>%
   arrange(last_name) %>%
   select(-title, -uuid, -count_na,
          -contains("last_name_split"), -author,
+         -contains("permission_re"), -contains("granted_2"),
          -`publication year`,
          -`publication type`,
          -publisher,
