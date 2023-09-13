@@ -369,8 +369,8 @@ ggplot(data = vizDataFrame, aes(topic, value, fill = topic_max), ylab = "proport
 #| eval: false
 
 # What are the most probable topics in the entire collection?
-topicProportions <- colSums(theta) / nDocs(emu_dtm)  # mean probabilities over all paragraphs
-names(topicProportions) <- topic_names     # assign the topic names we created before
+topicProportions <- colSums(theta_5) / nDocs(emu_dtm)  # mean probabilities over all paragraphs
+names(topicProportions) <- topic_names_5     # assign the topic names we created before
 sort(topicProportions, decreasing = TRUE) # show summed proportions in decreased order
 
 soP <- sort(topicProportions, decreasing = TRUE)
@@ -379,9 +379,9 @@ paste(round(soP, 5), ":", names(soP))
 # How many documents are with the highest probability in each topic?
 K = 5
 countsOfPrimaryTopics <- rep(0, K)
-names(countsOfPrimaryTopics) <- topic_names
+names(countsOfPrimaryTopics) <- topic_names_5
 for (i in 1:nDocs(emu_dtm)) {
-  topicsPerDoc <- theta[i, ] # select topic distribution for document i
+  topicsPerDoc <- theta_5[i, ] # select topic distribution for document i
   # get first element position from ordered list
   primaryTopic <- order(topicsPerDoc, decreasing = TRUE)[1] 
   countsOfPrimaryTopics[primaryTopic] <- countsOfPrimaryTopics[primaryTopic] + 1
@@ -397,10 +397,10 @@ paste(so, ":", names(so))
 
 topicToFilter <- 6  # you can set this manually ...
 # ... or have it selected by a term in the topic name (e.g. 'children')
-topicToFilter <- grep('river', topic_names)[1] 
+topicToFilter <- grep('river', topic_names_5)[1] 
 topicThreshold <- 0.2
-selectedDocumentIndexes <- which(theta[, topicToFilter] >= topicThreshold)
-filteredCorpus <- emu_theses[selectedDocumentIndexes,]
+selectedDocumentIndexes <- which(theta_5[, topicToFilter] >= topicThreshold)
+filteredCorpus <- emu[selectedDocumentIndexes,]
 # show length of filtered corpus
 filteredCorpus
 ```
@@ -409,14 +409,14 @@ filteredCorpus
 #| eval: false
 
 N = 82
-topic_prop_per_year <- theta[1:N,]
-colnames(topic_prop_per_year) <- topic_names
+topic_prop_per_year <- theta_5[1:N,]
+colnames(topic_prop_per_year) <- topic_names_5
 
 # TODO change to pivot_longer
 vizDataFrameWithYear <- melt(cbind(data.frame(topic_prop_per_year), 
                            document = factor(rownames(topic_prop_per_year))), 
                      variable.name = "topic", id.vars = "document") |> 
-    left_join(select(emu_theses, ID, "year" = graduation_year), by = c("document" = "ID"))
+    left_join(select(emu, ID, "year" = graduation_year), by = c("document" = "ID"))
 
 # Plot topic proportions per year
 vizDataFrameWithYear |> 
@@ -437,8 +437,8 @@ svd_tsne <- function(x) tsne(svd(x)$u)
 
 # Convert DTM into JSON required by the LDAvis package
 json <- LDAvis::createJSON(
-  phi = beta, 
-  theta = theta, 
+  phi = beta_5, 
+  theta = theta_5, 
   doc.length = rowSums(as.matrix(emu_dtm)), 
   vocab = colnames(emu_dtm), 
   term.frequency = colSums(as.matrix(emu_dtm)),
