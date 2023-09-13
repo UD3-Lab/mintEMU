@@ -7,7 +7,6 @@ library(tidyverse)
 theses_all <-
   readxl::read_xlsx(path = here("analysis", "data", "raw_data", "theses-all.xlsx")) %>%
   select(-email,
-         -contains("permission_"),
          -contains("pdf_requested"),
          -pdf_exists,
          -`Current Employmment`) %>%
