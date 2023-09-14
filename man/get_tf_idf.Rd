@@ -4,12 +4,12 @@
 \alias{get_tf_idf}
 \title{Get \code{tf-idf} statistic}
 \usage{
-get_tf_idf(data, title_col = NULL, word_col = NULL)
+get_tf_idf(data, id_col = NULL, word_col = NULL)
 }
 \arguments{
-\item{data}{Data frame containing colomns with titles, words and word counts}
+\item{data}{Data frame containing colomns with IDs, words and word counts}
 
-\item{title_col}{Name of the title column of the input data frame}
+\item{id_col}{Name of the ID column of the input data frame}
 
 \item{word_col}{Name of the word column of the input data frame}
 }

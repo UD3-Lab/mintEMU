@@ -8,7 +8,7 @@ get_ngrams(
   data,
   n,
   text_col = NULL,
-  title_col = NULL,
+  id_col = NULL,
   rm_n_short_words = 2,
   min_freq = 5,
   stem = FALSE,
@@ -22,7 +22,7 @@ get_ngrams(
 
 \item{text_col}{The name of the column where the text to be tokenised is located}
 
-\item{title_col}{The name of the title column}
+\item{id_col}{The name of the ID column}
 
 \item{stem}{If \code{TRUE} create additional columns with stemmed version of tokens}
 

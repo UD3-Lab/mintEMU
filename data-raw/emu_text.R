@@ -17,11 +17,11 @@ usethis::use_data(emu_metadata, overwrite = TRUE)
 
 emu <- dplyr::left_join(emu_raw, emu_metadata, by  = "ID")
 
-meta_sw <- find_meta_stopwords(emu)
-emu_sw <- urbanism_stopwords(
+meta_sw <- mintEMU::find_meta_stopwords(emu)
+emu_sw <- mintEMU::urbanism_stopwords(
   add_stopwords = c("emu", "european post[\\-]?(graduate)?[\\s]?master[s]? in urbanism",
                     "tu delft", "ku leuven", "upc barcelona", "iuav venice"))
-thesis_sw <- thesis_stopwords(add_stopwords = c("advisor", "prof", "fig", "ure", "figure", "ning"))
+thesis_sw <- mintEMU::thesis_stopwords(add_stopwords = c("advisor", "prof", "fig", "ure", "figure", "ning"))
 anonymisation_sw <- c("EMAIL_REMOVED", "AUTHOR_REMOVED", "FIRST_NAME_REMOVED", "LAST_NAME_REMOVED") |>
   paste(collapse = "|")
 custom_sw <- c("space[s]?", "spatial", "plan", "(plann)\\w{0,}", "public", "development",
@@ -33,24 +33,24 @@ custom_sw <- c("space[s]?", "spatial", "plan", "(plann)\\w{0,}", "public", "deve
 # Add cleaned text column
 emu$text_clean <- emu$text_raw |>
   # Remove text included with anonymisation
-  str_remove_all(anonymisation_sw) |>
+  stringr::str_remove_all(anonymisation_sw) |>
   # Remove white spaces and punctuation, and change text to lower-case
-  clean_basic() |>
+  mintEMU::clean_basic() |>
   # Remove title, subtitle and full title
-  str_remove_all(meta_sw) |>
+  stringr::str_remove_all(meta_sw) |>
   # Remove dataset-specific words
-  str_remove_all(emu_sw) |>
+  stringr::str_remove_all(emu_sw) |>
   # Remove thesis-specific words
-  str_remove_all(thesis_sw)
+  stringr::str_remove_all(thesis_sw)
 
 # Concatenate ngrams
 emu$text_clean <- emu |>
-  c_ngrams(n_max = 3, text_col = "text_clean",
+  mintEMU::c_ngrams(n_max = 3, text_col = "text_clean",
            id_col = "ID", min_freq = 20, lemma = TRUE)
 
 # Words that were not included in ngrams are safe to remove now
 emu$text_clean <- emu$text_clean |>
-  str_remove_all(custom_sw)
+  stringr::str_remove_all(custom_sw)
 
 # # Get all concatenated ngrams
 # unique(unlist(str_match_all(emu$text_clean, "[A-Za-z]+(?:_[A-Za-z]+)+")[1]))

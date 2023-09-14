@@ -6,7 +6,7 @@
 \usage{
 get_topics(
   data,
-  title_col = "title",
+  id_col = "ID",
   word_col = "word",
   k = 2,
   min_term_freq = 1,
@@ -17,7 +17,7 @@ get_topics(
 \arguments{
 \item{data}{Data frame with theses, containing a column with words.}
 
-\item{title_col}{The name of the column from the input data frame containing the title of the document.}
+\item{id_col}{The name of the column from the input data frame containing the ID of the document.}
 
 \item{word_col}{Name of the column from the input data frame containing all words.}
 

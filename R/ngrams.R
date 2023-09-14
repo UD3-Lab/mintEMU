@@ -27,33 +27,33 @@ get_ngrams <- function(data,
 
   # Remove ngrams below a given frequency
   ngram_counts <- data_ngrams |>
-    count(ngram, sort = TRUE) |>
-    filter(n > min_freq)
+    dplyr::count(ngram, sort = TRUE) |>
+    dplyr::filter(n > min_freq)
 
   data_ngrams <- data_ngrams |>
-    filter(ngram %in% ngram_counts$ngram)
+    dplyr::filter(ngram %in% ngram_counts$ngram)
 
   # Remove stop words from each column starting with "w_"
   w_cols <- names(data_ngrams)[grepl("w_", names(data_ngrams))]
 
   # TODO short words in a separate function
   short_words <- data |>
-    select(text_raw) |>
-    unnest_tokens(output = word, input = text_raw) |>
-    anti_join(tidytext::stop_words, by = "word") |>  # remove stop words
-    mutate(word = textstem::lemmatize_words(word)) |>  # lemmatise words
-    filter(nchar(word) <= rm_n_short_words)
+    dplyr::select(text_raw) |>
+    tidytext::unnest_tokens(output = word, input = text_raw) |>
+    dplyr::anti_join(tidytext::stop_words, by = "word") |>  # remove stop words
+    dplyr::mutate(word = textstem::lemmatize_words(word)) |>  # lemmatise words
+    dplyr::filter(nchar(word) <= rm_n_short_words)
 
   for (i in w_cols) {
     data_ngrams <- data_ngrams |>
-      anti_join(stop_words, by = set_names("word", i)) |>
-      anti_join(short_words, by = set_names("word", i)) |>
-      anti_join(urbanism_stopwords(add_stopwords = c("emu", "tu", "delft", "ku",
+      dplyr::anti_join(tidytext::stop_words, by = rlang::set_names("word", i)) |>
+      dplyr::anti_join(short_words, by = rlang::set_names("word", i)) |>
+      dplyr::anti_join(urbanism_stopwords(add_stopwords = c("emu", "tu", "delft", "ku",
                                                      "leuven", "upc", "barcelona",
                                                      "iuav", "venice"),
                                    convert_to_regex = FALSE) %>%
                   data.frame(word = .),
-                by = set_names("word", i))
+                by = rlang::set_names("word", i))
   }
 
   # Add columns with stemmed versions of individual terms if `stem = TRUE`

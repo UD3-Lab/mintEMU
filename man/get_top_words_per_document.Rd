@@ -7,7 +7,7 @@
 get_top_words_per_document(
   data,
   top_n,
-  title_col = "title",
+  id_col = "ID",
   word_col = "word",
   min_count = 1
 )
@@ -17,7 +17,7 @@ get_top_words_per_document(
 
 \item{top_n}{The number of top words to be returned by the function.}
 
-\item{title_col}{The name of the column from the input data frame containing the title of the document.}
+\item{id_col}{The name of the column from the input data frame containing the ID of the document.}
 
 \item{word_col}{Name of the column from the input data frame containing all words.}
 
@@ -28,6 +28,6 @@ A data frame with the top n words with a count above the given minimum.
 }
 \description{
 Given a data frame with a column storing the words found in a document
-identified with a title column and a positive number top_n, this function
+identified with a ID column and a positive number top_n, this function
 returns the top n words with the highest count in each document.
 }
