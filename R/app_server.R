@@ -180,8 +180,7 @@ app_server <- function(session,input, output) {
         value = n_theses,
         subtitle = "Number of theses",
         icon = shiny::icon("book-open"),
-        color = "info",
-        width = 12
+        color = "info"
       )
     })
 
@@ -196,8 +195,7 @@ app_server <- function(session,input, output) {
         value = n_words,
         subtitle = "Number of words",
         icon = shiny::icon("comment-dots"),
-        color = "teal",
-        width = 12
+        color = "teal"
       )
     })
 
@@ -215,8 +213,7 @@ app_server <- function(session,input, output) {
         value = top_word,
         subtitle = "Most used word",
         icon = shiny::icon("trophy"),
-        color = "primary",
-        width = 12
+        color = "primary"
       )
     })
   })
