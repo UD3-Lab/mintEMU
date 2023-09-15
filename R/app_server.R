@@ -1,26 +1,35 @@
 #' @export
 app_server <- function(session,input, output) {
 
-  ## Use the thematic package to adjust plot styles to app theme ---------------
+  # Use the thematic package to adjust plot styles to app theme ---------------
   thematic::thematic_shiny()
   bs4Dash::useAutoColor()
 
-  ## Get the data ---------------------- ---------------------------------------
+  # Plot kit  -----------------------------------------------------------------
+
+  # Define color palette
+  seq_pal10 <- colorspace::sequential_hcl(10, palette = "BluGrn", rev = TRUE)
+
+
+  # Get the data --------------------------------------------------------------
 
   data("emu_clean")
   data("emu_metadata")
   emu_theses <- dplyr::left_join(emu_clean, emu_metadata, by = "ID")
 
-  # Update filters
+  # Update filters ------------------------------------------------------------
 
-  shiny::updateSliderInput(session,"year", label = "Select year:", step = 1,
+  shiny::updateSliderInput(session,"year",
+                           label = "Select graduation year:",
+                           step = 1,
                            min = min(emu_theses$graduation_year),
                            max = max(emu_theses$graduation_year),
                            value = c(min(emu_theses$graduation_year),
                                      median(emu_theses$graduation_year))
                              )
 
-  shiny::updateSelectInput(session,"exchange", label = "Select exchange semester:",
+  shiny::updateSelectInput(session,"exchange",
+                           label = "Select exchange semester:",
                            choices = c('ALL', emu_theses$graduation_year |>
                                          as.character() |>
                                          unique()|>
@@ -30,6 +39,7 @@ app_server <- function(session,input, output) {
 
 
   # Tool tips ------------------------------------------------------------------
+
   bs4Dash::addTooltip(id = "year",
                       options = list(title = "Filter results by graduation year",
                                      placement = "right"))
@@ -47,15 +57,23 @@ app_server <- function(session,input, output) {
   #                                 sort()  ),
   #                   selected='ALL')
 
+  # Reactive objects -----------------------------------------------------------
+
   # Create reactive data object
   emu_reactive <- shiny::reactive({
     emu_theses |>
-      dplyr::filter(graduation_year > input$year[1] & graduation_year < input$year[2])
+      dplyr::filter(graduation_year >= input$year[1] & graduation_year <= input$year[2])
    })
- # Render plots
+
+  emu_words <- shiny::reactive({
+    emu_reactive() |>
+      tidytext::unnest_tokens(word, text_clean) |>
+      dplyr::mutate(word = textstem::lemmatize_words(word)) |>
+      dplyr::anti_join(tidytext::stop_words, by = "word")
+  })
+
 
   # ID of value clicked on the map
-
   clicked_id <- shiny::reactive({input$thesis_location_map_marker_click$id}) |>
     shiny::bindEvent(input$thesis_location_map_marker_click)
 
@@ -65,95 +83,142 @@ app_server <- function(session,input, output) {
     dplyr::filter(ID  == clicked_id())
   })
 
+  clicked_title <- shiny::reactive({
+    emu_reactive() |>
+      dplyr::filter(ID  == clicked_id()) |>
+      dplyr::pull(title)
+
+  })
+
+
 
  # Render outputs  ------------------------------------------------------------
 
-  # Map
+ # Leaflet Map ----------------------------------------------------------------
    output$thesis_location_map <- leaflet::renderLeaflet({
 
-    set.seed(2023)
+    emu_theses |>
+      leaflet::leaflet() |>
+      leaflet::addProviderTiles("Stamen.TonerLite")
 
-    data <-  emu_reactive() |>
-      dplyr::mutate(longitude = jitter(longitude, factor = 0.01),
-                    latitude  = jitter(latitude , factor = 0.01)
-                    )
+    })
 
+
+  shiny::observe({
     icons <- leaflet::awesomeIcons(
       icon = "pen",
       iconColor = "#fff",
       library = "fa",
       markerColor = "blue"
-    )
+      )
 
-    data |>
-      leaflet::leaflet() |>
-      leaflet::addProviderTiles("Stamen.TonerLite") |>
-      leaflet::addAwesomeMarkers(layerId = data$ID,
+    leaflet::leafletProxy("thesis_location_map", session, data = emu_reactive()) |>
+      leaflet::clearMarkers() |>
+      leaflet::clearMarkerClusters() %>%
+      leaflet::addAwesomeMarkers(layerId = emu_reactive()$ID,
                                  icon = icons,
-                                 label = data$location,
-                                 popup = paste0("<b>Title:</b> ", data$title,
+                                 label = emu_reactive()$location,
+                                 popup = paste0("<b>Title:</b> ", emu_reactive()$title,
                                                 "<br/>",
-                                                "<b>Location:</b> ", data$location),
-                                 clusterOptions = leaflet::markerClusterOptions()
+                                                "<b>Location:</b> ", emu_reactive()$location,
+                                                "<br/>",
+                                                "<b>Graduation year:</b> ", emu_reactive()$graduation_year
+                                                ),
 
+                                 clusterOptions = leaflet::markerClusterOptions()
                                  )
     })
 
-   # Box generated for a single title
-   output$clicked_box <- shiny::renderUI({
+  # Box generated for a single title -------------------------------------------
 
-     empty_box <- is.null(clicked_id())
+  shiny::observe({
 
-     bs4Dash::box(title = paste(clicked_thesis()$ID, clicked_thesis()$title),
-                  status = "lightblue",
-                  collapsed = empty_box,
-                  width = NULL,
-                  textOutput('clickid'),
-                  plotOutput("top_words")
-                  )
+    empty_box <- is.null(clicked_id())
+    box_title <- clicked_title()
+
+  output$clicked_box <- shiny::renderUI({
+    bs4Dash::box(
+      title = "Selected thesis",#paste(box_title),
+      status = "lightblue",
+      collapsed = empty_box,
+      width = NULL,
+      wordcloud2::wordcloud2Output("wordcloud"))
+     })
+  })
+
+ # Word cloud of the selected thesis -------------------------------------------
+
+  shiny::observe({
+
+    clicked_words <- clicked_thesis() |>
+      tidytext::unnest_tokens(word, text_clean) |>
+      dplyr::mutate(word = textstem::lemmatize_words(word)) |>
+      dplyr::anti_join(tidytext::stop_words, by = "word") |>
+      dplyr::count(word) |>
+      dplyr::arrange(-n)
+
+   output$wordcloud <- wordcloud2::renderWordcloud2({
+     # Make sure that the wordcloud for a thesis always looks the same
+     set.seed(12345)
+
+    # color vecotr for the wordcloud
+     wc_cols <- c(rep(seq_pal10[5], 5),rep('#000000',500))
+
+     # Create wordcloud
+     wordcloud2::wordcloud2(clicked_words, size = 0.7, color = wc_cols )
      })
 
-   # Graph with top 50 words
-   output$top_words <- renderPlot({
-
-     clicked_words <- clicked_thesis() |>
-       tidytext::unnest_tokens(word, text_clean) |>
-       dplyr::mutate(word = textstem::lemmatize_words(word)) |>
-       dplyr::anti_join(tidytext::stop_words, by = "word")
-
-     top_words <-
-       get_top_words_per_corpus(clicked_words , 20, 'word')
-
-     ggplot2::ggplot(top_words) +
-       ggplot2::aes(x = word, y = n) +
-       ggplot2::geom_col()
-
-   })
-
-   # Word cloud of the selected thesis
-   output$wordcloud <- wordcloud2::renderWordcloud2({
-     clicked_words <- clicked_thesis() |>
-       tidytext::unnest_tokens(word, text_clean) |>
-       dplyr::mutate(word = textstem::lemmatize_words(word)) |>
-       dplyr::anti_join(tidytext::stop_words, by = "word") |>
-       dplyr::count(word) |>
-       dplyr::arrange(-n)
-
-     wordcloud2::wordcloud2(clicked_words)
-
    })
 
 
-   # Word cloud of the selected thesis
-   output$clickid <- renderText({
-     clicked_id <- input$thesis_location_map_marker_click$id
+# Value box with number of theses -----------------------------------------
+  shiny::observe({
+    n_theses <- nrow(emu_reactive())
 
-     clicked_id
+    output$vbox_ntheses <- bs4Dash::renderbs4ValueBox({
+      bs4Dash::bs4ValueBox(
+        value = n_theses,
+        subtitle = "Number of theses",
+        icon = shiny::icon("book-open"),
+        color = "info",
+        width = 12
+      )
+    })
 
-   }) |>
-     shiny::bindEvent(input$thesis_location_map_marker_click)
+  })
 
+# Value box with number of words -----------------------------------------
+  shiny::observe({
+    n_words <- prettyNum(nrow(emu_words()), big.mark = ",")
 
+    output$vbox_nwords <- bs4Dash::renderbs4ValueBox({
+      bs4Dash::bs4ValueBox(
+        value = n_words,
+        subtitle = "Number of words",
+        icon = shiny::icon("comment-dots"),
+        color = "teal",
+        width = 12
+      )
+    })
 
+  })
+  shiny::observe({
+
+    top_word <- emu_words() |>
+      dplyr::count(word) |>
+      dplyr::filter(n == max(n)) |>
+      dplyr::pull(word)
+
+    output$vbox_topword <- bs4Dash::renderbs4ValueBox({
+
+      bs4Dash::bs4ValueBox(
+        value = top_word,
+        subtitle = "Most used word",
+        icon = shiny::icon("trophy"),
+        color = "primary",
+        width = 12
+      )
+    })
+  })
 
   }
