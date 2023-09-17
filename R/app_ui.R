@@ -49,7 +49,8 @@ app_ui <- function() {
                                                 bs4Dash::column(12,
                                                                 bs4Dash::box(title = "Links",
                                                                 status = "lightblue",
-                                                                width = NULL
+                                                                width = NULL,
+                                                                shiny::textOutput('nth')
                                                                 )),
 
                                                 bs4Dash::bs4ValueBoxOutput("vbox_ntheses"),

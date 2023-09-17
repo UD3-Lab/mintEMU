@@ -9,7 +9,7 @@ app_server <- function(session,input, output) {
 
   # Define color palette
   seq_pal10 <- colorspace::sequential_hcl(10, palette = "BluGrn", rev = TRUE)
-
+  teal <- "#39cccc"
 
   # Get the data --------------------------------------------------------------
 
@@ -131,12 +131,11 @@ app_server <- function(session,input, output) {
 
   # Box generated for a single title -------------------------------------------
 
-  shiny::observe({
 
+  output$clicked_box <- shiny::renderUI({
     empty_box <- is.null(clicked_id())
     box_title <- clicked_title()
 
-  output$clicked_box <- shiny::renderUI({
     bs4Dash::box(
       title = "Selected thesis",#paste(box_title),
       status = "lightblue",
@@ -144,7 +143,6 @@ app_server <- function(session,input, output) {
       width = NULL,
       wordcloud2::wordcloud2Output("wordcloud"))
      })
-  })
 
  # Word cloud of the selected thesis -------------------------------------------
 
@@ -162,7 +160,7 @@ app_server <- function(session,input, output) {
      set.seed(12345)
 
     # color vecotr for the wordcloud
-     wc_cols <- c(rep(seq_pal10[5], 5),rep('#000000',500))
+     wc_cols <- c(rep(teal, 5),rep('#000000',500))
 
      # Create wordcloud
      wordcloud2::wordcloud2(clicked_words, size = 0.7, color = wc_cols )
@@ -172,10 +170,11 @@ app_server <- function(session,input, output) {
 
 
 # Value box with number of theses -----------------------------------------
-  shiny::observe({
-    n_theses <- nrow(emu_reactive())
+  # shiny::observe({
 
     output$vbox_ntheses <- bs4Dash::renderbs4ValueBox({
+      n_theses <- nrow(emu_reactive())
+
       bs4Dash::bs4ValueBox(
         value = n_theses,
         subtitle = "Number of theses",
@@ -184,13 +183,15 @@ app_server <- function(session,input, output) {
       )
     })
 
-  })
+  # })
 
 # Value box with number of words -----------------------------------------
-  shiny::observe({
-    n_words <- prettyNum(nrow(emu_words()), big.mark = ",")
+  # shiny::observe({
 
     output$vbox_nwords <- bs4Dash::renderbs4ValueBox({
+
+      n_words <- prettyNum(nrow(emu_words()), big.mark = ",")
+
       bs4Dash::bs4ValueBox(
         value = n_words,
         subtitle = "Number of words",
@@ -199,15 +200,15 @@ app_server <- function(session,input, output) {
       )
     })
 
-  })
-  shiny::observe({
-
-    top_word <- emu_words() |>
-      dplyr::count(word) |>
-      dplyr::filter(n == max(n)) |>
-      dplyr::pull(word)
+ # })
+ # shiny::observe({
 
     output$vbox_topword <- bs4Dash::renderbs4ValueBox({
+
+      top_word <- emu_words() |>
+        dplyr::count(word) |>
+        dplyr::filter(n == max(n)) |>
+        dplyr::pull(word)
 
       bs4Dash::bs4ValueBox(
         value = top_word,
@@ -216,6 +217,10 @@ app_server <- function(session,input, output) {
         color = "primary"
       )
     })
-  })
+  #})
+
+    output$nth <- shiny::renderText(
+      print(nrow(emu_reactive()))
+    )
 
   }
