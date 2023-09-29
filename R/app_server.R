@@ -50,7 +50,7 @@ app_server <- function(session,input, output) {
   # Create reactive data object
   emu_reactive <- shiny::reactive({
     emu_theses |>
-      dplyr::filter(graduation_year > input$year[1] & graduation_year < input$year[2])
+      dplyr::filter(graduation_year >= input$year[1] & graduation_year <= input$year[2])
    })
  # Render plots
 
@@ -65,7 +65,12 @@ app_server <- function(session,input, output) {
     dplyr::filter(ID  == clicked_id())
   })
 
-
+ # Plot kit  ------------------------------------------------------------------
+  #Define theme here
+  theme_mintEMU = ggplot2::theme_classic() +
+    ggplot2::theme(legend.position = "none", title = ggplot2::element_blank()) +
+    ggplot2::theme(axis.text = ggplot2::element_text(size = 12),
+                   axis.title = ggplot2::element_text(size = 15))
  # Render outputs  ------------------------------------------------------------
 
   # Map
@@ -153,7 +158,8 @@ app_server <- function(session,input, output) {
    }) |>
      shiny::bindEvent(input$thesis_location_map_marker_click)
 
-   # Graph with top N words
+
+   # Graph withTop N words
    output$Top_n_words <- renderPlot({
 
      emu_words <- emu_reactive() |>
@@ -161,32 +167,49 @@ app_server <- function(session,input, output) {
        dplyr::mutate(word = textstem::lemmatize_words(word)) |>
        dplyr::anti_join(tidytext::stop_words, by = "word")
 
-     words_per_year = data.frame()
+     top_words2 = get_top_words_per_corpus(emu_words, 5, word_col = "word")
 
-     for (grad_year in sort(unique(emu_words$graduation_year))) {
-       result <- get_top_words_per_corpus(emu_words[emu_words$graduation_year == grad_year,], 5, word_col = "word")
-       result$year <- grad_year
-       words_per_year <- rbind(words_per_year, result)
-     }
+     ggplot2::ggplot(top_words2) +
+       ggplot2::aes(x = reorder(word, n), y = n, fill = word) +
+       ggplot2::geom_col() +
+       ggplot2::coord_flip() +
+       theme_mintEMU +
+       ggplot2::scale_fill_viridis_d(begin = 0, end = 0.8) +
+       ggplot2::xlab("Count") + ggplot2::ylab("Word")
 
-     word_order <- words_per_year |>
-       dplyr::group_by(word) |>
-       dplyr::mutate(m = sum(n)) |>
-       dplyr::select(-year, -n)|>
-       unique() |>
-       dplyr::arrange(-m) |>
-       dplyr::select(word)
 
-     words_per_year$word <- factor(x = words_per_year$word,  levels = word_order[["word"]])
+   })
+   # Graph with Evolution of top words
+   output$Evolution_of_top_words <- plotly::renderPlotly({
 
-     ggplot2::ggplot(words_per_year) +
-       ggplot2::aes(x = word, y = n, fill = as.factor(year)) +
-       ggplot2::geom_bar(position = "stack", stat = "identity") +
-       colorspace::scale_fill_discrete_sequential(palette = c("BluGrn"), name = "Year") +
-       ggplot2::xlab("Words") + ggplot2::ylab("Count") + ggplot2::ggtitle("Most Used 5 Words per Year") +
-       ggplot2::theme_minimal() +
-       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, vjust = 1.4)) +
-       ggplot2::theme(axis.line.y = ggplot2::element_blank(), panel.grid = ggplot2::element_blank())
+     emu_words <- emu_reactive() |>
+       tidytext::unnest_tokens(word, text_clean) |>
+       dplyr::mutate(word = textstem::lemmatize_words(word)) |>
+       dplyr::anti_join(tidytext::stop_words, by = "word")
+
+    top_words2 = get_top_words_per_corpus(emu_words, 5, word_col = "word")
+
+    word_order <- emu_words |>
+      dplyr::group_by(word, graduation_year) |>
+      dplyr::count(word, sort = TRUE) |>
+      dplyr::ungroup() |>
+      dplyr::arrange(graduation_year, -n) |>
+      dplyr::group_by(graduation_year) |>
+      dplyr::mutate(relative_frequency = n/sum(n)*100) |>
+      dplyr::mutate(rank = round(rank(-n), 0)) |>
+      dplyr::ungroup() |>
+      dplyr::filter(word %in% top_words2$word)
+
+   plotly::ggplotly(
+      ggplot2::ggplot(word_order) +
+      ggplot2::aes(x = graduation_year, y = relative_frequency, color = word, label = rank, fill = "white") +
+      ggplot2::geom_path(lwd = 0.1) +
+      ggplot2::geom_point(size = 8, shape = 21, fill = "white", stroke = 1.2) +
+      ggplot2::geom_text(ggplot2::aes(x = graduation_year), color = "black") +
+      theme_mintEMU +
+      ggplot2::scale_color_viridis_d(begin = 0, end = 0.8)+
+      ggplot2::xlab("Year") + ggplot2::ylab("Frequency (%)")
+)
 
    })
 
