@@ -198,7 +198,7 @@ get_number_of_topics <- function(dtm,
 #' @param tbl A vector of tokens.
 #' @param window_size A small window size of 3-4 shows how a word is used, while a larger window size of, say, 10 gives more information about the domain topic.
 #'
-#' @return
+#' @return Data frame with skipgram probabilities
 #' @export
 #'
 slide_windows <- function(tbl, window_size) {
@@ -406,6 +406,7 @@ count_docs_per_topic <- function(lda) {
              count = sorted_document_counts_per_topic,
              row.names = NULL)
 }
+
 
 
 
