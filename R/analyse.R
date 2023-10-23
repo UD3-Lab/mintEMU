@@ -350,3 +350,62 @@ get_tf_idf <- function(data, id_col = NULL, word_col = NULL) {
 
   words_counts
 }
+
+#' Get topic proportions in an LDA model
+#'
+#' @param lda LDA model object
+#'
+#' @return Data frame with topics and their proportions
+#' @export
+get_topic_proportions <- function(lda) {
+
+  topic_prob <- posterior(lda)$topics
+  term_prob <- posterior(lda)$terms
+
+  ndocs <- length(unique(rownames(topic_prob)))
+
+  # mean probabilities over all documents
+  topic_proportions <- colSums(topic_prob) / ndocs
+  # assign topic names
+  names(topic_proportions) <- mintEMU::name_topics(term_prob)
+  # show summed proportions in decreased order
+  sorted_topic_proportions <- sort(topic_proportions, decreasing = TRUE)
+  data.frame(topic = names(sorted_topic_proportions),
+             proportion = sorted_topic_proportions,
+             row.names = NULL)
+}
+
+#' Count documents per main topic
+#'
+#' @param lda LDA model
+#'
+#' @return Data frame with topics and count of documents per main topic
+#' @export
+count_docs_per_topic <- function(lda) {
+
+  topic_prob <- posterior(lda)$topics
+  term_prob <- posterior(lda)$terms
+
+  k <- ncol(topic_prob)
+  ndocs <- length(unique(rownames(topic_prob)))
+
+  counts_of_primary_topics <- rep(0, k)
+  names(counts_of_primary_topics) <- name_topics(term_prob)
+
+  for (i in 1:ndocs) {
+    topics_per_doc <- topic_prob[i,]  # select topic distribution for document i
+    # get first element position from ordered list
+    primary_topic <- order(topics_per_doc, decreasing = TRUE)[1]
+
+    counts_of_primary_topics[primary_topic] <-
+      counts_of_primary_topics[primary_topic] + 1
+  }
+
+  sorted_document_counts_per_topic <- sort(counts_of_primary_topics, decreasing = TRUE)
+  data.frame(topic = names(sorted_document_counts_per_topic),
+             count = sorted_document_counts_per_topic,
+             row.names = NULL)
+}
+
+
+
