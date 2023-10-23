@@ -1,11 +1,11 @@
 #' Get ngrams from a corpus
 #'
 #' @param data Data frame of documents containing a text column
-#' @param n The number of words to include in the token (e.g., n = 2 for bigram)
-#' @param text_col The name of the column where the text to be tokenised is located
+#' @param n The number of words to include in the token (e.g., n = 2 for bigrams)
+#' @param text_col The name of the text column where to be tokenised
 #' @param id_col The name of the ID column
-#' @param stem If `TRUE` create additional columns with stemmed version of tokens
-#' @param lemma If `TRUE` create additional columns with lemmatised version of tokens
+#' @param stem If `TRUE` create additional columns with stemmed tokens
+#' @param lemma If `TRUE` create additional columns with lemmatised tokens
 #'
 #' @return A data frame with an "ngram" column and columns for its constituent words
 #' @export
