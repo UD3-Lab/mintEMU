@@ -6,7 +6,7 @@
 \usage{
 get_pmi(
   data,
-  title_col = NULL,
+  id_col = NULL,
   text_col = NULL,
   parallel = TRUE,
   window_size = 4L
@@ -15,7 +15,7 @@ get_pmi(
 \arguments{
 \item{data}{Data frame of theses}
 
-\item{title_col}{Name of the title column}
+\item{id_col}{Name of the ID column}
 
 \item{text_col}{Name of the text column to be tokenised}
 
