@@ -52,6 +52,9 @@ theses_meta <- theses_all %>%
 
 # Write metadata ----
 theses_meta %>%
+  mutate(`repository link` = case_when(
+    last_name == "Park" ~ "http://resolver.tudelft.nl/uuid:55020771-b07d-4953-b578-37b0be018521",
+    .default = `repository link`)) %>%
   mutate(thesis_title = ifelse((!is.na(title) & (str_length(title) > str_length(thesis_title))), title, thesis_title)) %>%  # Update titles from repository
   mutate(count_na = apply(., 1, function(x) sum(is.na(x)))) %>%
   group_by(file_name) %>%
