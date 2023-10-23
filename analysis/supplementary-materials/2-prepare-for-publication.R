@@ -21,8 +21,9 @@ emu_theses <-
   filter(!is.na(pdf_via))
 
 pdf_paths <- here(data_path, emu_theses$file_name)
+start_page <- emu_theses$start_page
 
-emu_theses$text <- convert_pdf_text(pdf_paths)
+emu_theses$text <- convert_pdf_text(pdf_paths, start_page)
 
 # Add ID (order based on title) & perform anonymisation ------------
 

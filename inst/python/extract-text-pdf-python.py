@@ -48,7 +48,7 @@ def check_file_path(file_path):
 
         return(file_list)
         
-def convert_pdf(file_list):
+def convert_pdf(file_list, start_pages):
     '''
     Function converts the pdf files to text. It allow unusual pdf layout (multiple columns)
 
@@ -64,13 +64,15 @@ def convert_pdf(file_list):
 
     '''
     text_list = []
-    for file in file_list: 
+    for i, file in enumerate(file_list): 
         l = []
         assert os.path.isfile(file), f"No such file: {file}"
         with fitz.open(file) as doc:
             for page in doc:
                 text = page.get_text()
                 l.append(text)
+        start_page = int(start_pages[i]) - 1
+        l = l[start_page:]
         l = ' '.join(l)
         text_list.append(l)
     

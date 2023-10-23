@@ -85,7 +85,8 @@ theses_meta %>%
          "title" = thesis_title,
          "graduation_year" = grad_year,
          "graduation_semester" = grad_sem,
-         "link" = `repository link`) %>%
+         "link" = `repository link`,
+         start_page) %>%
   rename(full_title = title) %>%
   separate(full_title, c("title", "subtitle"), sep = ":", remove = FALSE) %>%
   write_csv(file = here("analysis", "data", "raw_data", "theses-metadata.csv"))
