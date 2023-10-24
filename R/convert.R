@@ -4,10 +4,11 @@
 #' Checks if the provided file path exists and whether it holds the adequate file formats (pdf).
 #'
 #' @param pdf_filenames A vector of paths to input (pdf) files
-#' @param start_page A numeric vector with the start page numbers from where the original text should be converted
+#' @param start_pages A numeric vector with the start page numbers from where the original text should be converted
+#' @param end_pages A numeric vector with the end page numbers until where the original text should be converted
 #' @return A vector of body of text; one string per pdf file
 #' @export
-convert_pdf_text <- function(pdf_filenames, start_pages){
+convert_pdf_text <- function(pdf_filenames, start_pages, end_pages){
 
   pdf_list<- as.list(pdf_filenames)
 
@@ -40,7 +41,7 @@ convert_pdf_text <- function(pdf_filenames, start_pages){
   # Load python script with functions to extract texts
   reticulate::source_python(pyf_path)
 
-  text_list <- convert_pdf(pdf_list, start_pages) |> unlist()
+  text_list <- convert_pdf(pdf_list, start_pages, end_pages) |> unlist()
 
   text_list
 }

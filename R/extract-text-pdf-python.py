@@ -48,7 +48,7 @@ def check_file_path(file_path):
 
         return(file_list)
         
-def convert_pdf(file_list, start_pages):
+def convert_pdf(file_list, start_pages, end_pages):
     '''
     Function converts the pdf files to text. It allow unusual pdf layout (multiple columns)
 
@@ -56,6 +56,12 @@ def convert_pdf(file_list, start_pages):
     -----------
     file_list : list 
         The list of files to be converted
+    
+    start_pages : list 
+        The list of start pages to be used to subset PDF pages
+        
+    end_pages : list 
+        The list of end pages to be used to subset PDF pages
 
     Returns
     ------------
@@ -72,7 +78,11 @@ def convert_pdf(file_list, start_pages):
                 text = page.get_text()
                 l.append(text)
         start_page = int(start_pages[i]) - 1
-        l = l[start_page:]
+        if not int(end_pages[i]) == 0:
+          end_page = int(end_pages[i])
+          l = l[start_page:end_page]
+        else:
+          l = l[start_page:]
         l = ' '.join(l)
         text_list.append(l)
     
