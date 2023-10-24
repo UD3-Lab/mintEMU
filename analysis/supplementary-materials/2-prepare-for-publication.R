@@ -1,18 +1,12 @@
-# Load packages ---------------------
+# Load packages -----------------------------------------------------------
 library(tidyverse)
 library(here)
 library(mintEMU)
 library(readxl)
 
-# Extract text from PDFs ----
-# Read thesis metadata
-data_path <- here("analysis", "data", "raw_data")
-pdf_names <- dir(data_path, pattern = "*.pdf")
 
-# TODO clean script of unneeded lines such as 13-15 and check that it still works
-## Read metadata for all theses
-# all_theses <-
-#   read_xlsx(path = here(data_path, "theses-all.xlsx"))
+# Read thesis metadata ----------------------------------------------------
+data_path <- here("analysis", "data", "raw_data")
 
 ## Read only metadata for theses with PDF available
 emu_theses <-
@@ -20,21 +14,25 @@ emu_theses <-
   mutate(text = "") |>
   filter(!is.na(pdf_via))
 
+
+# Extract text from PDFs --------------------------------------------------
 pdf_paths <- here(data_path, emu_theses$file_name)
-start_page <- emu_theses$start_page
+start_pages <- emu_theses$start_page
+end_pages <- emu_theses$end_page
 
-emu_theses$text <- convert_pdf_text(pdf_paths, start_page)
+emu_theses$text <- convert_pdf_text(pdf_paths, start_pages, end_pages)
 
-# Add ID (order based on title) & perform anonymisation ------------
 
-# Remove special Latin characters before anonymisation
-# Remove email addresses
+# Add ID (order based on title) & perform anonymisation -------------------
+
+## Remove special Latin characters before anonymisation
+## Remove email addresses
 emu_theses <- emu_theses |>
   arrange(title) |>
   mutate(ID  = seq_len(n()),
          text_raw = stringi::stri_trans_general(text,  "Latin-ASCII")) |>
   mutate(text_raw = str_replace_all(text_raw,
-                                    "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b" ,
+                                    "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
                                     "EMAIL_REMOVED"))
 
 # # head_text(emu_theses$text_raw )[9]
@@ -42,7 +40,7 @@ emu_theses <- emu_theses |>
 # # Check if email addresses removed:
 # replacement_checker(emu_theses$text_raw, "@")
 
-# Remove First name/ last name combination ( for first and second author)
+# Remove first name / last name combination (for first and second author)
 
 pattern <- word_vec_combos(normalise_words(emu_theses$first_name),
                            normalise_words(emu_theses$last_name))
@@ -99,7 +97,8 @@ text_raw <- mapply(str_replace_all, text_raw, pattern_ln,
 # incorporate into the main dataset
 emu_theses$text_raw  <- text_raw
 
-# Make selection of columns ----------------
+
+# Make selection of columns -----------------------------------------------
 emu_theses <- emu_theses |>
   filter(as.logical(permission_granted) == TRUE) |>
   select(ID, graduation_year,
@@ -109,10 +108,12 @@ emu_theses <- emu_theses |>
          abstract,
          text_raw)
 
-# Add longitude and latitude columns ---------
+
+# Add longitude and latitude columns --------------------------------------
 emu_theses <- geocode_thesis_locations(emu_theses)
 
-# reorder the columns in the dataset ---------
+
+# Reorder the columns in the dataset --------------------------------------
 emu_theses <- emu_theses |>
   select(ID,
          graduation_year,
@@ -122,22 +123,22 @@ emu_theses <- emu_theses |>
          abstract,
          text_raw)
 
-# separate text file and metadata file ----------------
+
+# Separate metadata file and text file ------------------------------------
 emu_metadata <- emu_theses |>
   select(-text_raw)
 
 emu_raw <- emu_theses |>
   select(ID, text_raw)
 
-# write CSV files ----------------
 
-# emu raw text file
+# Write CSV files ---------------------------------------------------------
+## Metadata file
+emu_meta_path <- here("analysis", "data", "derived_data", "emu_metadata.csv")
+readr::write_csv(emu_metadata, emu_meta_path)
+
+## Raw text file
 emu_raw_path <- here("analysis", "data", "derived_data", "emu_raw.csv")
-
 readr::write_csv(emu_raw, emu_raw_path)
 
-# emu metadata file
-emu_meta_path <- here("analysis", "data", "derived_data", "emu_metadata.csv")
-
-readr::write_csv(emu_metadata, emu_meta_path)
 
