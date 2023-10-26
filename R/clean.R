@@ -51,8 +51,8 @@ find_meta_stopwords <- function(metadata,
                                 stop_cols =  list(
                                   'author1' = c('first_name', 'last_name'),
                                   'author2' = c('first_name_2', 'last_name_2'),
-                                  'title'  = 'title',
-                                  'subtitle' = 'subtitle',
+                                  # 'title'  = 'title',
+                                  # 'subtitle' = 'subtitle',
                                   'full_title' = 'full_title'
                                 ),
                                 convert_to_regex = TRUE,
@@ -90,7 +90,7 @@ find_meta_stopwords <- function(metadata,
   if (convert_to_regex == TRUE)
     return(stringr::regex(do.call(paste, c(
       stop_words_df, sep = "|"
-    ))))
+    )), ignore_case = TRUE))
   else
     return(stop_words_df)
 
