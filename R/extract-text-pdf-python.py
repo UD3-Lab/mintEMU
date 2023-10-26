@@ -77,13 +77,16 @@ def convert_pdf(file_list, start_pages, end_pages):
             for page in doc:
                 text = page.get_text()
                 l.append(text)
+        
+        # Get start and end pages
         start_page = int(start_pages[i]) - 1
-        if not int(end_pages[i]) == 0:
-          end_page = int(end_pages[i])
-          l = l[start_page:end_page]
-        else:
-          l = l[start_page:]
-        l = ' '.join(l)
+        end_page = int(end_pages[i])
+        
+        # Keep only selected subset of pages
+        l = l[start_page:end_page]
+        
+        # Add front matter and back matter removal markers
+        l = ' '.join(l).join(["FRONT_MATTER_REMOVED\n", "BACK_MATTER_REMOVED"])
         text_list.append(l)
     
     return(text_list)
