@@ -46,14 +46,14 @@ get_ngrams <- function(data,
 
   for (i in w_cols) {
     data_ngrams <- data_ngrams |>
-      dplyr::anti_join(tidytext::stop_words, by = set_names("word", i)) |>
-      dplyr::anti_join(short_words, by = set_names("word", i)) |>
+      dplyr::anti_join(tidytext::stop_words, by = rlang::set_names("word", i)) |>
+      dplyr::anti_join(short_words, by = rlang::set_names("word", i)) |>
       dplyr::anti_join(mintEMU::urbanism_stopwords(add_stopwords = c("emu", "tu", "delft", "ku",
                                                      "leuven", "upc", "barcelona",
                                                      "iuav", "venice"),
                                    convert_to_regex = FALSE) %>%
                   data.frame(word = .),
-                by = set_names("word", i))
+                by = rlang::set_names("word", i))
   }
 
   # Add columns with stemmed versions of individual terms if `stem = TRUE`
