@@ -18,7 +18,7 @@ get_ngrams(
 \arguments{
 \item{data}{Data frame of documents containing a text column}
 
-\item{n}{The number of words to include in the token (e.g., n=2 for bigrams)}
+\item{n}{The number of words to include in the token (e.g., n = 2 for bigrams)}
 
 \item{text_col}{The name of the text column where to be tokenised}
 
