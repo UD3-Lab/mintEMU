@@ -4,10 +4,14 @@
 \alias{convert_pdf_text}
 \title{Convert pdf to text}
 \usage{
-convert_pdf_text(pdf_filenames)
+convert_pdf_text(pdf_filenames, start_pages, end_pages)
 }
 \arguments{
 \item{pdf_filenames}{A vector of paths to input (pdf) files}
+
+\item{start_pages}{A numeric vector with the start page numbers from where the original text should be converted}
+
+\item{end_pages}{A numeric vector with the end page numbers until where the original text should be converted}
 }
 \value{
 A vector of body of text; one string per pdf file
