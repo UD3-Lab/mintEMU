@@ -48,7 +48,7 @@ def check_file_path(file_path):
 
         return(file_list)
         
-def convert_pdf(file_list):
+def convert_pdf(file_list, start_pages, end_pages):
     '''
     Function converts the pdf files to text. It allow unusual pdf layout (multiple columns)
 
@@ -56,6 +56,12 @@ def convert_pdf(file_list):
     -----------
     file_list : list 
         The list of files to be converted
+        
+    start_pages : list 
+        The list of start pages to be used to subset PDF pages
+        
+    end_pages : list 
+        The list of end pages to be used to subset PDF pages
 
     Returns
     ------------
@@ -64,14 +70,23 @@ def convert_pdf(file_list):
 
     '''
     text_list = []
-    for file in file_list: 
+    for i, file in enumerate(file_list): 
         l = []
         assert os.path.isfile(file), f"No such file: {file}"
         with fitz.open(file) as doc:
             for page in doc:
                 text = page.get_text()
                 l.append(text)
-        l = ' '.join(l)
+        
+        # Get start and end pages
+        start_page = int(start_pages[i]) - 1
+        end_page = int(end_pages[i])
+        
+        # Keep only selected subset of pages
+        l = l[start_page:end_page]
+        
+        # Add front matter and back matter removal markers
+        l = ' '.join(l).join(["FRONT_MATTER_REMOVED\n", "BACK_MATTER_REMOVED"])
         text_list.append(l)
     
     return(text_list)

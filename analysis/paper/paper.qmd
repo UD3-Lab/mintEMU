@@ -32,7 +32,7 @@ filters:
 bibliography: references.bib
 csl: "../templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
 abstract: |
-  Prompted by the closure of the European post-Master of Urbanism (EMU) at TU Delft,
+  Prompted by the closure of the European post-Master of Urbanism (EMU) at TU Delft in 2021,
   this paper aims to describe the legacy of the EMU. To that end, it reports on the
   analysis of the graduation theses produced over 2007-2021 when the program was running.
   The text mining approach allows for a close scrutiny of the latent thematic patterns, 
@@ -60,17 +60,17 @@ Highlights: `r rmarkdown::metadata$highlights`
 ```{r setup}
 #| include: false
 
+# TODO remove this section after all analysis has been translated into functions
 # Load packages ----
 ## List packages to be loaded
 packages <- c(
-  "here",                                       # Managing paths
-  # TODO remove reshape2 if `melt()` is replaced by`pivot_longer()`
-  "tidyverse", "reshape2", "widyr", "readxl",   # Data manipulation and visualisation
-  "furrr",                                      # Parallel use of purrr::map() functions
-  "tidytext", "SnowballC", "tm",                # Text processing and analysis
-  "topicmodels", "LDAvis", "tsne",              # Topic modeling
-  "tidygeocoder",                               # Working with spatial data
-  "igraph", "ggraph", "DiagrammeR"              # Network analysis and visualization
+  "here",
+  "tidyverse", "widyr", "readxl",   # Data manipulation and visualisation
+  "furrr",                          # Parallel use of purrr::map() functions
+  "tidytext", "SnowballC", "tm",    # Text processing and analysis
+  "topicmodels", "LDAvis", "tsne",  # Topic modeling
+  "tidygeocoder",                   # Working with spatial data
+  "igraph", "ggraph", "DiagrammeR"  # Network analysis and visualization
 )
 
 ## Load required packages, install them if needed
@@ -81,6 +81,8 @@ for (package in packages) {
   library(package, character.only = TRUE)
 }
 
+
+# TODO should this be replaced with a call to `library(mintEMU)`?
 # Load analysis functions ----
 devtools::load_all(".")
 ```
@@ -88,85 +90,76 @@ devtools::load_all(".")
 ```{r load-data}
 #| include: false
 
-# Load thesis metadata
-data(emu_metadata)
+# TODO merge into setup code chunk
 
-# Load raw text data
-data(emu_raw) 
+# Load data for analysis
+data(emu_metadata)  # Thesis metadata
+data(emu_raw)       # Raw text data
+data(emu_clean)     # Cleaned text data
 
-# Load cleaned text data
-data(emu_clean)
-
-# Join text with the metadata file  
-emu <- emu_raw |> 
-  left_join(emu_metadata, by = "ID") |> 
+# Join metadata and cleaned text data
+emu <- emu_metadata |> 
+  left_join(emu_raw, by = "ID") |> 
   left_join(emu_clean, by = "ID")
+
+theses_all_per_year <- read_csv(file = here("analysis", "data", "derived_data", "theses-per-year.csv"))
+
+# # Prepare data for analysis
+# ## Create lists of stop words
+# thesis_sw <- thesis_stopwords(
+#   add_stopwords = c("advisor", "prof", "professor", "fig", "ure", "figure", "ning", "dr", "ir", "drir"))
+# custom_sw <- c("space[s]?", "spatial", "plan", "(plann)\\w{0,}", "public", "development",
+#                "design", "process[es]?", "project[s]?", "figure[s]?", "map[s]?", "strateg(y|ies)", "intervention[s]?",
+#                "create", "exist", "analys(i|e)s") |>
+#   (\(.) paste0("\\b", ., "\\b"))() |>
+#   paste(collapse = "|")
+# emu_sw <- urbanism_stopwords(
+#   add_stopwords = c("emu", "european post[\\-]?(graduate)?[\\s]?master[s]? in urbanism",
+#                     "tu delft", "ku leuven", "upc barcelona", "iuav venice"))
+# 
+# emu$text_clean <- emu$text_clean |> 
+#   # Remove white spaces and punctuation, and change text to lower-case
+#   clean_basic() |>
+#   # Remove thesis-specific words
+#   str_remove_all(thesis_sw) |> 
+#   # Remove dataset-specific words
+#   str_remove_all(emu_sw)
+# 
+# # Concatenate ngrams
+# emu$text_clean <- emu |>
+#   mintEMU::c_ngrams(n_max = 3, text_col = "text_clean",
+#            id_col = "ID", min_freq = 20, lemma = TRUE)
+# 
+# # Words that were not included in ngrams are safe to remove now
+# emu$text_clean <- emu$text_clean |>
+#   # Words that were not included in ngrams are safe to remove now
+#   str_remove_all(custom_sw)
+
 ```
 
 # Introduction
 
-The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. The EMU was an advanced master ran jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia. <!-- Complete paragraph about the program -->
+The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) of the Department of Urbanism at the Faculty of Architecture and the Built Environment, TU Delft. The EMU is an advanced master started jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia in 2005. The program distinguished itself internationally as a post-master open only to applicants with a prior MSc degree and experience in practice. With a combined research and design program, it provided a bridge towards advanced practice as well as research trajectories after graduation. All students followed an exchange semester at one of the other three program universities, allowing them to have a broader view on the field of urbanism. Although located in Europe and named "European", its geographic scope is global, especially at the level of graduation, considering that a large majority of students were of non-European origin. Influenced by the strong urbanism tradition of the four universities involved, the program yielded a group of almost 100 graduates.
 
-Distinctive features of the program:\
-- as a postmaster, it only accepted applicants with a prior MSc degree and experience in practice - provides a bridge towards PhD-level research - all students had an exchange semester at one of the other three program universities
+In 2021, TU Delft stepped out the program, but its approach has remained imprinted on the TU Delft approach to urbanism. <!--# paragraph to be elaborated -->
 
-In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved over the years of the program. To that end, we employed a text mining approach in which we analysed its output: 96 theses with an average of `r mean(str_length(emu$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(emu$graduation_year, na.rm = TRUE), "-", max(emu$graduation_year, na.rm = TRUE))`.
+In order to describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved over the years of the program. To that end, the research presented in this paper employed a text mining approach to analyse the output of the EMU: 96 theses with an average of `r mean(str_length(emu$text_clean), na.rm = TRUE)` words produced over the years for the duration of the program between `r paste0(min(emu$graduation_year, na.rm = TRUE) - 2, "-", max(emu$graduation_year, na.rm = TRUE))`.
 
 <!-- If the focus of the paper shifts to topic modeling the paragraphs below can be swapped with the paragraphs describing the EMU program. -->
 
-This paper leverages topic modeling as an unsupervised machine learning method to reveal latent semantic structure and relationships between the latent topics in a large document collection [@muchene2021].
+**The rise of computational social sciences** [@wallach2018] provides tools and methods to summarise large sets of data that would not be possible with human annotation [@blei2012]. At the same time, urbanism research in general and urbanism education studies in particular that use statistical methods for unstructured data, such as topic modeling, are scarce. This is especially a missed opportunity considering that theses are representative outputs of educational programs that are increasingly available in digital repositories - the TU Delft repository was established in 2007, which is also the first graduation year of the EMU, and has been steadily growing since then. Patterns revealed in past education can potentially better inform future decisions in education in the field. Although the corpus analysed in this study is relatively small, it is large enough to make a quantitative analytical approach untenable.
 
-In Natural Language Processing (NLP) ... and the focus on its subtopic topic modeling
+Acknowledging that opportunity, **this paper leverages topic modeling**, a branch of NLP, as an unsupervised machine learning method to reveal latent the semantic structure and relationships between latent topics in a large document collection [@muchene2021]. Latent Dirichlet Allocation (LDA) is broadly adopted in topic modeling [@muchene2021] as it uses a *soft clustering algorithm* in which objects can be part of multiple clusters (mixed membership approach) as opposed to hard clustering algorithms (single membership approaches) [@rüdiger2022a]. LDA uses as input a bag-of-words (BOW) model, more generally called the vector space model (VSM), in which documents in a corpus are decomposition into two low-dimensional matrices for doc-topic distribution and word-topic distribution, respectively. Although topic modeling in general automates the process of identifying topics through clustering, those topics need to be manually interpreted and labelled after the application of the algorithm [@rüdiger2022a]. Moreover, arguing for the right algorithm and a suitable number of clusters remains a challenge [@rüdiger2022]
 
-Topic modeling provides a way to generative
+In addition to describing the legacy of the EMU, **this paper showcases a reproducible research workflow**. It is part of a reproducible research compendium and accompanied by a published dataset. The analyses presented in this paper were carried out in the free and open-source statistical programming software R [@rcoreteam2023]. The research compendium is available at \[ADD CITATION\], the data is published in th 4TU.ResearchData repository \[ADD CITATION\] and it is available for exploration in a Shiny dashboard at \[ADD LINK\]
 
--   bag of words
+-   Give an overview of th predominant topics and their evolution over the years of the EMU program.
 
--   decomposition into two low-dimensional matrices for doc-topic distribution and word-topic distribution, respectively
-
--   LDA and extensions of it (CTM, HDP, GLDA, DTM) are broadly adopted in topic modeling [@muchene2021]
-
-<!-- Describe the research gaps -->
-
-Research gaps and opportunities:
-
--   The scarcity of studies that use statistical methods for unstructured data in urbanism education
-
--   Theses are representative outputs of educational programs that can be used as data for text mining. The growing availability of theses in digital repositories presents an opportunity to that end. The TU Delft repository was established in 2007, in the year when the EMU program started.
-
--   Applications of topic modeling in the field of urbanism
-
--   Patterns revealed in past education can potentially better inform future decisions in education in the field
-
--   The EMU program...
-
-Challenges:
-
-Contribution:
-
--   This paper showcases reproducible research workflow. It is part of a reproducible research compendium and accompanied by a published dataset. The analyses presented in this paper were carried out in the free and open-source statistical programming software R [@rcoreteam2023]. The research compendium is available at \[ADD CITATION\], the data is published in th 4TU.ResearchData repository \[ADD CITATION\] and it is available for exploration in a Shiny dashboard at \[ADD LINK\]
-
--   Give an overview of th predominant topics and their evolution over the years of the EMU program. In addition to the natural document classification <!--# explain --> of documents provided by a repository, LDA allows documents to be part of multiple topics [@muchene2021].
-
-<!--# Outline -->
-
-The following section describes the case study data, pre-processing steps and the topic modeling workflow.
+The following section describes the case study data, pre-processing steps and the topic modeling workflow. Then results of the analysis are summarised in... The paper concludes with a discussion on what the lessons learned from the EMU program mean for urbanism education and practice in general as well as on the broader challenges and opportunities of the text mining approach taken in the paper.
 
 # Methods
 
-Research questions:
-
--   What were the main topics addressed in the EMU program?
-
--   How did those topics evolve throughout the duration of the program between 2007-2021?
-
--   To what extent were the topics and evolution thereof influenced by the assignments given to the students throughout their studies leading up to their thesis?
-
--   To what extent were the topics and evolution thereof influenced by the exchange semester followed by the students?
-
-    -   Use LDA clustering with 3 classes (corresponding to the three exchange universities) to see how well the clustering is aligned with where the student carried out their exchange semester. Use a confusion matrix to visualize the relation between real values and values assigned through clustering.
-  
-The research process (@fig-process-diagram)...
+To describe the legacy of the EMU program this research answers two questions: What were the main topics addressed in the EMU program? And how did those topics evolve throughout the duration of the program between 2007-2021? The paper then discusses to what extent those topics and evolution thereof were influenced by the assignments given to the students throughout their studies leading up to their thesis and by the exchange semester followed by the students. The research process is described in @fig-process-diagram.
 
 ```{r fig-process-diagram}
 #| fig-cap: Text mining process
@@ -182,23 +175,78 @@ graph LR
 ")
 ```
 
+1.  
+
+2.  Pre-processing ...
+
+3.  Information extraction ... topic modeling:
+
+3.1. tokenisation with a window of 1-3 words
+
+3.2. DTM, discarding terms with a frequency under a specified threshold
+
+3.3. Assign a K value manually
+
+3.4. Calculate topic coherence for K values ranging from 2 to K
+
+3.5. Plot K values agianst coherence scores and select K with the highest coherence value
+
+3.6. Fit model with K determined in previous step
+
+3.7. Get top 20 words in each topic to understand what it is about
+
+3.8. Run a cluster dendrogram (Hellinger distance) to see which topics should be grouped together
+
+3.9. Visualise topics with word clouds
+
+OR Use LDA clustering with 3 classes (corresponding to the three exchange universities) to see how well the clustering is aligned with where the student carried out their exchange semester. Use a confusion matrix to visualize the relation between real values and values assigned through clustering.
+
+4.  Visualisation ...
+
+5.  Results ...
+
 ## Data collection
 
-Of the total of 96 theses published in the EMU program, full-text documents were available and permissions were granted for `r nrow(emu)` <!--# update after removing theses without permission -->. Metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records when unavailable on the repository. The full-text documents were obtained either from the TU Delft Education Repository (an API for downloading a large set of full-text data is not available), when available, or from the authors via email. Even though repository entries are open access, it was unclear if the content of the theses can be mined. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni network, permissions were requested individually. Only PDFs for which permission was obtained were included in the corpus.With the exception of a bilingual English-Spanish thesis, all thesis were written in English. The theses are available in PDF format with complex layouts typical to an urbanism project in which text and various types of graphics are combined. @tbl-data gives an overview of the data included in the analysis.
-
-Description of text extraction; raw data available on 4TU.ResearchData at...
+The dataset consists of full texts and metadata of a subset of EMU theses written in English. The full texts are available as PDF documents with complex layouts typical to an urbanism project in which text and various types of graphics are combined. The full-text documents were obtained either from the TU Delft Education Repository upon request (an API for downloading full-text data was not available at the time of data collection), or from the authors via email if not available on the repository. In addition, metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records when unavailable on the repository. Even though repository entries are openly accessible, licenses were not specified and thus it was unclear if the content of the theses can be mined and if the resulting data can be published. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni network, permissions were requested individually. As a result, of the total of `r sum(theses_all_per_year$n)` theses presented in the EMU program, full-text documents were obtained for 83 of which permissions were granted for `r nrow(emu)`. Only PDFs for which permission was obtained were included in the corpus. The final corpus contains at least one thesis for each year of graduation between 2007-2021 as shown in @tbl-data.
 
 ```{r tbl-data}
 #| tbl-cap: Overview of theses included in the analysis
 #| tbl-cap-location: top
 
+emu |> 
+  count(graduation_year) |> 
+  left_join(theses_all_per_year, by = c("graduation_year" = "grad_year")) |> 
+  mutate(graduation_year = as.factor(graduation_year),
+         `% of all theses` = scales::label_percent()(round(n.x / n.y, 4))) |>
+  bind_rows(data.frame(graduation_year = "", 
+                       n.x = nrow(emu), 
+                       n.y = sum(theses_all_per_year$n),
+                       `% of all theses` = scales::label_percent()(nrow(emu) / sum(theses_all_per_year$n)),
+                       check.names = FALSE)) |> 
+  rename(`Graduation year` = graduation_year,
+         `No. theses included` = n.x) |>
+  select(-n.y) |>
+  kableExtra::kable(align = "r")
 ```
 
-The imported dataset contains the text data in the `text` column and related metadata in the other columns...
+## Pre-processing
 
-For each thesis, henceforth referred to as "document", the metadata consisted of the `ID`, `title`, `graduation_year`, `graduation_semester`, `exchange_semester`, `location`, `latitude`, `longitude`, `abstract`, `text_raw` and `text_clean` <!--# check column names or add them in an inline code chunk with epoxy -->.
+The text was extracted from the original theses with . The text was
 
-Both the raw and cleaned data are published in the 4TU.ResearchData repository [ADD CITATION].
+Description of text extraction;
+
+The raw data available on 4TU.ResearchData at...The imported dataset contains the text data in the `text` column and related metadata in the other columns...
+
+For each thesis, henceforth referred to as "document", the following cleaning steps were performed:
+
+1.  Text was extracted from the original PDF documents with the the PyMuPDF Python package. During extraction, the front matter (cover page, colophon, contents, acknowledgements) and back matter (references) were removed. The page numbers used to exclude the front matter and back matter were manually identified and used as input for page selection during text extraction.
+2.  The extracted text was cleaned of line breaks, hyphenation, occurrences of the thesis title, author name, and page numbers.
+
+Only relevant metadata was kept
+
+The resulting dataset consisted of the `ID`, `title`, `graduation_year`, `graduation_semester`, `exchange_semester`, `location`, `latitude`, `longitude`, `abstract`, `text_raw` and `text_clean` <!--# check column names or add them in an inline code chunk with epoxy -->.
+
+Both the raw and cleaned data are published in the 4TU.ResearchData repository \[ADD CITATION\].
 
 ```{r fig-map-theses}
 #| fig-cap: "Location of EMU theses included in the analysis"
@@ -209,15 +257,51 @@ visualize_thesis_locations(emu)
 
 @fig-map-theses shows the geographic spread of the theses included in the analysis.
 
-## Pre-processing
+## Information extraction
+
+### Tokenisation
 
 Word-level tokenisation was applied with the `unnest_tokens()` function of the `tidytext` package. This was preferred over other tokenisers as it produced results that work seamlessly with other `tidyverse` tools used in the analysis. `unnest_tokens()` removes punctuation, converts to lower-case, and separate all words into individual tokens.
 
-Bigrams such as "public space" and trigrams such as "socio-spatial segregation" identified during preliminarey EDA were concatenated by replacing white spaces with underscores.
+Bigrams such as "public space" and trigrams such as "socio-spatial segregation" identified during preliminary EDA were concatenated by replacing white spaces and hyphens with underscores. This way, they could be included alongside words in the topic model.
 
 For analyses in which word-level tokens were used, stop words, i.e., common words or words that do not add much meaning, were removed in the pre-processing stage. Global, subject-specific and document stop words [@hvitfeldt2021a] were differentiated. As all theses were written in English, the pre-made "snowball" lexicon was used to remove global stop words. <!-- We tried to create a custom global stop word list on the entire corpus, by removing high-frequency words, starting with 20 words and increasing by 10 until reaching words that are not appropriate as stop words, but no significant improvement was observed in the result. --> We manually constructed a list of subject-specific stop words based on our domain knowledge. Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words. In the next pre-processing step, we normalised the resulting words, that is, reduced them to their canonical dictionary forms, the resulting words were lemmatised [@hvitfeldt2021a]. Lemmatisation was preferred over stemming as the former tends to be more meaningful and less degrading than the latter.
 
+```{r eval=FALSE}
+ent1 <- spacyr::entity_extract(spacyr::spacy_parse(emu$text_clean[1:13]))
+
+ent1 |> 
+  filter(entity_type == "LOC") |> 
+  pull(entity) |> 
+  unique()
+
+ent2 <- ent1 |> 
+  mutate(entity = tolower(entity)) |> 
+  group_by(entity) |> 
+  mutate(bign = length(unique(doc_id))) |> 
+  ungroup() |> 
+  count(doc_id, entity, bign) |> 
+  filter(bign > 3, nchar(entity) > 4)
+
+dtm <- tidytext::cast_sparse(data = ent2,
+                             row = doc_id,
+                             column = entity,
+                             value = n)
+
+lda <- text2vec::LDA$new(n_topics = 50) 
+fit <- lda$fit_transform(dtm, progressbar = F)
+tm_summary <- # incomplete code
+
+```
+
+```{r eval=FALSE}
+# Find locations
+entity::location_entity(head_text(emu$text_clean[15], sub_end = 50000))
+```
+
 ```{r tokenise}
+
+# TODO create tokenizer function
 
 # Unnest tokens and remove words of one and two letters
 emu_words <- emu |> 
@@ -233,12 +317,9 @@ emu_words <- emu |>
 
 Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, including "map" and "low", were meaningful and occurring in high frequency.
 
-
-## Information extraction
-
 ### Topic model
 
-Similar to clustering on numeric data, topic modelling is a method of unsupervised classification of topics found in a group of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\theta$ (theta) statistic.
+Similar to clustering on numeric data, topic modelling is a method of unsupervised classification of topics found in a collection of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\theta$ (theta) statistic.
 
 LDA is a Bayesian generative topic model which assumes that each topic is a distribution over words and each document is a distribution over topics [@blei2012; @grün2011; @blei2003].
 
@@ -257,27 +338,34 @@ Describe model parameters:
 Determining tuning parameters:
 
 -   The number of topics was qualitatively determined
--   Evaluating the number of topics quantitatively requires can be done through
-the measure of **topic coherence**
+-   Evaluating the number of topics quantitatively requires can be done through the measure of **topic coherence**
 
-LDA requires a document-term matrix as input.
+LDA requires a document-term matrix (DTM) as input. To reduce the size of the DTM, words with a frequency lower than 5 were excluded.
 
-```{r topic-model-lda-1}
+```{r topic-model-dtm}
+
+# TODO should tf or tf-idf be used for weighting?
 
 # Prepare document-term matrix as input for LDA model
-# Reduce the size of the DTM by excluding words with a frequency lower than 5
 emu_dtm <- convert_to_dtm(emu_words, 
                           id_col = "ID", 
                           word_col = "word", 
                           min_term_freq = 5)
+```
 
+```{r topic-model-lda-1}
 # Fit LDA model with K clusters
 ## Determine K value empirically
 k = get_number_of_topics(emu_dtm)
-# TODO run the model with the empirically determined k and compare (or combine) with results using qualitative value
+# TODO run the model with the empirically determined k and compare with results using qualitative value
 emu_lda_k <- LDA(emu_dtm, k = k, method = "Gibbs",
                control = list(seed = 2023, iter = 500, verbose = 25))
 
+beta_k <- posterior(emu_lda_k)$terms
+theta_k <- posterior(emu_lda_k)$topics 
+
+# Add pseudo-names to topics based on the top 5 words in each topic
+topic_names_k <- name_topics(beta_k)
 
 ## Determine K value qualitatively
 ## K = 5 corresponds to the 2 TUD semesters and the 3 exchange semesters combined 
@@ -288,11 +376,7 @@ emu_lda_5 <- LDA(emu_dtm, k = 5, method="Gibbs",
 beta_5 <- posterior(emu_lda_5)$terms
 theta_5 <- posterior(emu_lda_5)$topics 
 
-beta_k <- posterior(emu_lda_k)$terms
-theta_k <- posterior(emu_lda_k)$topics 
-
 # Add pseudo-names to topics based on the top 5 words in each topic
-topic_names_k <- name_topics(beta_k)
 topic_names_5 <- name_topics(beta_5)
 
 ```
@@ -303,13 +387,16 @@ topic_names_5 <- name_topics(beta_5)
 # TODO Replace this with a table containing topics, documents, and theta
 #      sorted by theta in decreasing order
 # What is the dominant topic in each document?
-N = 70
+N = nrow(theta_5)
 topic_prop_examples <- theta_5[1:N,]
 colnames(topic_prop_examples) <- topic_names_5
-# TODO change to pivot_longer
-vizDataFrame <- melt(cbind(data.frame(topic_prop_examples), 
-                           document = factor(str_sub(rownames(topic_prop_examples), 1, 20))), 
-                     variable.name = "topic", id.vars = "document") |> 
+
+vizDataFrame <- pivot_longer(
+  data = data.frame(topic_prop_examples, 
+                    document = factor(str_sub(rownames(topic_prop_examples), 1, 20))),
+  cols = -document,
+  names_to = "topic",
+  values_to = "value") |> 
   group_by(document) |> 
   mutate(value_max = max(value),
          topic_max = topic[value == value_max])
@@ -326,60 +413,53 @@ ggplot(data = vizDataFrame, aes(topic, value, fill = topic_max), ylab = "proport
 ```
 
 ```{r topics-per-corpus}
-#| eval: false
 
 # What are the most probable topics in the entire collection?
-topicProportions <- colSums(theta_5) / nDocs(emu_dtm)  # mean probabilities over all paragraphs
-names(topicProportions) <- topic_names_5     # assign the topic names we created before
-sort(topicProportions, decreasing = TRUE) # show summed proportions in decreased order
-
-soP <- sort(topicProportions, decreasing = TRUE)
-paste(round(soP, 5), ":", names(soP))
+topic_proportions <- get_topic_proportions(emu_lda_5)
+# paste0(round(topic_proportions$proportion, 2), ": ", topic_proportions$topic)
 
 # How many documents are with the highest probability in each topic?
-K = 5
-countsOfPrimaryTopics <- rep(0, K)
-names(countsOfPrimaryTopics) <- topic_names_5
-for (i in 1:nDocs(emu_dtm)) {
-  topicsPerDoc <- theta_5[i, ] # select topic distribution for document i
-  # get first element position from ordered list
-  primaryTopic <- order(topicsPerDoc, decreasing = TRUE)[1] 
-  countsOfPrimaryTopics[primaryTopic] <- countsOfPrimaryTopics[primaryTopic] + 1
-}
-sort(countsOfPrimaryTopics, decreasing = TRUE)
+counts_of_primary_topics <- count_docs_per_topic(emu_lda_5)
+# paste0(counts_of_primary_topics$count, ": ", topic_proportions$topic)
 
-so <- sort(countsOfPrimaryTopics, decreasing = TRUE)
-paste(so, ":", names(so))
+topic_proportions |> 
+  left_join(counts_of_primary_topics, by = "topic")
 ```
 
 ```{r}
 #| eval: false
 
-topicToFilter <- 6  # you can set this manually ...
-# ... or have it selected by a term in the topic name (e.g. 'children')
-topicToFilter <- grep('river', topic_names_5)[1] 
-topicThreshold <- 0.2
-selectedDocumentIndexes <- which(theta_5[, topicToFilter] >= topicThreshold)
-filteredCorpus <- emu[selectedDocumentIndexes,]
+topic_to_filter <- 1  # set manually
+# or have it selected by a term in the topic name (e.g. 'airport')
+topic_to_filter <- grep('water', topic_names_5)[1] 
+topic_threshold <- 0.2
+selected_document_indices <- which(theta_5[, topic_to_filter] >= topic_threshold)
+filtered_corpus <- emu[selected_document_indices,]
 # show length of filtered corpus
-filteredCorpus
+nrow(filtered_corpus)
 ```
 
 ```{r}
 #| eval: false
 
-N = 82
+N = nrow(emu)
 topic_prop_per_year <- theta_5[1:N,]
 colnames(topic_prop_per_year) <- topic_names_5
 
-# TODO change to pivot_longer
-vizDataFrameWithYear <- melt(cbind(data.frame(topic_prop_per_year), 
-                           document = factor(rownames(topic_prop_per_year))), 
-                     variable.name = "topic", id.vars = "document") |> 
-    left_join(select(emu, ID, "year" = graduation_year), by = c("document" = "ID"))
+viz_df_with_year <-
+  pivot_longer(
+    data = data.frame(topic_prop_examples,
+                      document = factor(str_sub(
+                        rownames(topic_prop_examples), 1, 20))),
+    cols = -document,
+    names_to = "topic",
+    values_to = "value") |> 
+  left_join(mutate(emu, ID = as.factor(ID), "year" = graduation_year), by = c("document" = "ID"))
 
+# TODO change to discrete colors
+# TODO try representing this as a line chart
 # Plot topic proportions per year
-vizDataFrameWithYear |> 
+viz_df_with_year |> 
   ggplot(aes(x = factor(year), y = value, fill = topic)) + 
   geom_bar(stat = "identity", position = "fill") +
   scale_fill_viridis_d(name = "Topics") +
@@ -392,6 +472,8 @@ vizDataFrameWithYear |>
 #| eval: false
 
 # TODO check if this can be included in the Shiny dashboard
+# TODO remove from paper
+# TODO how to show distances between topics in the paper?
 # Function to approximate the distance between topics
 svd_tsne <- function(x) tsne(svd(x)$u)
 
@@ -412,8 +494,6 @@ LDAvis::serVis(json)
 ```
 
 ```{r topic-model-beta}
-
-# TODO Explore including concatenated collocations in the topic model
 
 # Extract topics as mixtures of terms from LDA model
 emu_topics <- tidy(emu_lda_5, matrix = "beta")
@@ -457,6 +537,8 @@ emu_documents |>
   geom_bar(stat = "identity") + 
   coord_flip()
 
+# TODO check if this is consistent with the results above
+# TODO is gamma the same as theta ?!
 emu_documents |>
   mutate(document = as.numeric(document)) |> 
   inner_join(emu |> 
@@ -467,6 +549,7 @@ emu_documents |>
   coord_flip() + 
   facet_wrap(~ graduation_year, ncol = 1, scales = "free", drop = TRUE)
 
+# TODO check if this plot is useful and, if not, remove it
 emu_documents |> 
   inner_join(emu |> 
                select(ID, graduation_year), 
@@ -497,11 +580,26 @@ get_top_words_per_document(data = emu_words, id_col = "ID", top_n = 10)
 ```{r top-words-corpus}
 
 # Which are the top n most frequently used words in all theses?
-# TODO add `topic` to `fill` aesthetic
-n = 50
+terms <- as.data.frame(posterior(emu_lda_5)$terms)
+rownames(terms) <- topic_names_5
+terms <- terms |> 
+  mutate(topic = rownames(terms)) |> 
+  pivot_longer(-topic,
+               names_to = "term",
+               values_to = "prob") |> 
+  group_by(term) |> 
+  mutate(max_topic = topic[which.max(prob)]) |> 
+  filter(topic == max_topic) |> 
+  ungroup()
+
+emu_words_topics <- emu_words |> 
+  left_join(terms, by = c("word" = "term"))
+
+n = 20
 get_top_words_per_corpus(data = emu_words, top_n = n) |>
+  left_join(terms, by = c("word" = "term")) |> 
   ggplot(aes(reorder(word, n), n)) +
-  geom_col(fill = "orange") +
+  geom_col(aes(fill = max_topic)) +
   geom_text(aes(label = n), size = 2, hjust = 1.1) +
   coord_flip() +
   xlab("Word") +
@@ -543,6 +641,8 @@ trigram_tf_idf <- emu_trigrams |>
   arrange(desc(tf_idf))
 
 trigram_tf_idf
+
+trigram_tf_idf |> arrange(desc(n))
 ```
 
 ```{r}
@@ -706,10 +806,10 @@ What terms should be checked with the function below?
 
 # Calculate nearest neighbours of a given word
 tidy_word_vectors |> 
-  nearest_neighbors("resilience")
+  nearest_neighbors("water")
 ```
 
-The first # components... what do they show?
+The first \# components... what do they show?
 
 ```{r word-embeddings-vis}
 
@@ -741,7 +841,7 @@ dim(doc_matrix)
 
 # Discussion
 
-Although the focus of this study is on describing a fixed corpus though unsupervised machine learning, it can provide input into supervised predictive models. 
+Although the focus of this study is on describing a fixed corpus though unsupervised machine learning, it can provide input into supervised predictive models.
 
 # Conclusion
 

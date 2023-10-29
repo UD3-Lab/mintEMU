@@ -52,6 +52,9 @@ theses_meta <- theses_all %>%
 
 # Write metadata ----
 theses_meta %>%
+  mutate(`repository link` = case_when(
+    last_name == "Park" ~ "http://resolver.tudelft.nl/uuid:55020771-b07d-4953-b578-37b0be018521",
+    .default = `repository link`)) %>%
   mutate(thesis_title = ifelse((!is.na(title) & (str_length(title) > str_length(thesis_title))), title, thesis_title)) %>%  # Update titles from repository
   mutate(count_na = apply(., 1, function(x) sum(is.na(x)))) %>%
   group_by(file_name) %>%
@@ -82,9 +85,13 @@ theses_meta %>%
          "title" = thesis_title,
          "graduation_year" = grad_year,
          "graduation_semester" = grad_sem,
-         "link" = `repository link`) %>%
+         "link" = `repository link`,
+         start_page, end_page) %>%
   rename(full_title = title) %>%
   separate(full_title, c("title", "subtitle"), sep = ":", remove = FALSE) %>%
   write_csv(file = here("analysis", "data", "raw_data", "theses-metadata.csv"))
 
-
+## Total theses per year
+readxl::read_xlsx(path = here("analysis", "data", "raw_data", "theses-all.xlsx")) |>
+  count(grad_year) |>
+  write_csv(file = here("analysis", "data", "derived_data", "theses-per-year.csv"))

@@ -11,6 +11,9 @@ slide_windows(tbl, window_size)
 
 \item{window_size}{A small window size of 3-4 shows how a word is used, while a larger window size of, say, 10 gives more information about the domain topic.}
 }
+\value{
+Data frame with skipgram probabilities
+}
 \description{
 Sliding window function used to calculate skipgram probabilities,
 that is, how often each word occurs near each other word.

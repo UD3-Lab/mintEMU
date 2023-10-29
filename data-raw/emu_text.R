@@ -7,21 +7,21 @@ usethis::use_data(emu_raw, overwrite = TRUE)
 
 # emu metadata file
 emu_meta_path <- here::here("analysis", "data", "derived_data", "emu_metadata.csv")
-
 emu_metadata <- readr::read_csv(emu_meta_path)
 
-# add metadata dataset to the package
+# add metadata to the package
 usethis::use_data(emu_metadata, overwrite = TRUE)
 
 # Clean the dataset ----
-
 emu <- dplyr::left_join(emu_raw, emu_metadata, by  = "ID")
 
-meta_sw <- mintEMU::find_meta_stopwords(emu)
+# Prepare lists of stop words
+meta_sw <- mintEMU::find_meta_stopwords(emu, clean_meta = FALSE)
 emu_sw <- mintEMU::urbanism_stopwords(
   add_stopwords = c("emu", "european post[\\-]?(graduate)?[\\s]?master[s]? in urbanism",
                     "tu delft", "ku leuven", "upc barcelona", "iuav venice"))
-thesis_sw <- mintEMU::thesis_stopwords(add_stopwords = c("advisor", "prof", "fig", "ure", "figure", "ning"))
+thesis_sw <- mintEMU::thesis_stopwords(
+  add_stopwords = c("advisor", "prof", "professor", "fig", "ure", "figure", "ning", "dr", "ir", "drir"))
 anonymisation_sw <- c("EMAIL_REMOVED", "AUTHOR_REMOVED", "FIRST_NAME_REMOVED", "LAST_NAME_REMOVED") |>
   paste(collapse = "|")
 custom_sw <- c("space[s]?", "spatial", "plan", "(plann)\\w{0,}", "public", "development",
@@ -30,18 +30,36 @@ custom_sw <- c("space[s]?", "spatial", "plan", "(plann)\\w{0,}", "public", "deve
   (\(.) paste0("\\b", ., "\\b"))() |>
   paste(collapse = "|")
 
+# # Add cleaned text column
+# emu$text_clean <- emu$text_raw |>
+#   # Remove hyphenation
+#   stringr::str_replace_all("-\\n", "") |>
+#   # Remove text included with anonymisation
+#   stringr::str_remove_all(anonymisation_sw) |>
+#   # Remove white spaces and punctuation, and change text to lower-case
+#   mintEMU::clean_basic() |>
+#   # Remove title, subtitle and full title
+#   stringr::str_remove_all(meta_sw) |>
+#   # Remove dataset-specific words
+#   stringr::str_remove_all(emu_sw) |>
+#   # Remove thesis-specific words
+#   stringr::str_remove_all(thesis_sw)
+
 # Add cleaned text column
 emu$text_clean <- emu$text_raw |>
+  # Remove hyphenation
+  stringr::str_replace_all("-\\n", "") |>
+  # Remove line breaks
+  stringr::str_replace_all(" \\n", " ") |>
+  # Remove page numbers
+  stringr::str_remove_all("\\n{0,}\\s{0,}\\d+\\n") |>
   # Remove text included with anonymisation
   stringr::str_remove_all(anonymisation_sw) |>
-  # Remove white spaces and punctuation, and change text to lower-case
-  mintEMU::clean_basic() |>
-  # Remove title, subtitle and full title
-  stringr::str_remove_all(meta_sw) |>
-  # Remove dataset-specific words
-  stringr::str_remove_all(emu_sw) |>
-  # Remove thesis-specific words
-  stringr::str_remove_all(thesis_sw)
+  # Remove occurrences of the full title
+  stringr::str_remove_all(meta_sw)
+
+# # Check line breaks
+# emu$text_clean[22] |> str_split("\\n")
 
 # Concatenate ngrams
 emu$text_clean <- emu |>

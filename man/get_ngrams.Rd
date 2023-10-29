@@ -18,15 +18,15 @@ get_ngrams(
 \arguments{
 \item{data}{Data frame of documents containing a text column}
 
-\item{n}{The number of words to include in the token (e.g., n = 2 for bigram)}
+\item{n}{The number of words to include in the token (e.g., n = 2 for bigrams)}
 
-\item{text_col}{The name of the column where the text to be tokenised is located}
+\item{text_col}{The name of the text column where to be tokenised}
 
 \item{id_col}{The name of the ID column}
 
-\item{stem}{If \code{TRUE} create additional columns with stemmed version of tokens}
+\item{stem}{If \code{TRUE} create additional columns with stemmed tokens}
 
-\item{lemma}{If \code{TRUE} create additional columns with lemmatised version of tokens}
+\item{lemma}{If \code{TRUE} create additional columns with lemmatised tokens}
 }
 \value{
 A data frame with an "ngram" column and columns for its constituent words
