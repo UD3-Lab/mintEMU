@@ -91,4 +91,7 @@ theses_meta %>%
   separate(full_title, c("title", "subtitle"), sep = ":", remove = FALSE) %>%
   write_csv(file = here("analysis", "data", "raw_data", "theses-metadata.csv"))
 
-
+## Total theses per year
+readxl::read_xlsx(path = here("analysis", "data", "raw_data", "theses-all.xlsx")) |>
+  count(grad_year) |>
+  write_csv(file = here("analysis", "data", "derived_data", "theses-per-year.csv"))
