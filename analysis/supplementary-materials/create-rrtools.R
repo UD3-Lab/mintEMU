@@ -6,5 +6,5 @@ renv::init()
 rrtools::add_dependencies_to_description()
 devtools::document()
 
-# allows using magrittr pipe in the pacakge:
+# allows using magrittr pipe in the package:
 usethis::use_pipe()
