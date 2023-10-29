@@ -72,7 +72,8 @@ Imports:
     topicmodels (>= 0.2-14),
     utils (>= 4.2.0),
     widyr (>= 0.1.5),
-    wordcloud2 (>= 0.2.1)
+    wordcloud2 (>= 0.2.1),
+    magrittr
 Suggests: 
     devtools,
     testthat (>= 3.0.0),
