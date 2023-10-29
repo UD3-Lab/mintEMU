@@ -11,6 +11,7 @@ agree to abide by our [code of conduct](CONDUCT.md).
 * [Fork](https://github.com/UD3-Lab/minTEMU/#fork-destination-box) the repository on GitHub to make a copy of the repository on your account. Or use this line in your shell terminal:
 
     `git clone git@github.com:your-username/minTEMU.git`
+* Run `renv:install()` to install the package dependencies. 
     
 ## Making changes
 
