@@ -203,28 +203,28 @@ OR Use LDA clustering with 3 classes (corresponding to the three exchange univer
 
 5.  Results ...
 
-## Data collection
+## Data collection {#datacol}
 
-The dataset consists of full texts and metadata of a subset of EMU theses written in English. The full texts are available as PDF documents with complex layouts typical to an urbanism project in which text and various types of graphics are combined. The full-text documents were obtained either from the TU Delft Education Repository upon request (an API for downloading full-text data was not available at the time of data collection), or from the authors via email if not available on the repository. In addition, metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records when unavailable on the repository. Even though repository entries are openly accessible, licenses were not specified and thus it was unclear if the content of the theses can be mined and if the resulting data can be published. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni network, permissions were requested individually. As a result, of the total of `r sum(theses_all_per_year$n)` theses presented in the EMU program, full-text documents were obtained for 83 of which permissions were granted for `r nrow(emu)`. Only PDFs for which permission was obtained were included in the corpus. The final corpus contains at least one thesis for each year of graduation between 2007-2021 as shown in @tbl-data.
+**The dataset consists of full texts and metadata of a subset of EMU theses written in English.** The full texts are available as PDF documents with unstructured layouts typical to an urbanism project in which text and various types of graphics are combined. The full-text documents were obtained either from the TU Delft Education Repository upon request (an API for downloading full-text data was not available at the time of data collection), or from the authors via email if not available on the repository. Metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records when unavailable on the repository. Even though repository entries are openly accessible, licenses were not specified and thus it was unclear if the content of the theses can be mined and if the resulting data can be published. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni network, permissions were requested individually. As a result, of the total of `r sum(theses_all_per_year$n_total)` theses presented in the EMU program, full-text documents were obtained for `r sum(theses_all_per_year$n_pdfs)` of which permissions were granted for `r nrow(emu)`. Only PDFs for which permission was obtained were included in the corpus. The final corpus contains at least one thesis for each year of graduation between `r min(emu$graduation_year)`-`r max(emu$graduation_year)` as shown in @tbl-data.
 
 ```{r tbl-data}
 #| tbl-cap: Overview of theses included in the analysis
 #| tbl-cap-location: top
 
-emu |> 
-  count(graduation_year) |> 
-  left_join(theses_all_per_year, by = c("graduation_year" = "grad_year")) |> 
-  mutate(graduation_year = as.factor(graduation_year),
-         `% of all theses` = scales::label_percent()(round(n.x / n.y, 4))) |>
-  bind_rows(data.frame(graduation_year = "", 
-                       n.x = nrow(emu), 
-                       n.y = sum(theses_all_per_year$n),
-                       `% of all theses` = scales::label_percent()(nrow(emu) / sum(theses_all_per_year$n)),
+theses_all_per_year |> 
+  select(grad_year, n_total, n_permissions) |> 
+  mutate(grad_year = as.factor(grad_year),
+         `% of all theses` = scales::label_percent()(round(n_permissions / n_total, 4))) |> 
+  bind_rows(data.frame(grad_year = "", 
+                       n_permissions = nrow(emu), 
+                       n_total = sum(theses_all_per_year$n_total),
+                       `% of all theses` = scales::label_percent()(nrow(emu) / sum(theses_all_per_year$n_total)),
                        check.names = FALSE)) |> 
-  rename(`Graduation year` = graduation_year,
-         `No. theses included` = n.x) |>
-  select(-n.y) |>
-  kableExtra::kable(align = "r")
+  rename(`No. theses` = n_total,
+         `Graduation year` = grad_year,
+         `No. theses included` = n_permissions) |> 
+  kableExtra::kable(align = "lrrr")
+
 ```
 
 ## Pre-processing
