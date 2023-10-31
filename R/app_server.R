@@ -179,30 +179,32 @@ app_server <- function(session,input, output) {
 
 
    })
+
+
    # Graph with Evolution of top words
    output$Evolution_of_top_words <- plotly::renderPlotly({
 
-     emu_words <- emu_reactive() |>
+     emu_words <-  emu_theses |>
        tidytext::unnest_tokens(word, text_clean) |>
        dplyr::mutate(word = textstem::lemmatize_words(word)) |>
        dplyr::anti_join(tidytext::stop_words, by = "word")
 
-    top_words2 = get_top_words_per_corpus(emu_words, 5, word_col = "word")
+     top_words2 = get_top_words_per_corpus(emu_words, 5, word_col = "word")
 
-    word_order <- emu_words |>
-      dplyr::group_by(word, graduation_year) |>
-      dplyr::count(word, sort = TRUE) |>
-      dplyr::ungroup() |>
-      dplyr::arrange(graduation_year, -n) |>
-      dplyr::group_by(graduation_year) |>
-      dplyr::mutate(relative_frequency = n/sum(n)*100) |>
-      dplyr::mutate(rank = round(rank(-n), 0)) |>
-      dplyr::ungroup() |>
-      dplyr::filter(word %in% top_words2$word)
+     word_order <- emu_words |>
+       dplyr::group_by(word, graduation_year) |>
+       dplyr::count(word, sort = TRUE) |>
+       dplyr::ungroup() |>
+       dplyr::arrange(graduation_year, -n) |>
+       dplyr::group_by(graduation_year) |>
+       dplyr::mutate(relative_frequency = n/sum(n)*100) |>
+       dplyr::mutate(rank = round(rank(-n), 0)) |>
+       dplyr::ungroup() |>
+       dplyr::filter(word %in% top_words2$word)
 
-   plotly::ggplotly(
-      ggplot2::ggplot(word_order) +
-      ggplot2::aes(x = graduation_year, y = relative_frequency, color = word, label = rank, fill = "white") +
+    plotly::ggplotly(
+      ggplot2::ggplot(word_order, ggplot2::aes(x = graduation_year, y = relative_frequency, color = word, label = rank)) +
+      ggplot2::aes(fill = "white") +
       ggplot2::geom_path(lwd = 0.1) +
       ggplot2::geom_point(size = 8, shape = 21, fill = "white", stroke = 1.2) +
       ggplot2::geom_text(ggplot2::aes(x = graduation_year), color = "black") +
