@@ -48,10 +48,15 @@ app_server <- function(session,input, output) {
   #                   selected='ALL')
 
   # Create reactive data object
+  emu_reactive_all <- shiny::reactive({
+    emu_theses
+    })
+
+  # Create reactive data object without the year filter
   emu_reactive <- shiny::reactive({
     emu_theses |>
       dplyr::filter(graduation_year >= input$year[1] & graduation_year <= input$year[2])
-   })
+  })
  # Render plots
 
   # ID of value clicked on the map
@@ -184,12 +189,18 @@ app_server <- function(session,input, output) {
    # Graph with Evolution of top words
    output$Evolution_of_top_words <- plotly::renderPlotly({
 
-     emu_words <-  emu_theses |>
+
+     emu_words <- emu_reactive_all() |>
        tidytext::unnest_tokens(word, text_clean) |>
        dplyr::mutate(word = textstem::lemmatize_words(word)) |>
        dplyr::anti_join(tidytext::stop_words, by = "word")
 
-     top_words2 = get_top_words_per_corpus(emu_words, 5, word_col = "word")
+     emu_words_filtered <- emu_reactive() |>
+       tidytext::unnest_tokens(word, text_clean) |>
+       dplyr::mutate(word = textstem::lemmatize_words(word)) |>
+       dplyr::anti_join(tidytext::stop_words, by = "word")
+
+     top_words2 = get_top_words_per_corpus(emu_words_filtered, 5, word_col = "word")
 
      word_order <- emu_words |>
        dplyr::group_by(word, graduation_year) |>
