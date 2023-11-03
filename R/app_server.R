@@ -175,11 +175,11 @@ app_server <- function(session,input, output) {
      top_words2 = get_top_words_per_corpus(emu_words, 5, word_col = "word")
 
      ggplot2::ggplot(top_words2) +
-       ggplot2::aes(x = reorder(word, n), y = n, fill = word) +
+       ggplot2::aes(x = reorder(word, n), y = n, fill = reorder(word, n)) +
        ggplot2::geom_col() +
        ggplot2::coord_flip() +
        theme_mintEMU +
-       ggplot2::scale_fill_viridis_d(begin = 0, end = 0.8) +
+       ggplot2::scale_fill_viridis_d(begin = 0.8, end = 0) +
        ggplot2::xlab("Count") + ggplot2::ylab("Word")
 
 
@@ -212,6 +212,8 @@ app_server <- function(session,input, output) {
        dplyr::mutate(rank = round(rank(-n), 0)) |>
        dplyr::ungroup() |>
        dplyr::filter(word %in% top_words2$word)
+
+     word_order$word <- factor(word_order$word, levels = top_words2$word, ordered = TRUE)
 
     plotly::ggplotly(
       ggplot2::ggplot(word_order, ggplot2::aes(x = graduation_year, y = relative_frequency, color = word, label = rank)) +
