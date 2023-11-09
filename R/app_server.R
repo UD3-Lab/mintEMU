@@ -214,17 +214,19 @@ app_server <- function(session,input, output) {
        dplyr::filter(word %in% top_words2$word)
 
      word_order$word <- factor(word_order$word, levels = top_words2$word, ordered = TRUE)
+     highlight <- plotly::highlight_key(word_order, ~word)
 
-    plotly::ggplotly(
-      ggplot2::ggplot(word_order, ggplot2::aes(x = graduation_year, y = relative_frequency, color = word, label = rank)) +
-      ggplot2::aes(fill = "white") +
-      ggplot2::geom_path(lwd = 0.1) +
-      ggplot2::geom_point(size = 8, shape = 21, fill = "white", stroke = 1.2) +
-      ggplot2::geom_text(ggplot2::aes(x = graduation_year), color = "black") +
-      theme_mintEMU +
-      ggplot2::scale_color_viridis_d(begin = 0, end = 0.8)+
-      ggplot2::xlab("Year") + ggplot2::ylab("Frequency (%)")
-)
+     plot <- plotly::ggplotly(
+       ggplot2::ggplot(highlight, ggplot2::aes(x = graduation_year, y = relative_frequency, color = word, label = rank)) +
+         ggplot2::aes(fill = "white") +
+         ggplot2::geom_path(lwd = 0.1) +
+         ggplot2::geom_point(size = 8, shape = 21, fill = "white", stroke = 1.2) +
+         ggplot2::geom_text(ggplot2::aes(x = graduation_year), color = "black") +
+         theme_mintEMU +
+         ggplot2::scale_color_viridis_d(begin = 0, end = 0.8)+
+         ggplot2::xlab("Year") + ggplot2::ylab("Frequency (%)"))
+
+    plotly::highlight(plot, on = "plotly_click", off = "plotly_deselect")
 
    })
 
