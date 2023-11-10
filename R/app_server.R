@@ -28,6 +28,9 @@ app_server <- function(session,input, output) {
                            ),
                            selected = 'ALL')
 
+  shiny::updateSliderInput(session,"wordNumber", label = "Number of words:", step = 1,
+                           value = 5
+  )
 
   # Tool tips ------------------------------------------------------------------
   bs4Dash::addTooltip(id = "year",
@@ -47,11 +50,16 @@ app_server <- function(session,input, output) {
   #                                 sort()  ),
   #                   selected='ALL')
 
-  # Create reactive data object
+  # Create reactive data object without the year filter
+  emu_reactive_all <- shiny::reactive({
+    emu_theses
+    })
+
+  # Create reactive data object with the year filter
   emu_reactive <- shiny::reactive({
     emu_theses |>
-      dplyr::filter(graduation_year > input$year[1] & graduation_year < input$year[2])
-   })
+      dplyr::filter(graduation_year >= input$year[1] & graduation_year <= input$year[2])
+  })
  # Render plots
 
   # ID of value clicked on the map
@@ -65,7 +73,12 @@ app_server <- function(session,input, output) {
     dplyr::filter(ID  == clicked_id())
   })
 
-
+ # Plot kit  ------------------------------------------------------------------
+  #Define theme here
+  theme_mintEMU = ggplot2::theme_classic() +
+    ggplot2::theme(legend.position = "none", title = ggplot2::element_blank()) +
+    ggplot2::theme(axis.text = ggplot2::element_text(size = 12),
+                   axis.title = ggplot2::element_text(size = 15))
  # Render outputs  ------------------------------------------------------------
 
   # Map
@@ -153,6 +166,72 @@ app_server <- function(session,input, output) {
    }) |>
      shiny::bindEvent(input$thesis_location_map_marker_click)
 
+
+   # Graph withTop N words
+   output$Top_n_words <- renderPlot({
+
+     emu_words <- emu_reactive() |>
+       tidytext::unnest_tokens(word, text_clean) |>
+       dplyr::mutate(word = textstem::lemmatize_words(word)) |>
+       dplyr::anti_join(tidytext::stop_words, by = "word")
+
+     top_words2 = get_top_words_per_corpus(emu_words, input$wordNumber, word_col = "word")
+
+     ggplot2::ggplot(top_words2) +
+       ggplot2::aes(x = reorder(word, n), y = n, fill = reorder(word, n)) +
+       ggplot2::geom_col() +
+       ggplot2::coord_flip() +
+       theme_mintEMU +
+       ggplot2::scale_fill_viridis_d(begin = 0.8, end = 0) +
+       ggplot2::xlab("Count") + ggplot2::ylab("Word")
+
+
+   })
+
+
+   # Graph with Evolution of top words
+   output$Evolution_of_top_words <- plotly::renderPlotly({
+
+
+     emu_words <- emu_reactive_all() |>
+       tidytext::unnest_tokens(word, text_clean) |>
+       dplyr::mutate(word = textstem::lemmatize_words(word)) |>
+       dplyr::anti_join(tidytext::stop_words, by = "word")
+
+     emu_words_filtered <- emu_reactive() |>
+       tidytext::unnest_tokens(word, text_clean) |>
+       dplyr::mutate(word = textstem::lemmatize_words(word)) |>
+       dplyr::anti_join(tidytext::stop_words, by = "word")
+
+     top_words2 = get_top_words_per_corpus(emu_words_filtered,  input$wordNumber, word_col = "word")
+
+     word_order <- emu_words |>
+       dplyr::group_by(word, graduation_year) |>
+       dplyr::count(word, sort = TRUE) |>
+       dplyr::ungroup() |>
+       dplyr::arrange(graduation_year, -n) |>
+       dplyr::group_by(graduation_year) |>
+       dplyr::mutate(relative_frequency = n/sum(n)*100) |>
+       dplyr::mutate(rank = round(rank(-n), 0)) |>
+       dplyr::ungroup() |>
+       dplyr::filter(word %in% top_words2$word)
+
+     word_order$word <- factor(word_order$word, levels = top_words2$word, ordered = TRUE)
+     highlight <- plotly::highlight_key(word_order, ~word)
+
+     plot <- plotly::ggplotly(
+       ggplot2::ggplot(highlight, ggplot2::aes(x = graduation_year, y = relative_frequency, color = word, label = rank)) +
+         ggplot2::aes(fill = "white") +
+         ggplot2::geom_path(lwd = 0.1) +
+         ggplot2::geom_point(size = 8, shape = 21, fill = "white", stroke = 1.2) +
+         ggplot2::geom_text(ggplot2::aes(x = graduation_year), color = "black") +
+         theme_mintEMU +
+         ggplot2::scale_color_viridis_d(begin = 0, end = 0.8)+
+         ggplot2::xlab("Year") + ggplot2::ylab("Frequency (%)"))
+
+    plotly::highlight(plot, on = "plotly_click", off = "plotly_deselect")
+
+   })
 
 
 
