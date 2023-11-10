@@ -28,6 +28,9 @@ app_server <- function(session,input, output) {
                            ),
                            selected = 'ALL')
 
+  shiny::updateSliderInput(session,"wordNumber", label = "Number of words:", step = 1,
+                           value = 5
+  )
 
   # Tool tips ------------------------------------------------------------------
   bs4Dash::addTooltip(id = "year",
@@ -47,12 +50,12 @@ app_server <- function(session,input, output) {
   #                                 sort()  ),
   #                   selected='ALL')
 
-  # Create reactive data object
+  # Create reactive data object without the year filter
   emu_reactive_all <- shiny::reactive({
     emu_theses
     })
 
-  # Create reactive data object without the year filter
+  # Create reactive data object with the year filter
   emu_reactive <- shiny::reactive({
     emu_theses |>
       dplyr::filter(graduation_year >= input$year[1] & graduation_year <= input$year[2])
@@ -172,7 +175,7 @@ app_server <- function(session,input, output) {
        dplyr::mutate(word = textstem::lemmatize_words(word)) |>
        dplyr::anti_join(tidytext::stop_words, by = "word")
 
-     top_words2 = get_top_words_per_corpus(emu_words, 5, word_col = "word")
+     top_words2 = get_top_words_per_corpus(emu_words, input$wordNumber, word_col = "word")
 
      ggplot2::ggplot(top_words2) +
        ggplot2::aes(x = reorder(word, n), y = n, fill = reorder(word, n)) +
@@ -200,7 +203,7 @@ app_server <- function(session,input, output) {
        dplyr::mutate(word = textstem::lemmatize_words(word)) |>
        dplyr::anti_join(tidytext::stop_words, by = "word")
 
-     top_words2 = get_top_words_per_corpus(emu_words_filtered, 5, word_col = "word")
+     top_words2 = get_top_words_per_corpus(emu_words_filtered,  input$wordNumber, word_col = "word")
 
      word_order <- emu_words |>
        dplyr::group_by(word, graduation_year) |>

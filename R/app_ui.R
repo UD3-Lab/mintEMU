@@ -88,6 +88,12 @@ app_ui <- function() {
                                               ),
                              bs4Dash::tabItem(tabName = "data",
                                               shiny::fluidRow(
+                                                bs4Dash::column(12,
+                                                                shiny::numericInput("wordNumber",
+                                                                                   label = "Number of words:",
+                                                                                   value = 5,
+                                                                                   min = 0,
+                                                                                   max = 20                                                                )),
                                                 bs4Dash::column(6,
                                                                 bs4Dash::box(title = "Top N words",
                                                                              status = "lightblue",
