@@ -52,7 +52,7 @@ emu$text_clean <- emu$text_raw |>
   # Remove line breaks
   stringr::str_replace_all(" \\n", " ") |>
   # Remove page numbers
-  stringr::str_remove_all("\\n{0,}\\s{0,}\\d+\\n") |>
+  stringr::str_replace_all("\\\n{0,}\\s{0,}\\d+\\s{0,}\\.?\\\n", "\n") |>
   # Remove text included with anonymisation
   stringr::str_remove_all(anonymisation_sw) |>
   # Remove occurrences of the full title
