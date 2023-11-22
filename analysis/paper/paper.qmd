@@ -49,13 +49,13 @@ highlights: |
   These are the highlights. 
 ---
 
-<!-- With the following code you can access and display values from the yml header above. -->
+<!-- The following code display values from the YAML header above. -->
 
 Keywords: `r rmarkdown::metadata$keywords`
 
 Highlights: `r rmarkdown::metadata$highlights`
 
-<!-- The actual document text starts here: -->
+<!-- Setup code, not shown in the rendered document. -->
 
 ```{r setup}
 #| include: false
