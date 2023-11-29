@@ -75,7 +75,7 @@ def convert_pdf(file_list, start_pages, end_pages):
         assert os.path.isfile(file), f"No such file: {file}"
         with fitz.open(file) as doc:
             for page in doc:
-                text = page.get_text(sort=True)
+                text = page.get_text(sort=True).encode("utf8")
                 l.append(text)
         
         # Get start and end pages
