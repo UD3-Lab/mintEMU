@@ -86,7 +86,7 @@ def convert_pdf(file_list, start_pages, end_pages):
         l = l[start_page:end_page]
         
         # Add front matter and back matter removal markers
-        l = ' '.join(l).join(["FRONT_MATTER_REMOVED\n", "BACK_MATTER_REMOVED"])
+        l = ' '.join(l)
         text_list.append(l)
     
     return(text_list)
