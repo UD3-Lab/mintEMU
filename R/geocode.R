@@ -7,14 +7,14 @@
 #' @return Data frame with latitude and longitude columns
 #'
 #' @export
-geocode_thesis_locations <- function(data, location = "location") {
+geocode_thesis_locations <- function(data, location = "loc") {
   if (!("latitude" %in% names(data)) | !("longitude" %in% names(data))) {
     data <- tidygeocoder::geocode(
       data,
-      address = location,
+      address = loc,
       method = 'osm',
-      lat = latitude ,
-      long = longitude
+      lat = lat,
+      long = long
     )
   }
   data
@@ -37,7 +37,7 @@ visualize_thesis_locations <- function(data, cols = c(map_col = 'black' , map_fi
       aes(long, lat, map_id = region),
       color = cols['map_col'], fill = cols['map_fill'], size = 0.1
     ) +
-    ggplot2::geom_count(data = data, aes(longitude, latitude), color = cols['point_col']) +
+    ggplot2::geom_count(data = data, aes(long, lat), color = cols['point_col']) +
     ggplot2::scale_size_area(max_size = 5) +
     ggplot2::coord_fixed() +
     ggplot2::theme_void()
