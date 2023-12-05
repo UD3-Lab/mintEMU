@@ -407,6 +407,33 @@ count_docs_per_topic <- function(lda) {
              row.names = NULL)
 }
 
+#' Visualise LDA model
+#'
+#' @param phi   A matrix with each row representing the probability
+#'              distribution of a topic over terms
+#' @param theta A matrix with each row representing the probability
+#'              distribution of a documents over topics
+#' @param dtm   Document-term matrix used as input to the LDA model
+#'
+#' @return  Visualise LDA in a browser.
+#' @export
+visualise_lda <- function(phi, theta, dtm) {
 
+  # Function to approximate the distance between topics
+  svd_tsne <- function(x) tsne::tsne(svd(x)$u)
 
+  # Convert DTM into JSON required by the LDAvis package
+  json <- LDAvis::createJSON(
+    phi = phi,
+    theta = theta,
+    doc.length = rowSums(as.matrix(dtm)),
+    vocab = colnames(dtm),
+    term.frequency = colSums(as.matrix(dtm)),
+    mds.method = svd_tsne,
+    plot.opts = list(xlab="", ylab="")
+  )
+
+  # Visualise topics model with LDAvis
+  LDAvis::serVis(json)
+}
 
