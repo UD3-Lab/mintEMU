@@ -8,8 +8,6 @@
 #'
 #' @return Data frame with `ID` and `text_clean` columns
 #' @export
-#'
-#' @examples
 tokenize <- function(data,
                      id_col = "ID",
                      text_col = "text_clean",
