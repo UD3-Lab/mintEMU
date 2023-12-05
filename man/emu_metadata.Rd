@@ -7,17 +7,17 @@
 \format{
 \subsection{\code{emu_metadata}}{
 
-A data frame with 83 rows and 8 columns:
+A data frame with 68 rows and 10 columns:
 \describe{
 \item{ID}{ID of the thesis}
-\item{graduation_year}{Raw text of the thesis.}
-\item{graduation_semester}{Raw text of the thesis.}
+\item{grad_year}{The year when the thesis was published.}
+\item{grad_sem}{The semester when the student graduated.}
 \item{full_title}{Full title of the thesis.}
 \item{title}{Title of the thesis.}
 \item{subtitle}{Subtitle of the thesis.}
-\item{location}{The location that the thesis is focused on.}
-\item{latitude}{Latitude of the thesis location geocoded from \code{location}.}
-\item{longitude}{Longitude of the thesis location geocoded from \code{location}.}
+\item{loc}{The location that the thesis is focused on.}
+\item{lat}{Latitude of the thesis location geocoded from \code{location}.}
+\item{long}{Longitude of the thesis location geocoded from \code{location}.}
 \item{abstract}{Abstract of the thesis.}
 }
 }

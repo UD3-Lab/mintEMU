@@ -7,15 +7,13 @@
 \format{
 \subsection{\code{emu_raw}}{
 
-A data frame with 83 rows and 2 columns:
+A data frame with 68 rows and 2 columns.
 \describe{
 \item{ID}{ID of the thesis}
 \item{text_raw}{Raw text of the thesis.
-The text has been anonymyzed and Latin special characters have been replaced with 26-letter alphabet counterparts}
+The text has been anonymized, Latin special characters have been replaced with 26-letter alphabet counterparts,
+hyphenation, line breaks and occurrences of the title, often found in the header or footer of theses layouts, have been removed.}
 }
-}
-\source{
-\url{https://repository.tudelft.nl/islandora/search/?collection=education}
 }
 \usage{
 emu_raw
