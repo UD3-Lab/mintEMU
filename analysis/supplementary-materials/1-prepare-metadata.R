@@ -98,4 +98,5 @@ readxl::read_xlsx(path = here("analysis", "data", "raw_data", "theses-all.xlsx")
   summarise(n_total = n(),
             n_pdfs = sum(as.logical(pdf_exists), na.rm = TRUE),
             n_permissions = sum(as.logical(permission_granted), na.rm = TRUE)) |>
-  write_csv(file = here("analysis", "data", "derived_data", "theses-per-year.csv"))
+  filter(!is.na(grad_year)) |>
+  write_csv(file = here("analysis", "data", "derived_data", "emu-theses-per-year.csv"))
