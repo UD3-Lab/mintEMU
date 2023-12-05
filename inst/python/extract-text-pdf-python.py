@@ -75,7 +75,7 @@ def convert_pdf(file_list, start_pages, end_pages):
         assert os.path.isfile(file), f"No such file: {file}"
         with fitz.open(file) as doc:
             for page in doc:
-                text = page.get_text(sort=True).encode("utf8")
+                text = page.get_text(sort=True)
                 l.append(text)
         
         # Get start and end pages
@@ -85,7 +85,6 @@ def convert_pdf(file_list, start_pages, end_pages):
         # Keep only selected subset of pages
         l = l[start_page:end_page]
         
-        # Add front matter and back matter removal markers
         l = ' '.join(l)
         text_list.append(l)
     
