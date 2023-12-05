@@ -1,62 +1,49 @@
-# Download and import the dataset ----
-emu_raw_path <- here::here("analysis", "data", "derived_data", "emu_raw.csv")
+# Download and import the dataset -----------------------------------------
+
+# TODO Replace paths to emu_raw.csv and emu_metadata.csv with URL of published dataset
+
+## Raw text data ----
+emu_raw_path <- here::here("analysis", "data", "derived_data", "emu-raw.csv")
 emu_raw <- readr::read_csv(emu_raw_path)
 
-# add raw dataset to the package
+### Add raw dataset to the package
 usethis::use_data(emu_raw, overwrite = TRUE)
 
-# emu metadata file
-emu_meta_path <- here::here("analysis", "data", "derived_data", "emu_metadata.csv")
+## Metadata ----
+emu_meta_path <- here::here("analysis", "data", "derived_data", "emu-metadata.csv")
 emu_metadata <- readr::read_csv(emu_meta_path)
 
-# add metadata to the package
+### Add metadata to the package
 usethis::use_data(emu_metadata, overwrite = TRUE)
 
-# Clean the dataset ----
-emu <- dplyr::left_join(emu_raw, emu_metadata, by  = "ID")
+# Clean the dataset -------------------------------------------------------
+emu <- dplyr::left_join(emu_raw, emu_metadata, by = "ID")
 
-# Prepare lists of stop words
-meta_sw <- mintEMU::find_meta_stopwords(emu, clean_meta = FALSE)
+## Prepare lists of stop words ----
+# meta_sw <- mintEMU::find_meta_stopwords(emu, clean_meta = FALSE)
 emu_sw <- mintEMU::urbanism_stopwords(
   add_stopwords = c("emu", "european post[\\-]?(graduate)?[\\s]?master[s]? in urbanism",
                     "tu delft", "ku leuven", "upc barcelona", "iuav venice"))
 thesis_sw <- mintEMU::thesis_stopwords(
   add_stopwords = c("advisor", "prof", "professor", "fig", "ure", "figure", "ning", "dr", "ir", "drir"))
-anonymisation_sw <- c("EMAIL_REMOVED", "AUTHOR_REMOVED", "FIRST_NAME_REMOVED", "LAST_NAME_REMOVED") |>
-  paste(collapse = "|")
+# anonymisation_sw <- c("EMAIL_REMOVED", "AUTHOR_REMOVED", "FIRST_NAME_REMOVED", "LAST_NAME_REMOVED") |>
+#   paste(collapse = "|")
 custom_sw <- c("space[s]?", "spatial", "plan", "(plann)\\w{0,}", "public", "development",
                "design", "process[es]?", "project[s]?", "figure[s]?", "map[s]?", "strateg(y|ies)", "intervention[s]?",
                "create", "exist", "analys(i|e)s") |>
   (\(.) paste0("\\b", ., "\\b"))() |>
   paste(collapse = "|")
 
-# # Add cleaned text column
-# emu$text_clean <- emu$text_raw |>
-#   # Remove hyphenation
-#   stringr::str_replace_all("-\\n", "") |>
-#   # Remove text included with anonymisation
-#   stringr::str_remove_all(anonymisation_sw) |>
-#   # Remove white spaces and punctuation, and change text to lower-case
-#   mintEMU::clean_basic() |>
-#   # Remove title, subtitle and full title
-#   stringr::str_remove_all(meta_sw) |>
-#   # Remove dataset-specific words
-#   stringr::str_remove_all(emu_sw) |>
-#   # Remove thesis-specific words
-#   stringr::str_remove_all(thesis_sw)
+## Add cleaned text column ----
 
-# Add cleaned text column
+### Cleaning steps not to be included in published dataset
 emu$text_clean <- emu$text_raw |>
-  # Remove hyphenation
-  stringr::str_replace_all("-\\n", "") |>
-  # Remove line breaks
-  stringr::str_replace_all(" \\n", " ") |>
-  # Remove page numbers
-  stringr::str_replace_all("\\\n{0,}\\s{0,}\\d+\\s{0,}\\.?\\\n", "\n") |>
-  # Remove text included with anonymisation
-  stringr::str_remove_all(anonymisation_sw) |>
-  # Remove occurrences of the full title
-  stringr::str_remove_all(meta_sw)
+  # Remove white spaces and punctuation, and change text to lowercase
+  mintEMU::clean_basic() |>
+  # Remove dataset-specific words
+  stringr::str_remove_all(emu_sw) |>
+  # Remove thesis-specific words
+  stringr::str_remove_all(thesis_sw)
 
 # # Check line breaks
 # emu$text_clean[22] |> str_split("\\n")
@@ -72,6 +59,9 @@ emu$text_clean <- emu$text_clean |>
 
 # # Get all concatenated ngrams
 # unique(unlist(str_match_all(emu$text_clean, "[A-Za-z]+(?:_[A-Za-z]+)+")[1]))
+
+# # Check if concatenated ngrams are retained
+# sort(table(unlist(str_match_all(emu_words$word, "[A-Za-z]+(?:_[A-Za-z]+)+"))), decreasing = TRUE)
 
 # # Check if the word "space" was removed
 # unique(unlist(str_match_all(emu$text_clean, "\\bspace\\b")))

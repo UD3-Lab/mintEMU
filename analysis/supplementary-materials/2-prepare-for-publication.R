@@ -95,7 +95,7 @@ text_raw <- mapply(str_replace_all, text_raw, pattern_ln,
 # head_text(text_raw)
 
 # incorporate into the main dataset
-emu_theses$text_raw  <- text_raw
+emu_theses$text_raw <- text_raw
 
 
 # Make selection of columns -----------------------------------------------
@@ -103,10 +103,13 @@ emu_theses <- emu_theses |>
   filter(as.logical(permission_granted) == TRUE) |>
   select(ID, graduation_year,
          graduation_semester,
-         title, full_title, subtitle, link,
+         full_title, title, subtitle, link,
          location,
          abstract,
-         text_raw)
+         text_raw) |>
+  rename(grad_year = graduation_year,
+         grad_sem = graduation_semester,
+         loc = location)
 
 
 # Add longitude and latitude columns --------------------------------------
@@ -116,17 +119,35 @@ emu_theses <- geocode_thesis_locations(emu_theses)
 # Reorder the columns in the dataset --------------------------------------
 emu_theses <- emu_theses |>
   select(ID,
-         graduation_year,
-         graduation_semester,
+         grad_year,
+         grad_sem,
          full_title, title, subtitle, link,
-         location, latitude, longitude,
+         loc, lat, long,
          abstract,
          text_raw)
 
 
+# Clean raw data for publication ----------------------------------------
+meta_sw <- mintEMU::find_meta_stopwords(emu_theses, clean_meta = FALSE)
+anonymisation_sw <- c("EMAIL_REMOVED", "AUTHOR_REMOVED", "FIRST_NAME_REMOVED", "LAST_NAME_REMOVED") |>
+  paste(collapse = "|")
+
+emu_theses$text_raw <- emu_theses$text_raw |>
+  # Remove hyphenation
+  stringr::str_replace_all("-\\n", "") |>
+  # Remove line breaks
+  stringr::str_replace_all(" \\n", " ") |>
+  # Remove page numbers
+  stringr::str_replace_all("\\\n{0,}\\s{0,}\\d+\\s{0,}\\.?\\\n", "\n") |>
+  # Remove text included with anonymisation
+  stringr::str_remove_all(anonymisation_sw) |>
+  # Remove occurrences of the full title
+  stringr::str_remove_all(meta_sw)
+
+
 # Separate metadata file and text file ------------------------------------
 emu_metadata <- emu_theses |>
-  select(-text_raw)
+  select(-text_raw, -link)
 
 emu_raw <- emu_theses |>
   select(ID, text_raw)
@@ -134,11 +155,11 @@ emu_raw <- emu_theses |>
 
 # Write CSV files ---------------------------------------------------------
 ## Metadata file
-emu_meta_path <- here("analysis", "data", "derived_data", "emu_metadata.csv")
+emu_meta_path <- here("analysis", "data", "derived_data", "emu-metadata.csv")
 readr::write_csv(emu_metadata, emu_meta_path)
 
 ## Raw text file
-emu_raw_path <- here("analysis", "data", "derived_data", "emu_raw.csv")
+emu_raw_path <- here("analysis", "data", "derived_data", "emu-raw.csv")
 readr::write_csv(emu_raw, emu_raw_path)
 
 
