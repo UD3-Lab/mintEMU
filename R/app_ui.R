@@ -49,37 +49,30 @@ app_ui <- function() {
                                                 bs4Dash::column(12,
                                                                 bs4Dash::box(title = "Links",
                                                                 status = "lightblue",
-                                                                width = NULL
+                                                                width = NULL,
+                                                                shiny::textOutput('nth')
                                                                 )),
-                                                bs4Dash::column(3,
-                                                       bs4Dash::box(title = "Stats 1",
-                                                                    status = "lightblue",
-                                                                    width=NULL)),
-                                                bs4Dash::column(3,
-                                                       bs4Dash::box(title = "Stats 2",
-                                                                    status = "lightblue",
-                                                                    width=NULL)),
-                                                bs4Dash::column(3,
-                                                       bs4Dash::box(title = "Stats 3",
-                                                                    status = "lightblue",
-                                                                    width=NULL)),
-                                                bs4Dash::column(3,
-                                                       bs4Dash::box(title = "Stats 4",
-                                                                    status = "lightblue",
-                                                                    width=NULL)),
+
+                                                bs4Dash::bs4ValueBoxOutput("vbox_ntheses"),
+                                                bs4Dash::bs4ValueBoxOutput("vbox_nwords"),
+                                                bs4Dash::bs4ValueBoxOutput("vbox_topword"),
+
                                                 bs4Dash::column(6,
                                                                 bs4Dash::box(title = "Map plot",
+                                                                             status = "lightblue",
                                                                              width = NULL,
                                                                              leaflet::leafletOutput("thesis_location_map")
                                                                              )),
+
                                                 bs4Dash::column(6,
                                                                 shiny::uiOutput("clicked_box")
                                                                 ),
+
                                                 bs4Dash::column(6,
-                                                                bs4Dash::box(title = "wordcloud",
-                                                                             width = NULL,
-                                                                             wordcloud2::wordcloud2Output("wordcloud")
+                                                                bs4Dash::box(title = "more info",
+                                                                             width = NULL
                                                                 )),
+
                                                 bs4Dash::column(6,
                                                                 bs4Dash::box(title = "FAIR",
                                                                              status = "lightblue",
