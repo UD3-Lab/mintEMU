@@ -22,15 +22,15 @@ app_server <- function(session,input, output) {
   shiny::updateSliderInput(session,"year",
                            label = "Select graduation year:",
                            step = 1,
-                           min = min(emu_theses$graduation_year),
-                           max = max(emu_theses$graduation_year),
-                           value = c(min(emu_theses$graduation_year),
-                                     median(emu_theses$graduation_year))
+                           min = min(emu_theses$grad_year),
+                           max = max(emu_theses$grad_year),
+                           value = c(min(emu_theses$grad_year),
+                                     median(emu_theses$grad_year))
                              )
 
   shiny::updateSelectInput(session,"exchange",
                            label = "Select exchange semester:",
-                           choices = c('ALL', emu_theses$graduation_year |>
+                           choices = c('ALL', emu_theses$grad_year |>
                                          as.character() |>
                                          unique()|>
                                          sort()
@@ -62,7 +62,7 @@ app_server <- function(session,input, output) {
   # Create reactive data object
   emu_reactive <- shiny::reactive({
     emu_theses |>
-      dplyr::filter(graduation_year >= input$year[1] & graduation_year <= input$year[2])
+      dplyr::filter(grad_year >= input$year[1] & grad_year <= input$year[2])
    })
 
   emu_words <- shiny::reactive({
@@ -117,12 +117,12 @@ app_server <- function(session,input, output) {
       leaflet::clearMarkerClusters() %>%
       leaflet::addAwesomeMarkers(layerId = emu_reactive()$ID,
                                  icon = icons,
-                                 label = emu_reactive()$location,
+                                 label = emu_reactive()$loc,
                                  popup = paste0("<b>Title:</b> ", emu_reactive()$title,
                                                 "<br/>",
-                                                "<b>Location:</b> ", emu_reactive()$location,
+                                                "<b>Location:</b> ", emu_reactive()$loc,
                                                 "<br/>",
-                                                "<b>Graduation year:</b> ", emu_reactive()$graduation_year
+                                                "<b>Graduation year:</b> ", emu_reactive()$grad_year
                                                 ),
 
                                  clusterOptions = leaflet::markerClusterOptions()
