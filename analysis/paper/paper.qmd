@@ -16,8 +16,8 @@ date-format: long
 format: pdf
   # docx:
   #   reference-doc: "../templates/template.docx" # Insert path for the DOCX file
-  pdf:
-    template: "../templates/plos_latex_template.tex"
+  # pdf:
+  #   template: "../templates/plos_latex_template.tex"
 execute:
   echo: false
   warning: false
