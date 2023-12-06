@@ -434,7 +434,10 @@ counts_of_primary_topics <- count_docs_per_topic(emu_lda_5)
 # paste0(counts_of_primary_topics$count, ": ", topic_proportions$topic)
 
 topic_proportions |> 
-  left_join(counts_of_primary_topics, by = "topic")
+  left_join(counts_of_primary_topics, by = "topic") |> 
+  rename(Topic = topic,
+         `Proportion per corpus` = proportion,
+         `No. of documents with primary topic` = count)
 ```
 
 ```{r}
