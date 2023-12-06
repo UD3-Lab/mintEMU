@@ -269,8 +269,6 @@ Finally, additional checks were made to the document in search for previously un
 
 ### Document-term matrix
 
-The topic model requires a document-term matrix (DTM) as input. To reduce the size of the DTM, words with a frequency lower than 5 were excluded.
-
 ```{r dtm}
 # Prepare document-term matrix as input for LDA model
 emu_dtm <- convert_to_dtm(emu_words, 
@@ -279,109 +277,34 @@ emu_dtm <- convert_to_dtm(emu_words,
                           min_term_freq = 5)
 ```
 
+The topic model requires a document-term matrix (DTM) as input. To reduce the size of the DTM, words with a frequency lower than 5 were excluded.
+
 ### Topic model
 
-Similar to clustering on numeric data, topic modelling is a method of unsupervised classification of topics found in a collection of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. In LDA, each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\theta$ (theta) statistic.
+Similar to clustering on numeric data, topic modelling is a method of unsupervised classification of topics found in a collection of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. LDA is a Bayesian generative topic model which assumes that each topic is a distribution over words and each document is a distribution over topics [@blei2012; @grün2011; @blei2003]. This means that each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\theta$ (theta) statistic.
 
-LDA is a Bayesian generative topic model which assumes that each topic is a distribution over words and each document is a distribution over topics [@blei2012; @grün2011; @blei2003].
+The corpus (D) consists of a collection of M = `r nrow(emu)` documents with a total number of N = `r length(emu_words$word)` words and a vocabulary of V = `r length(unique(emu_words$word))` words. After the exclusion of words with a frequency lower than 5, the vocabulary was reduced to V = `r ncol(emu_dtm)`.
 
-Latent topics are measured as patterns of word co-occurrence
+A key tuning parameter in an LDA model is the number of clusters K. A K with a smaller value will yield more general topics whereas a K with a high value will result in more specific topics. Hence, finding a suitable value entails a trade-off between interpretability and specificity. This is very much dependent on the data at hand and the research question. Given the small size of the corpus and the way the program was structured, the value of K = 5 was determined qualitatively considering the input received by the students in the two thematic semesters at TU Delft and the three alternative exchange semesters, each with a very distinct approach:  
 
-Describe model parameters:
+- TU Delft, Fall semester: Urban region networks
+- TU Delft, Spring semester: Constructing the sustainable city
+- IUAV Venice, exchange semester:
+- KU Leuven, exchange semester:
+- UPC Barcelona, exchange semester:
 
--   collection of M = `r nrow(emu)` documents
-
--   corpus D
-
--   N = `r length(emu_words$word)` words
-
--   vocabulary of V = `r length(unique(emu_words$word))` words
-
-Determining tuning parameters:
-
--   The number of topics was qualitatively determined
--   Evaluating the number of topics quantitatively can be done through the measure of **topic coherence**
-    -   Calculate topic coherence for K values ranging from 2 to K
-    -   Plot K values against coherence scores and select K with the highest coherence value
-
-A K with a smaller value will yield more general topics whereas a K with a high value will result in more specific topics. Hence, finding a suitable value entails a trade-off between interpretability and specificity. This is very much dependent on the data at hand and the research question.
-
-#### Determining the value of K empirically
-
-```{r topic-model-lda-1}
-# Determine K value empirically
-k = get_number_of_topics(emu_dtm)
-```
-
-Fit model with K determined in previous step...
-
-```{r topic-model-lda-1}
-emu_lda_k <- LDA(emu_dtm, k = k, method = "Gibbs",
-               control = list(seed = 2023, iter = 500, verbose = 25))
-
-beta_k <- posterior(emu_lda_k)$terms
-theta_k <- posterior(emu_lda_k)$topics 
-
-# Add pseudo-names to topics based on the top 5 words in each topic
-topic_names_k <- name_topics(beta_k)
-```
+To check how well the clustering is aligned with where the student carried out their exchange semester, we used a confusion matrix to visualize the relation between real values and values assigned through clustering.
 
 Get top 20 words in each topic to understand what it is about
 
-Run a cluster dendrogram (Hellinger distance) to see which topics should be grouped together
-
-```{r}
-# Perform hierarchical cluster analysis.
-
-rownames(beta_k) <- topic_names_k
-dend <- as.dist(beta_k) |> 
-  hclust() |> 
-  as.dendrogram()
-
-# Plot with Color in function of the cluster
-leafcolor <- colormap::colormap(colormap = colormap::colormaps$viridis, nshades = 5, format = "hex", alpha = 1, reverse = FALSE)
-dend |> 
-  # set("labels_col", value = leafcolor, k=5) %>%
-  # set("branches_k_color", value = leafcolor, k = 5) %>%
-  # plot(horiz=TRUE, axes=FALSE)
-  ggdendro::ggdendrogram(rotate = TRUE)
-
-
-
-dendr    <- ggdendro::dendro_data(dend, type="rectangle") # convert for ggplot
-clust    <- cutree(as.dist(beta_k) |> hclust(),k = 5)                    # find 2 clusters
-clust.df <- data.frame(label=names(clust), cluster=factor(clust))
-# dendr[["labels"]] has the labels, merge with clust.df based on label column
-dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
-# plot the dendrogram; note use of color=cluster in geom_text(...)
-ggplot() + 
-  geom_segment(data=ggdendro::segment(dendr), aes(x=x, y=y, xend=xend, yend=yend)) + 
-  geom_text(data=ggdendro::label(dendr), aes(x, y - 0.002, label=label, hjust=0, color=cluster), 
-           size=3) +
-  coord_flip() + 
-  scale_y_reverse(expand=c(0.1, 0.1)) +
-  theme(axis.line.y=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.ticks.y=element_blank(),
-        axis.text.x=element_blank(),
-        axis.text.y=element_blank(),
-        axis.title.x=element_blank(),
-        axis.title.y=element_blank(),
-        panel.background=element_rect(fill="white"),
-        panel.grid=element_blank())
-```
-
 Visualise topics with word clouds
 
-#### Determining the value of K qualitatively
+```{r lda-k-5}
+#| message: false
 
-OR Use LDA clustering with 3 classes (corresponding to the three exchange universities) to see how well the clustering is aligned with where the student carried out their exchange semester. Use a confusion matrix to visualize the relation between real values and values assigned through clustering.
-
-```{r topic-model-lda-1}
-## Determine K value qualitatively
-## K = 5 corresponds to the 2 TUD semesters and the 3 exchange semesters combined 
+## K = 5 considering the 2 TUD semesters and the 3 exchange semesters combined 
 emu_lda_5 <- LDA(emu_dtm, k = 5, method="Gibbs",
-               control = list(seed = 2023, iter = 500, verbose = 25))
+                 control = list(seed = 2023, iter = 500, verbose = 25))
 
 # Extract beta and theta statistics from LDA model
 beta_5 <- posterior(emu_lda_5)$terms
