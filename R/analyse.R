@@ -357,7 +357,7 @@ get_tf_idf <- function(data, id_col = NULL, word_col = NULL) {
 #'
 #' @return Data frame with topics and their proportions
 #' @export
-get_topic_proportions <- function(lda) {
+get_topic_proportions <- function(lda, digits = 2) {
 
   topic_prob <- posterior(lda)$topics
   term_prob <- posterior(lda)$terms
@@ -369,7 +369,8 @@ get_topic_proportions <- function(lda) {
   # assign topic names
   names(topic_proportions) <- mintEMU::name_topics(term_prob)
   # show summed proportions in decreased order
-  sorted_topic_proportions <- sort(topic_proportions, decreasing = TRUE)
+  sorted_topic_proportions <- sort(topic_proportions, decreasing = TRUE) |>
+    round(digits = digits)
   data.frame(topic = names(sorted_topic_proportions),
              proportion = sorted_topic_proportions,
              row.names = NULL)
