@@ -322,3 +322,60 @@ vis_lda <- function(phi, theta, dtm) {
   LDAvis::serVis(json)
 }
 
+#' Visualise top words per topic
+#'
+#' @param ... Arguments to be passed to `get_top_words_per_topic()`.
+#'
+#' @return `ggplot` bar chart of top n words faceted by topic.
+#' @export
+vis_top_words_per_topic <- function(...) {
+
+  top_terms <- mintEMU::get_top_words_per_topic(...)
+
+  top_terms |>
+    ggplot2::ggplot(aes(reorder(term, beta), beta, fill = factor(topic))) +
+    ggplot2::geom_col(show.legend = FALSE) +
+    ggplot2::facet_wrap(~ topic, scales = "free_y", ncol = 3) +
+    ggplot2::ylab("Beta") +
+    ggplot2::xlab("Top terms") +
+    ggplot2::labs(title = "Top n terms per topic") +
+    ggplot2::coord_flip()
+}
+
+#' Visualise top words per corpus
+#'
+#' @param ... Arguments to be passed to `get_top_words_per_corpus()`.
+#'
+#' @return `ggplot` bar chart of top n words colored by topic.
+#' @export
+vis_top_words_per_corpus <- function(lda, words, top_n = 20) {
+
+  terms <- as.data.frame(posterior(lda)$terms)
+  rownames(terms) <- mintEMU::name_topics(posterior(lda)$terms)
+
+  terms <- terms |>
+    dplyr::mutate(topic = rownames(terms)) |>
+    tidyr::pivot_longer(-topic,
+                        names_to = "term",
+                        values_to = "prob") |>
+    dplyr::group_by(term) |>
+    dplyr::mutate(max_topic = topic[which.max(prob)]) |>
+    dplyr::filter(topic == max_topic) |>
+    dplyr::ungroup()
+
+  emu_words_topics <- emu_words |>
+    left_join(terms, by = c("word" = "term"))
+
+  top_terms <- mintEMU::get_top_words_per_corpus(words, top_n)
+
+  top_terms |>
+    dplyr::left_join(terms, by = c("word" = "term")) |>
+    ggplot2::ggplot(aes(reorder(word, n), n)) +
+    ggplot2::geom_col(aes(fill = max_topic)) +
+    ggplot2::geom_text(ggplot2::aes(label = n), size = 2, hjust = 1.1) +
+    ggplot2::coord_flip() +
+    ggplot2::xlab("Word") +
+    ggplot2::ylab("Frequency") +
+    ggplot2::labs(title = paste0("Top ", top_n, " most used words in the corpus of theses")) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(panel.grid = ggplot2::element_blank())
