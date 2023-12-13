@@ -1,3 +1,22 @@
+#' Get word counts for corpus
+#'
+#' @param data A data frame comprising a corpus of texts
+#' @param text_col Name of the column in which the text is stored
+#'
+#' @return A numeric vector of word counts, one for each document in the corpus
+#' @export
+get_word_counts <- function(data, text_col = NULL) {
+  text_col <- rlang::sym(text_col)
+
+  word_counts <- vector(mode = "numeric", length = nrow(data))
+  for (i in 1:nrow(data)) {
+    word_counts[i] <-
+      tidytext::unnest_tokens(tbl = data[i,], output = word, input = !!text_col) |> nrow()
+  }
+
+  word_counts
+}
+
 #' Extract top n words with the highest count per document
 #'
 #' Given a data frame with a column storing the words found in a document
