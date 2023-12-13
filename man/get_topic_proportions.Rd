@@ -4,7 +4,7 @@
 \alias{get_topic_proportions}
 \title{Get topic proportions in an LDA model}
 \usage{
-get_topic_proportions(lda)
+get_topic_proportions(lda, digits = 2)
 }
 \arguments{
 \item{lda}{LDA model object}

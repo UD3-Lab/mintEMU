@@ -7,7 +7,7 @@
 get_top_words_per_topic(data, top_n, topic_col = "topic", beta_col = "beta")
 }
 \arguments{
-\item{data}{Data frame with topics, terms and beta statistic.}
+\item{data}{LDA model.}
 
 \item{top_n}{The number of top words to be returned by the function.}
 

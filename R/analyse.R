@@ -55,16 +55,16 @@ get_top_words_per_document <- function(data,
 #' and a positive number top_n, this function returns the top n words with the
 #' highest count across all documents.
 #'
-#' @param data Data frame with theses, containing a column with words.
+#' @param words Data frame with theses, containing a column with words.
 #' @param top_n The number of top words to be returned by the function.
 #' @param word_col Name of the column from the input data frame containing all words.
 #'
 #' @return A data frame with the top n words across all documents.
 #' @export
-get_top_words_per_corpus <- function(data, top_n, word_col = "word") {
+get_top_words_per_corpus <- function(words, top_n, word_col = "word") {
   word <- rlang::sym(word_col)
 
-  data_top_n <- data |>
+  data_top_n <- words |>
     dplyr::group_by(!!word) |>
     dplyr::count(!!word, sort = TRUE) |>
     dplyr::ungroup() |>
@@ -75,7 +75,7 @@ get_top_words_per_corpus <- function(data, top_n, word_col = "word") {
 
 #' Extract top n terms with the highest count across all topics
 #'
-#' @param data Data frame with topics, terms and beta statistic.
+#' @param data LDA model.
 #' @param top_n The number of top words to be returned by the function.
 #' @param topic_col Name of the column containing topics.
 #' @param beta_col Name of the column containing the beta statistic for all terms.
@@ -86,10 +86,14 @@ get_top_words_per_topic <- function(data,
                                     top_n,
                                     topic_col = "topic",
                                     beta_col = "beta") {
+
+  # Extract data frame with topics, terms and beta statistic from LDA model
+  topics <- tidytext::tidy(data, matrix = "beta")
+
   topic <- rlang::sym(topic_col)
   beta <- rlang::sym(beta_col)
 
-  data_top_terms <- data |>
+  data_top_terms <- topics |>
     dplyr::group_by(!!topic) |>
     dplyr::top_n(top_n,!!beta) |>
     dplyr::ungroup() |>
@@ -379,3 +383,4 @@ vis_top_words_per_corpus <- function(lda, words, top_n = 20) {
     ggplot2::labs(title = paste0("Top ", top_n, " most used words in the corpus of theses")) +
     ggplot2::theme_minimal() +
     ggplot2::theme(panel.grid = ggplot2::element_blank())
+}

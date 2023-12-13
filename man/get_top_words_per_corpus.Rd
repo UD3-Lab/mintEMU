@@ -4,10 +4,10 @@
 \alias{get_top_words_per_corpus}
 \title{Extract top n words with the highest count across all documents}
 \usage{
-get_top_words_per_corpus(data, top_n, word_col = "word")
+get_top_words_per_corpus(words, top_n, word_col = "word")
 }
 \arguments{
-\item{data}{Data frame with theses, containing a column with words.}
+\item{words}{Data frame with theses, containing a column with words.}
 
 \item{top_n}{The number of top words to be returned by the function.}
 
