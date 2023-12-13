@@ -3,6 +3,7 @@
 #' @param data A data frame containing a text column
 #' @param id_col Unique document id
 #' @param text_col Name of the column containing the text to be tokenized
+#' @param year_col Name of the column containing the year of graduation
 #' @param min_length Minimum length of words to be kept
 #' @param lemma Lemmatise words
 #'
@@ -11,14 +12,16 @@
 tokenize <- function(data,
                      id_col = "ID",
                      text_col = "text_clean",
+                     year_col = "grad_year",
                      min_length = 3,
                      lemma = TRUE) {
 
   id <- rlang::sym(id_col)
   text <- rlang::sym(text_col)
+  year <- rlang::sym(year_col)
 
   words_df <- data |>
-    dplyr::select(!!id, !!text) |>
+    dplyr::select(!!id, !!text, !!year) |>
     tidytext::unnest_tokens(output = word, input = !!text) |>  # remove punctuation, convert to lower-case, separate all words
     dplyr::anti_join(tidytext::stop_words, by = "word") |>  # remove stop words
     dplyr::mutate(word = textstem::lemmatize_words(word)) |>  # lemmatise words

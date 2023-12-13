@@ -8,6 +8,7 @@ tokenize(
   data,
   id_col = "ID",
   text_col = "text_clean",
+  year_col = "grad_year",
   min_length = 3,
   lemma = TRUE
 )
@@ -18,6 +19,8 @@ tokenize(
 \item{id_col}{Unique document id}
 
 \item{text_col}{Name of the column containing the text to be tokenized}
+
+\item{year_col}{Name of the column containing the year of graduation}
 
 \item{min_length}{Minimum length of words to be kept}
 
