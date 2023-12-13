@@ -302,7 +302,7 @@ count_docs_per_topic <- function(lda) {
 #'
 #' @return  Visualise LDA in a browser.
 #' @export
-visualise_lda <- function(phi, theta, dtm) {
+vis_lda <- function(phi, theta, dtm) {
 
   # Function to approximate the distance between topics
   svd_tsne <- function(x) tsne::tsne(svd(x)$u)
