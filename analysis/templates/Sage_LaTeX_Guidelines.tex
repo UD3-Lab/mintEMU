@@ -132,34 +132,36 @@ Perhaps Another\affilnum{1}>}
 The heading for any file using \textsf{\journalclass} is shown in
 Figure~\ref{F1}. You must select options for the trim/text area and
 the reference style of the journal you are submitting to.
-The choice of \verb+options+ are listed in Table~\ref{T1}.
+The choice of \verb+options+ are listed
 
-\begin{table}[h]
-\small\sf\centering
-\caption{The choice of options.\label{T1}}
-\begin{tabular}{lll}
-\toprule
-Option&Trim and font size&Columns\\
-\midrule
-\texttt{shortAfour}& 210 $\times$ 280 mm, 10pt& Double column\\
-\texttt{Afour} &210 $\times$ 297 mm, 10pt& Double column\\
-\texttt{MCfour} &189 $\times$ 246 mm, 10pt& Double column\\
-\texttt{PCfour} &170 $\times$ 242 mm, 10pt& Double column\\
-\texttt{Royal} &156 $\times$ 234 mm, 10pt& Single column\\
-\texttt{Crown} &7.25 $\times$ 9.5 in, 10pt&Single column\\
-\texttt{Review} & 156 $\times$ 234 mm, 12pt & Single column\\
-\bottomrule
-\end{tabular}\\[10pt]
-\begin{tabular}{ll}
-\toprule
-Option&Reference style\\
-\midrule
-\texttt{sageh}&SAGE Harvard style (author-year)\\
-\texttt{sagev}&SAGE Vancouver style (superscript numbers)\\
-\texttt{sageapa}&APA style (author-year)\\
-\bottomrule
-\end{tabular}
-\end{table}
+% in Table~\ref{T1}.
+%
+% \begin{table}[h]
+% \small\sf\centering
+% \caption{The choice of options.\label{T1}}
+% \begin{tabular}{lll}
+% \toprule
+% Option&Trim and font size&Columns\\
+% \midrule
+% \texttt{shortAfour}& 210\times 280 mm, 10pt& Double column\\
+% \texttt{Afour} &210\times 297 mm, 10pt& Double column\\
+% \texttt{MCfour} &189\times 246 mm, 10pt& Double column\\
+% \texttt{PCfour} &170\times 242 mm, 10pt& Double column\\
+% \texttt{Royal} &156\times 234 mm, 10pt& Single column\\
+% \texttt{Crown} &7.25\times 9.5 in, 10pt&Single column\\
+% \texttt{Review} & 156\times 234 mm, 12pt & Single column\\
+% \bottomrule
+% \end{tabular}\\[10pt]
+% \begin{tabular}{ll}
+% \toprule
+% Option&Reference style\\
+% \midrule
+% \texttt{sageh}&SAGE Harvard style (author-year)\\
+% \texttt{sagev}&SAGE Vancouver style (superscript numbers)\\
+% \texttt{sageapa}&APA style (author-year)\\
+% \bottomrule
+% \end{tabular}
+% \end{table}
 
 For example, if your journal is short A4 sized, uses Times fonts and has Harvard style references then you would need\\
 {\small\verb+\documentclass[ShortAfour,times,sageh]{sagej}+}
@@ -321,7 +323,7 @@ The files work in a completely standard way, and you just need to uncomment one 
 %\bibliographystyle{SageV}
 \bibliography{<YourBibfile.bib>}
 \end{verbatim}
-and remember to add the relevant option to the \verb+\documentclass[]{sagej}+ line as listed in Table~\ref{T1}. 
+and remember to add the relevant option to the \verb+\documentclass[]{sagej}+ line as listed in Table~\ref{T1}.
 
 %\section{Support for \textsf{\journalclass}}
 %We offer on-line support to participating authors. Please contact
