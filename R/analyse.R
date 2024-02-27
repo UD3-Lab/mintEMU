@@ -233,7 +233,7 @@ get_tf_idf <- function(data, id_col = NULL, word_col = NULL) {
   words_counts <- left_join(words_counts, words_total)
 
   words_counts <- words_counts |>
-    bind_tf_idf(!!rlang::sym(word_col), !!rlang::sym(id_col), n) |>
+    tidytext::bind_tf_idf(!!rlang::sym(word_col), !!rlang::sym(id_col), n) |>
     select(-total)
 
   words_counts
@@ -247,8 +247,8 @@ get_tf_idf <- function(data, id_col = NULL, word_col = NULL) {
 #' @export
 get_topic_proportions <- function(lda, digits = 2) {
 
-  topic_prob <- posterior(lda)$topics
-  term_prob <- posterior(lda)$terms
+  topic_prob <- modeltools::posterior(lda)$topics
+  term_prob <- modeltools::posterior(lda)$terms
 
   ndocs <- length(unique(rownames(topic_prob)))
 
@@ -272,8 +272,8 @@ get_topic_proportions <- function(lda, digits = 2) {
 #' @export
 count_docs_per_topic <- function(lda) {
 
-  topic_prob <- posterior(lda)$topics
-  term_prob <- posterior(lda)$terms
+  topic_prob <- modeltools::posterior(lda)$topics
+  term_prob <- modeltools::posterior(lda)$terms
 
   k <- ncol(topic_prob)
   ndocs <- length(unique(rownames(topic_prob)))
@@ -354,8 +354,8 @@ vis_top_words_per_topic <- function(...) {
 #' @export
 vis_top_words_per_corpus <- function(lda, words, top_n = 20) {
 
-  terms <- as.data.frame(posterior(lda)$terms)
-  rownames(terms) <- mintEMU::name_topics(posterior(lda)$terms)
+  terms <- as.data.frame(modeltools::posterior(lda)$terms)
+  rownames(terms) <- mintEMU::name_topics(modeltools::posterior(lda)$terms)
 
   terms <- terms |>
     dplyr::mutate(topic = rownames(terms)) |>
