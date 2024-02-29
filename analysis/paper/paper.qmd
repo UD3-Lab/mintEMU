@@ -42,7 +42,7 @@ abstract: |
   by a specific approach. The paper discusses the relevance of the findings for the
   state of the profession and education in the field. Set up as a research
   compendium accompanied by a published FAIR dataset and an interactive dashboard, 
-  the research is fully reproudcible and enables further analysis. 
+  the research is fully reproducible and enables further analysis. 
 keywords: |
   urbanism; education; post-master; text mining; topic modeling
 highlights: |
