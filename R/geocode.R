@@ -30,7 +30,11 @@ geocode_thesis_locations <- function(data, location = "loc") {
 #' @return A plot with thesis locations
 #' @export
 visualize_thesis_locations <- function(data, cols = c(map_col = 'black' , map_fill = 'lightgray', point_col = 'red' )) {
-  world <- ggplot2::map_data("world")
+  world <- ggplot2::fortify(maps::map(map = "world",
+                                      region = ".",
+                                      exact = FALSE,
+                                      plot = FALSE,
+                                      fill = TRUE))
   ggplot2::ggplot() +
     ggplot2::geom_map(
       data = world, map = world,
