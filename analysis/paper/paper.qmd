@@ -49,11 +49,11 @@ highlights: |
   These are the highlights. 
 ---
 
-<!-- The following code display values from the YAML header above. -->
+<!-- The following code can be used to show values from the YAML header in DOCX output. -->
 
-Keywords: `r rmarkdown::metadata$keywords`
+<!-- Keywords: `r rmarkdown::metadata$keywords` -->
 
-Highlights: `r rmarkdown::metadata$highlights`
+<!-- Highlights: `r rmarkdown::metadata$highlights` -->
 
 <!-- Setup code, not shown in the rendered document. -->
 
