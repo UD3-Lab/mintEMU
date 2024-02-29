@@ -1,5 +1,7 @@
 # Download and import the dataset -----------------------------------------
 
+devtools::load_all(".")
+
 # TODO Replace paths to emu_raw.csv and emu_metadata.csv with URL of published dataset
 
 ## Raw text data ----
