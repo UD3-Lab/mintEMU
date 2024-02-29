@@ -12,7 +12,10 @@ RUN . /etc/environment \
   # e.g. need this for ggforce::geom_sina
   && sudo apt-get update \
   && sudo apt-get install libudunits2-dev -y \
+  # and for the Rmpfr package
   && sudo apt-get install libmpfr-dev \
+  # and for the topicmodels package
+  && sudo apt-get install libgsl-dev \
   # build this compendium package
   && R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))" \
   && R -e "remotes::install_github(c('rstudio/renv', 'quarto-dev/quarto-r'))" \
