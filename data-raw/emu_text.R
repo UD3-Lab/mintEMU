@@ -2,7 +2,7 @@
 
 devtools::load_all(".")
 
-# TODO Replace paths to emu_raw.csv and emu_metadata.csv with URL of published dataset
+# TODO Replace paths to emu-raw.csv and emu-metadata.csv with URL of published dataset
 
 ## Raw text data ----
 emu_raw_path <- here::here("analysis", "data", "derived_data", "emu-raw.csv")
