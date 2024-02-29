@@ -14,11 +14,10 @@ affiliations:
 title-block-published: "Last updated"  
 date: now
 date-format: long
-format: pdf
+format:
+  html: default
   # docx:
-  #   reference-doc: "../templates/template.docx" # Insert path for the DOCX file
-  # pdf:
-  #   template: "../templates/plos_latex_template.tex"
+  #   reference-doc: ../templates/template.docx
 execute:
   echo: false
   warning: false
