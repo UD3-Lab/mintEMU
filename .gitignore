@@ -4,7 +4,7 @@
 # Data
 analysis/data/
 analysis/nul
-data/
+# data/
 
 #Paper
 analysis/paper/paper_*
