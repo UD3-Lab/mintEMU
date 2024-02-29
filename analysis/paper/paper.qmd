@@ -57,55 +57,33 @@ highlights: |
 
 <!-- Setup code, not shown in the rendered document. -->
 
-```{r setup}
+```{r}
+#| label: setup
 #| include: false
 
-# TODO remove unused packages after all analysis has been translated into functions
 # Load packages ----
-## List packages to be loaded
-packages <- c(
-  "here",
-  "tidyverse", "widyr", "readxl",   # Data manipulation and visualisation
-  "furrr",                          # Parallel use of purrr::map() functions
-  "tidytext", "SnowballC", "tm",    # Text processing and analysis
-  "topicmodels", "LDAvis", "tsne",  # Topic modeling
-  "tidygeocoder",                   # Working with spatial data
-  "igraph", "ggraph", "DiagrammeR"  # Network analysis and visualization
-)
+library(tidyverse)
 
-## Load required packages, install them if needed
-for (package in packages) {
-  if (!require(package, character.only = TRUE)) {
-    install.packages(package,  "http://cran.us.r-project.org")
-  }
-  library(package, character.only = TRUE)
-}
-
-
-# TODO should this be replaced with a call to `library(mintEMU)`?
 # Load analysis functions ----
+## TODO should this be replaced with a call to `library(mintEMU)`?
 devtools::load_all(".")
-```
 
-```{r load-data}
-#| include: false
-
-# TODO merge into setup code chunk
-
-# Load data for analysis
+# Load data ----
 data(emu_metadata)  # Thesis metadata
-data(emu_raw)       # Raw text data
-data(emu_clean)     # Cleaned text data
+data(emu_raw)       # Raw full text data
+data(emu_clean)     # Cleaned full text data
 
-# Join metadata and cleaned text data
+# Join metadata and cleaned text data ----
 emu <- emu_metadata |> 
   left_join(emu_raw, by = "ID") |> 
-  left_join(emu_clean, by = "ID")
+  left_join(emu_clean, by = "ID") |> 
+  select(-c(grad_sem, title, subtitle, abstract)) |> 
+  rename(title = full_title) |> 
+  select("ID", "title", everything())
 
-theses_all_per_year <- read_csv(file = here("analysis", "data", "derived_data", "emu-theses-per-year.csv"))
-
+# Get counts per corpus ----
+theses_all_per_year <- read_csv(file = here::here("analysis", "data", "derived_data", "emu-theses-per-year.csv"))
 word_counts <- get_word_counts(emu, text_col = "text_clean")
-
 ```
 
 <!-- The actual document text starts here: -->
