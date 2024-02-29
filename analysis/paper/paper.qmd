@@ -1,15 +1,16 @@
 ---
 title: "The Legacy of the European Post-Master in Urbanism at TU Delft: A Text Mining Approach"
 author:
-  - Claudiu Forgaci:
-      correspondence: "yes"
-      email: C.Forgaci@tudelft.nl
-      orcid: 0000-0003-3218-5102
-      institute: tud
-institute:
-  - tud:
-      name: Delft University of Technology
-      address: Julianalaan 134, 2628 BL, Delft, Zuid-Holland, The Netherlands
+  - name: Claudiu Forgaci
+    correspondence: "yes"
+    email: C.Forgaci@tudelft.nl
+    orcid: 0000-0003-3218-5102
+    affiliations: 
+      - ref: tud
+affiliations:
+  - id: tud
+    name: Delft University of Technology
+    address: Julianalaan 134, 2628 BL, Delft, Zuid-Holland, The Netherlands
 title-block-published: "Last updated"  
 date: now
 date-format: long
