@@ -9,13 +9,15 @@ COPY . /mintEMU
 # go into the repo directory
 RUN . /etc/environment \
   # Install linux depedendencies here
-  # e.g. need this for ggforce::geom_sina
+  # needed for ggforce::geom_sina
   && sudo apt-get update \
   && sudo apt-get install libudunits2-dev -y \
-  # and this for the Rmpfr package
+  # needed for the Rmpfr package
   && sudo apt-get install libmpfr-dev \
-  # and this for the topicmodels package
+  # needed for the topicmodels package
   && sudo apt-get install -y libgsl-dev \
+  # needed for the terra package
+  && sudo apt-get install libgdal-dev \
   # build this compendium package
   && R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))" \
   && R -e "remotes::install_github(c('rstudio/renv', 'quarto-dev/quarto-r'))" \
