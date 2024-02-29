@@ -110,46 +110,70 @@ The following section describes the case study data, pre-processing steps and th
 
 To describe the legacy of the EMU program this research answers two questions: What were the main topics addressed in the EMU program? And how did those topics evolve over the duration of the program? The paper then discusses to what extent those topics and evolution thereof were influenced by the assignments given to the students throughout their studies leading up to their thesis and by the exchange semester followed by the students. The research process is described in @fig-process-diagram.
 
-```{r fig-process-diagram}
-#| fig-cap: Text mining process
-#| eval: false
-
-mermaid("graph LR
+::: {#fig-process-diagram}
+```{mermaid}
+graph LR
     A[Data collection]-->B[Pre-processing]
-    B-->C[Information extraction]
-    C-->B
+    B-->C[Text mining]
     C-->D[Visualisation]
+    D-->B
     D-->E[Results]
-    ")
 ```
+
+Text mining process
+:::
 
 ## Data collection {#datacol}
 
-**The dataset consists of full texts and metadata of a subset of EMU theses written in English.** The full texts are available as PDF documents with unstructured layouts typical to an urbanism project in which text and various types of graphics are combined <!--add figure-->. The full-text documents were obtained either from the TU Delft Education Repository upon request (an API for downloading full-text data was not available at the time of data collection), or from the authors via email if not available on the repository. Metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records when unavailable on the repository. Even though repository entries are openly accessible, licenses were not specified and thus it was unclear if the content of the theses can be mined and if the resulting data can be published. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni network, permissions were requested individually. As a result, of the total of `r sum(theses_all_per_year$n_total)` theses presented in the EMU program, full-text documents were obtained for `r sum(theses_all_per_year$n_pdfs)` of which permissions were granted for `r nrow(emu)`. Only PDFs for which permission was obtained were included in the corpus. The final corpus contains at least one thesis for each year of graduation between `r min(emu$grad_year)`-`r max(emu$grad_year)` as shown in @tbl-data-selection. @fig-map-theses shows the geographic spread of the theses included in the analysis.
+```{r}
+#| label: data-collection
+#| include: false
 
-```{r tbl-data-selection}
-#| tbl-cap: Overview of theses included in the analysis
-#| tbl-cap-location: top
+n_theses_all <- sum(theses_all_per_year$n_total)
+n_theses_pdf <- sum(theses_all_per_year$n_pdfs)
+n_theses <- nrow(emu)
 
-theses_all_per_year |> 
+start_year <- min(emu$grad_year)
+end_year <- max(emu$grad_year)
+
+theses_overview <- theses_all_per_year |> 
   select(grad_year, n_total, n_permissions) |> 
   mutate(grad_year = as.factor(grad_year),
-         `% of all theses` = scales::label_percent()(round(n_permissions / n_total, 4))) |>
-  bind_rows(data.frame(grad_year = "", 
+         `% of all theses per period` = scales::label_percent()(round(n_permissions / n_total, 4))) |>
+  bind_rows(data.frame(grad_year = "2007-2021", 
                        n_permissions = nrow(emu), 
                        n_total = sum(theses_all_per_year$n_total),
-                       `% of all theses` = scales::label_percent()(nrow(emu) / sum(theses_all_per_year$n_total)),
+                       `% of all theses per period` = scales::label_percent()(nrow(emu) / sum(theses_all_per_year$n_total)),
                        check.names = FALSE)) |> 
   filter(!is.na(grad_year)) |> 
   rename(`No. theses` = n_total,
          `Graduation year` = grad_year,
-         `No. theses included` = n_permissions) |>
-  kableExtra::kable(align = "lrrr")
+         `No. theses included` = n_permissions) 
 
+perc_theses_included <- tail(theses_overview, 1)[ncol(theses_overview)] |> pull()
 ```
 
-```{r fig-map-theses}
+The dataset consists of full texts and metadata of a subset of EMU theses written in English. The full texts are available as PDF documents with unstructured layouts typical to an urbanism project in which text and various types of graphics are combined @fig-pdf-example. The full-text documents were obtained either from the TU Delft Education Repository upon request, or from the authors via email if not available on the repository. Metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records if unavailable on the repository. Even though repository entries are openly accessible, licenses were not specified and thus it was unclear if the content of the theses can be mined and if the resulting data can be published. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni network, permissions were requested individually. As a result, of the total of `r n_theses_all` theses presented in the EMU program, full-text documents were obtained for `r n_theses_pdf` of which permissions were granted for `r n_theses`, that is, `r perc_theses_included` of all theses. Only PDFs for which permission was obtained were included in the corpus. The final corpus contains at least one thesis for each year of graduation between `r start_year`-`r end_year` as shown in @tbl-data-selection. @fig-map-theses shows the geographic spread of the theses included in the analysis.
+
+::: {#fig-pdf-example}
+![](pdf-example.png)
+
+Example of facing pages from one of the theses in the corpus.
+:::
+
+```{r}
+#| label: tbl-data-selection
+#| tbl-cap: Overview of theses included in the analysis
+#| tbl-cap-location: top
+
+theses_overview |>
+  kableExtra::kable(align = "lrrr")
+```
+
+```{r}
+#| label: fig-map-theses
 #| fig-cap: "Location of EMU theses included in the analysis"
+#| warning: false
 
 # Show thesis locations on world map
 visualize_thesis_locations(emu)
@@ -159,15 +183,16 @@ visualize_thesis_locations(emu)
 
 For each full text, henceforth referred to as "document", the following cleaning steps were performed:
 
-1.  Text was extracted from the original PDF documents with the the PyMuPDF Python package. During extraction, the front matter (cover page, colophon, table of contents, acknowledgements) and back matter (references, acknowledgements, appendices) were excluded. The page numbers used to exclude the front matter and back matter were manually identified and used as input for page selection during text extraction. The extracted text was stored in the `text_raw` column.
+1.  Text was extracted from the original PDF documents with the the PyMuPDF Python package [@pymupdf/2024]. During extraction, the front matter (cover page, colophon, table of contents, acknowledgements) and back matter (references, acknowledgements, appendices) were excluded. The page numbers used to exclude the front matter and back matter were manually identified and used as input for page selection during text extraction. The extracted text was stored in the `text_raw` column of the dataset.
 2.  The extracted text was cleaned in R of line breaks, hyphenation, occurrences of the thesis title, author name, and page numbers. The cleaned text data was added to each thesis in a new column `text_clean`.
 3.  From the metadata only the title, graduation year, exchange semester and location of the case studied in the theses were kept. Column names were shortened and updated to follow the naming conventions used in the dataset.
 
-The resulting dataset consists of the id, `title`, `grad_year`, `exch_sem`, `loc`, `lat`, `lon`, `text_raw` and `text_clean`, as shown in @tbl-data-variables.
+The resulting dataset consists of `ID`, `title`, `grad_year`, `loc`, `lat`, `lon`, `text_raw` and `text_clean`, as shown in @tbl-data-variables.
 
-```{r tbl-data-variables}
-
-# TODO make sure that the columns reported in the text match those included in the dataset
+```{r}
+#| label: tbl-data-variables
+#| tbl-cap: Variables included in the dataset.
+#| tbl-cap-location: top
 
 tibble::tibble(Column = names(emu), 
                Type = purrr::map(emu, class),
@@ -176,80 +201,90 @@ tibble::tibble(Column = names(emu),
                  purrr::map(mean) |> 
                  purrr::map(\(x){1 - as.numeric(x)}) |> 
                  purrr::map(scales::label_percent())) |>
-  kableExtra::kable()
+  kableExtra::kable(align = "llr")
 
 ```
 
 Both the raw and cleaned data are published in the 4TU.ResearchData repository [@forgaci2023].
 
-## Information extraction {#infoext}
+## Text mining {#infoext}
 
-<!-- Add intro to this section -->
+<!-- TODO Add intro to this section -->
 
-Information extraction is a process of extracting information from unstructured data following the steps of tokenisation, construction of a Document-Term Matrix (DTM), fitting the topic model
+Text mining is a process of extracting information from unstructured data following the steps of tokenisation, construction of a Document-Term Matrix (DTM), fitting a topic model and visualisation of the results.
 
-### Tokenisation
+### Tokenization
 
-Word-level tokenisation was applied on the corpus. Bigrams such as "public space" and trigrams such as "socio-spatial segregation" identified with high frequency (at least 20 on a corpus level) during EDA were concatenated by replacing white spaces and hyphens with underscores. This way, they could be included alongside words in the topic model.
+Word-level tokenization was applied on the corpus. In addition, bigrams such as "public space" and trigrams such as "socio-spatial segregation" identified with high frequency (at least 20 on a corpus level) during exploratory data analysis (EDA) were concatenated by replacing white spaces and hyphens with underscores. This way, they could be included alongside words in the topic model.
 
-**Stop words, i.e., common words or words that do not add much meaning, were removed**. Global, subject-specific and document stop words [@hvitfeldt2021a] were differentiated. As all theses were written in English, the pre-made "snowball" lexicon was used to remove global stop words. We manually constructed a list of subject-specific stop words based on our domain knowledge. Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words. In the next pre-processing step, we normalised the resulting words, that is, reduced them to their canonical dictionary forms, the resulting words were lemmatised [@hvitfeldt2021a]. Lemmatisation was preferred over stemming as the former tends to be more meaningful and less degrading than the latter.
+Stop words, i.e., common words or words that do not add much meaning, were removed. Global, subject-specific and document stop words [@hvitfeldt2021a] were differentiated. As all theses were written in English, the pre-made "snowball" lexicon was used to remove global stop words [@porter2001]. We manually constructed a list of subject-specific stop words based on our domain knowledge. Words that are commonly used to structure a theses, such as "preface", "contents", and "introduction", were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words. In the next pre-processing step, we normalised the resulting words, that is, reduced them to their canonical dictionary forms, the resulting words were lemmatised [@hvitfeldt2021a]. Lemmatisation was preferred over stemming as the former tends to be more meaningful and less degrading than the latter.
 
-```{r tokenize}
+```{r}
+#| label: tokens
+
 # Unnest tokens (words, bigrams and trigrams) and remove words of one and two letters
-emu_words <- tokenize(emu)
+words <- tokenize(emu)
 ```
 
-Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, including "map" and "low", were meaningful and occurring in high frequency.
+Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, such as "map", were meaningful and occurring in high frequency.
 
 ### Document-term matrix
 
-```{r dtm}
+```{r}
+#| label: dtm
 # Prepare document-term matrix as input for LDA model
-emu_dtm <- convert_to_dtm(emu_words, 
+dtm <- convert_to_dtm(words, 
                           id_col = "ID", 
                           word_col = "word", 
                           min_term_freq = 5)
 ```
 
-The topic model requires a document-term matrix (DTM) as input. To reduce the size of the DTM, words with a frequency lower than 5 were excluded.
+<!-- TODO Elaborate or merge with previous section -->
+
+The tokenized corpus was then converted into a document-term matrix (DTM), which is the format needed as input for the topic model. To reduce the size of the DTM, words with a corpus-level frequency lower than 5 were excluded.
 
 ### Topic model
 
-Similar to clustering on numeric data [@rüdiger2022], topic modelling is a method of unsupervised classification of topics found in a collection of documents [@silge2017]. We used the Latent Dirichlet Allocation (LDA) algorithm for topic modeling. LDA is a Bayesian generative topic model which assumes that each topic is a distribution over words and each document is a distribution over topics [@blei2012; @grün2011; @blei2003]. This means that each document is a mixture of topics and each topic is a mixture of words. The probability of a term being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\theta$ (theta) statistic.
+Similar to clustering on numeric data [@rüdiger2022], topic modelling is a method of unsupervised classification of topics found in a collection of documents [@silge2017]. We used Latent Dirichlet Allocation (LDA), a generative probabilist topic model which assumes that each topic is a distribution over words and each document is a distribution over topics [@blei2012; @grün2011; @blei2003]. This means that each document is a mixture of topics and each topic is a mixture of words. The probability of a word being part of a topic is given by the $\beta$ (beta) statistic, while the probability of a document being part of a topic is given by the $\theta$ (theta) statistic.
 
-The corpus (D) consists of a collection of M = `r nrow(emu)` documents with a total number of N = `r length(emu_words$word)` words and a vocabulary of V = `r length(unique(emu_words$word))` words. After the exclusion of words with a frequency lower than 5, the vocabulary was reduced to V = `r ncol(emu_dtm)`.
+The corpus ($D$) consists of a collection of M = `r nrow(emu)` documents with a total number of N = `r length(words$word) |> format(big.mark=",")` words and a vocabulary of V = `r length(unique(words$word)) |> format(big.mark=",")` words. After the exclusion of words with a frequency lower than 5, the vocabulary was reduced to V = `r ncol(dtm) |> format(big.mark=",")`.
 
-A key tuning parameter (i.e., a manually specified parameter) in an LDA model is the number of clusters K. A K with a smaller value will yield more general topics whereas a K with a high value will result in more specific topics. Hence, finding a suitable value entails a trade-off between interpretability and specificity. This is very much dependent on the data at hand and the research question. Given the small size of the corpus and the way the program was structured, the value of K = 5 was determined qualitatively considering the input received by the students in the two thematic semesters at TU Delft and the three alternative exchange semesters, each with a very distinct approach.
+A key tuning parameter (i.e., a manually specified parameter) in an LDA model is the number of clusters $K$. A $K$ with a smaller value will yield more general topics whereas a $K$ with a high value will result in more specific topics. Hence, finding a suitable value entails a trade-off between interpretability and specificity<!-- add reference here -->. This is very much dependent on the data at hand and the research question. Given the small size of the corpus and the way the program was structured, the value of $K = 5$ was determined qualitatively considering the input received by the students in the two thematic semesters at TU Delft and the three alternative exchange semesters, each with a very distinct approach, as described in @tbl-semesters.
 
 | University    | Semester        | Topic                                            |
-|------------------|------------------|------------------------------------|
+|-----------------|-----------------|--------------------------------------|
 | TU Delft      | Fall semester   | Urban region networks                            |
 |               | Spring semester | Constructing the sustainable city                |
 | IUAV Venice   | Fall semester   | Territories of dispersion: Situations, Scenarios |
 | KU Leuven     | Fall semester   |                                                  |
 | UPC Barcelona | Fall semester   | Urban Transformations                            |
 
-Each topic is assigned a pseudo-name comprising the top 5 most frequent words of the topic. The top 20 words were used to interpret and describe the meaning of the topics. Overall results per topic are visualised with bar charts and the evolution of topics and top words is visualised with line charts.
+: Topics covered by each EMU semester at TU Delft and in the exchange locations. {#tbl-semesters}
 
-Using the $\theta$ statistic, the distribution of documents over topics is visualised to classify documents accoriding to their dominant topic and to show to what extent a document is specific to a topic or spread across topics.
+Each topic was assigned a pseudo-name comprising the top 5 most frequent words of the topic. The top 20 words were used to interpret and describe the meaning of the topics qualitatively. Overall results per topic were visualised with bar charts and the evolution of topics and top words was visualised with line charts.
+
+Using the $\theta$ statistic, the distribution of documents over topics is visualised to classify documents according to their dominant topic and to show to what extent a document is specific to a topic or spread across topics.
 
 Visualise topics with word clouds
 
 To check how well the clustering is aligned with where the student carried out their exchange semester, we used a confusion matrix to visualize the relation between real values and values assigned through clustering.
 
-```{r lda}
+```{r}
+#| label: lda
 #| include: false
 
+# TODO transform this into a function
+
 ## K = 5 considering the 2 TUD semesters and the 3 exchange semesters combined 
-emu_lda_5 <- LDA(emu_dtm, k = 5, method="Gibbs",
-                 control = list(seed = 2023, iter = 500, verbose = 100))
+lda <- topicmodels::LDA(dtm, k = 3, method="Gibbs",
+                        control = list(seed = 2023, iter = 500, verbose = 100))
 
 # Extract beta and theta statistics from LDA model
-beta_5 <- posterior(emu_lda_5)$terms
-theta_5 <- posterior(emu_lda_5)$topics 
+beta <- modeltools::posterior(lda)$terms
+theta <- modeltools::posterior(lda)$topics 
 
 # Add pseudo-names to topics based on the top 5 words in each topic
-topic_names_5 <- name_topics(beta_5)
+topic_names_5 <- name_topics(beta)
 
 ```
 
@@ -259,14 +294,15 @@ topic_names_5 <- name_topics(beta_5)
 
 ## Topics
 
-```{r fig-topics-doc}
+```{r}
+#| label: fig-topics-doc
 #| fig-cap: Topic probability distribution per document
 
 # TODO Replace this with a table containing topics, documents, and theta
 #      sorted by theta in decreasing order
 # What is the dominant topic in each document?
-topic_prop <- as.data.frame(theta_5)
-colnames(topic_prop) <- paste0(paste0("Topic ", 1:5, ": "), topic_names_5)
+topic_prop <- as.data.frame(theta)
+colnames(topic_prop) <- paste0(paste0("Topic ", 1:length(topic_names_5), ": "), topic_names_5)
 
 topic_prop_viz <- 
   pivot_longer(data = data.frame(topic_prop,
@@ -293,8 +329,11 @@ p <- ggplot(data = topic_prop_viz,
   theme(legend.position = "bottom",
         legend.justification = "left",
         legend.direction = "vertical",
-        axis.title.y = element_blank()) +
+        axis.title.y = element_blank(),
+        strip.text = element_text(size = 5),
+        strip.background = element_rect(size = 1)) +
   scale_fill_viridis_d(name = "Dominant topic")
+
 
 p_tab <- ggplotGrob(p)
 # print(p_tab)
@@ -327,13 +366,14 @@ grid::grid.draw(p_filtered)
 
 ```
 
-```{r topic-proportions-corpus}
+```{r}
+#| label: topic-proportions-corpus
 
 # What is the mean probability of the documents being part of each topic?
-topic_proportions <- get_topic_proportions(emu_lda_5)
+topic_proportions <- get_topic_proportions(lda)
 
 # How many documents are with the highest probability in each topic?
-counts_of_primary_topics <- count_docs_per_topic(emu_lda_5)
+counts_of_primary_topics <- count_docs_per_topic(lda)
 
 # Show summary table of mean probabilities and document counts per topic
 topic_proportions |> 
@@ -345,43 +385,70 @@ topic_proportions |>
 
 The top 20 most frequently used words in the corpus (@fig-top-words-corpus), do not reflect the mean proportion ...
 
-```{r fig-top-words-corpus}
+```{r}
+#| label: fig-top-words-corpus
+
 # Which are the top n most frequently used words in all theses?
-vis_top_words_per_corpus(lda = emu_lda_5, words = emu_words, top_n = 20)
+n <- 20
+vis_top_words_per_corpus(lda = lda, words = words, top_n = n)
 ```
 
-```{r top-words-document}
+```{r}
+#| label: top-words-document
+
 # Which are the top n most frequently used words in each thesis?
-get_top_words_per_document(data = emu_words, id_col = "ID", top_n = 3)
+n <- 3
+get_top_words_per_document(data = words, id_col = "ID", top_n = n)
 ```
 
-```{r top-words-topic}
-vis_top_words_per_topic(data = emu_lda_5, top_n = 20)
+```{r}
+#| label: top-words-topic
+
+# Which are the top n most frequently used words in each thesis?
+n <- 20
+vis_top_words_per_topic(data = lda, top_n = n)
 ```
 
-```{r lda-vis}
-#| eval: false
+```{r}
+theta |> 
+  as_tibble() |> 
+  mutate(ID = as.numeric(rownames(theta))) |> 
+  pivot_longer(cols = `1`:ncol(theta),
+               names_to = "topic",
+               values_to = "prob") |> 
+  group_by(ID) |> 
+  mutate(max_prob = max(prob, na.rm = FALSE),
+         max_topic = if_else(round(prob, digits = 7) == round(max_prob, digits = 7), topic, NA)) |> 
+  ungroup() |> 
+  select(ID, max_prob, max_topic) |> 
+  drop_na() |> 
+  left_join(emu) |> 
+  select(ID, max_prob, max_topic, title, text_clean) |> 
+  # group_by(max_topic) |> 
+  # filter(max_prob == max(max_prob)) |> 
+  arrange(max_topic, desc(max_prob)) |> 
+  select(max_topic, max_prob, ID, title) |> 
+  kableExtra::kable()
 
-# TODO check if this can be included in the Shiny dashboard
-# TODO remove from paper
-# TODO how to show distances between topics in the paper?
-
-vis_lda(phi = beta_5,
-        theta = theta_5,
-        dtm = emu_dtm)
-
+# words_repr <- words |> 
+#   left_join(repr_theses) |> 
+#   drop_na()
+# 
+# set.seed(2023)
+# wordcloud::wordcloud(words_repr |> filter(ID == unique(words_repr$ID)[3]) |> pull(word), min.freq = 60)
 ```
 
 The `tf-idf` statistic shows words that are the most important to one document in a collection of documents [@silge2017]. In this case, it shows high values for the names of thesis locations that tend to be high-frequency thesis-specific words.
 
-```{r tf-idf}
+```{r}
+#| label: tf-idf
 
 ## Calculate tf-idf statistic
-emu_tf_idf <- emu_words |> 
+tf_idf <- words |> 
   get_tf_idf(id_col = "ID", word_col = "word")
 
 ## Get top n words most specific to each thesis 
-emu_tf_idf |> 
+tf_idf |> 
   group_by(ID) |> 
   top_n(5, tf_idf) |> 
   arrange(desc(tf_idf), .by_group = TRUE)
@@ -390,20 +457,45 @@ emu_tf_idf |>
 
 ### Topic 1: `r topic_names_5[1]`
 
+**People and places:** *community land house develop region*
+
+Community, social, ... local scale
+
 ### Topic 2: `r topic_names_5[2]`
+
+**Landscapes:** *water landscape system river land*
+
+The most dominant topic highlights the systemic, landscape-driven component of the program. This topic was central in the Spring semester at TU Delft.
 
 ### Topic 3: `r topic_names_5[3]`
 
+**Spatial morphology:** *block street build athens house*
+
+This topic is predominantly morphological... density... plot...
+
+The theses with the highest probabilities in this cluster...
+
 ### Topic 4: `r topic_names_5[4]`
+
+**Integrated projects:** *park build main house community*
 
 ### Topic 5: `r topic_names_5[5]`
 
+**Regional networks:** *territory land rural potential region*
+
+This topic represents territorial challenges that go beyond the urban to consider
+
+### Integrated projects
+
+Theses that have a broader distribution across topics have an integrative character. Do those theses have a relatively higher frequency of the term "integrate"? Also, Topics \# and \# share the dominant term "system" as they both represent systemic approaches
+
 ## The dynamics of thesis topics
 
-```{r fig-topics-evolution}
+```{r}
+#| label: fig-topics-evolution
 #| eval: false
 
-topic_prop_per_year <- theta_5[1:nrow(emu),]
+topic_prop_per_year <- theta[1:nrow(emu),]
 colnames(topic_prop_per_year) <- topic_names_5
 
 viz_df_with_year <-
@@ -417,7 +509,6 @@ viz_df_with_year <-
     values_to = "value") |> 
   left_join(mutate(emu, ID = as.factor(ID), "year" = grad_year), by = c("document" = "ID"))
 
-# TODO change to discrete colors
 # TODO represent this as a line chart
 # Plot topic proportions per year
 viz_df_with_year |> 
@@ -429,20 +520,21 @@ viz_df_with_year |>
   labs(title = "Topic proportions per year")
 ```
 
-```{r topic-model-gamma}
+```{r}
+#| label: topic-model-gamma
 #| eval: false
 
 # Extract documents as mixtures of topics from LDA model
-emu_documents <- tidy(emu_lda_5, matrix = "gamma")
+documents <- tidy(lda, matrix = "gamma")
 
-emu_documents |> 
+documents |> 
   ggplot(aes(x = reorder(str_sub(document, 1, 50), gamma), y = gamma, fill = topic)) + 
   geom_bar(stat = "identity") + 
   coord_flip()
 
 # TODO check if this is consistent with the results above
 # TODO is gamma the same as theta ?!
-emu_documents |>
+documents |>
   mutate(document = as.numeric(document)) |> 
   inner_join(emu |> 
                select(ID, grad_year), 
@@ -453,7 +545,7 @@ emu_documents |>
   facet_wrap(~ grad_year, ncol = 1, scales = "free", drop = TRUE)
 
 # TODO check if this plot is useful and, if not, remove it
-emu_documents |> 
+documents |> 
   mutate(document = as.numeric(document)) |> 
   inner_join(emu |> 
                select(ID, grad_year), 
@@ -464,9 +556,9 @@ emu_documents |>
 
 ```{r}
 
-top_words <- get_top_words_per_corpus(emu_words, top_n = 5, word_col = "word")
+top_words <- get_top_words_per_corpus(words, top_n = 5, word_col = "word")
 
-word_order <- emu_words |>
+word_order <- words |>
   group_by(word, grad_year) |>
   count(word, sort = TRUE) |>
   ungroup() |>
@@ -500,15 +592,33 @@ ggplot(word_order,
 
 As shown in @fig-topics-evolution, topics such as ... have gained importance over the years, while ... have lost prominence.
 
+-   show mean length of theses over time
+
+-   discuss why theses tend to be longer over time: more frictionless workflows, pre-made layouts, more focus on research
+
 # Discussion
+
+The relevance of the findings for the state of the profession and urbanism education...
+
+What are the core, stable elements of urbanism practice and how does the field need to adapt to changing societal challenges?
+
+The topics can be useful for searching...
+
+The number of topics...
 
 Although the focus of this study is on describing a fixed corpus though unsupervised machine learning, it can provide input into supervised predictive models.
 
 Research directions...
 
-# Conclusion
+-   what is generalisable to urbanism theses in general
+
+    -   increasing length is probably the case for all theses
+
+# Conclusion {#conclusion}
 
 # Acknowledgements
+
+I would like to acknowledge the invaluable contribution of Aleksandra Wilczynska to the development of this paper as a reproducible research compendium as part of DCC support provided by the TU Delft library. I would also like to thank former EMU coordinators Birgit Hausleitner and Luiz De Carvalho Filho for their support in collecting the metadata and data used in this paper, as well as to Bjarne van der Drift and Greta Samulionytė for their assistance in completing the metadata.
 
 <!-- The following line inserts a page break  -->
 
@@ -525,7 +635,7 @@ Research directions...
 
 ### Colophon
 
-This report was generated on `r Sys.time()` using the following computational environment and dependencies:
+This paper was generated on `r Sys.time()` using the following computational environment and dependencies:
 
 ```{r}
 #| label: colophon
@@ -538,6 +648,7 @@ if ("devtools" %in% installed.packages()) devtools::session_info()
 The current Git commit details are:
 
 ```{r}
+#| label: last-commit
 # what commit is this file at? 
 if ("git2r" %in% installed.packages() & git2r::in_repository(path = ".")) git2r::repository(here::here())  
 ```
