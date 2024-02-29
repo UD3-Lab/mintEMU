@@ -196,7 +196,7 @@ get_number_of_topics <- function(dtm,
                                  verbose = TRUE) {
 
   result <- ldatuning::FindTopicsNumber(
-    emu_dtm,
+    dtm,
     topics = topics,
     metrics = metrics,
     method = method,
@@ -296,6 +296,7 @@ count_docs_per_topic <- function(lda) {
              row.names = NULL)
 }
 
+# TODO check if this can be included in the Shiny dashboard
 #' Visualise LDA model
 #'
 #' @param phi   A matrix with each row representing the probability
@@ -367,7 +368,7 @@ vis_top_words_per_corpus <- function(lda, words, top_n = 20) {
     dplyr::filter(topic == max_topic) |>
     dplyr::ungroup()
 
-  emu_words_topics <- emu_words |>
+  emu_words_topics <- words |>
     left_join(terms, by = c("word" = "term"))
 
   top_terms <- mintEMU::get_top_words_per_corpus(words, top_n)
