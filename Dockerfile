@@ -17,7 +17,7 @@ RUN . /etc/environment \
   # needed for the topicmodels package
   && sudo apt-get install -y libgsl-dev \
   # needed for the terra package
-  && sudo apt-get install libgdal-dev \
+  && sudo apt-get install -y libgdal-dev \
   # build this compendium package
   && R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))" \
   && R -e "remotes::install_github(c('rstudio/renv', 'quarto-dev/quarto-r'))" \
