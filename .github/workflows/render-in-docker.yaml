@@ -8,8 +8,8 @@ jobs:
        uses: actions/checkout@master
      - name: Build the Docker image
        run: docker build . --file Dockerfile
-     - name: Upload rendered paper
-       uses: actions/upload-artifact@v4
-       with:
-         name: rendered-paper
-         path: /mintEMU/analysis/paper/paper.html
+     # - name: Upload rendered paper
+     #   uses: actions/upload-artifact@v4
+     #   with:
+     #     name: rendered-paper
+     #     path: ./mintEMU/analysis/paper/paper.html
