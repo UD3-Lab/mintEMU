@@ -1,5 +1,5 @@
 FROM rocker/binder:4.2.0
-LABEL maintainer= 'Claudiu Forgaci <C.Forgaci@tudelft.nl>'
+LABEL maintainer = 'Claudiu Forgaci <C.Forgaci@tudelft.nl>'
 USER root
 COPY . ${HOME}
 RUN chown -R ${NB_USER} ${HOME}
