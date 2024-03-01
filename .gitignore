@@ -7,8 +7,7 @@ analysis/nul
 # data/
 
 #Paper
-analysis/paper/paper_*
-*.docx
+analysis/paper/paper.docx
 
 # pyvenv
 inst/python/pyvenv
