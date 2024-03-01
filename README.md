@@ -5,25 +5,27 @@
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/UD3-Lab/minTEMU/main?urlpath=rstudio)
 
-This repository contains the data and code for our paper:
+This repository contains the data and code for the paper:
 
-> Authors, (YYYY). *The Legacy of the European Postgraduate Master in
-> Urbanism at TU Delft: A Text Mining Approach*. Name of journal/book
+> Forgaci, C., (2023). *The Legacy of the European Postgraduate Master
+> in Urbanism at TU Delft: A Text Mining Approach*. Name of journal/book
 > <https://doi.org/xxx/xxx>
 
-Our pre-print is online here:
+The pre-print is online here:
 
-> Authors, (YYYY). *The Legacy of the European Postgraduate Master in
-> Urbanism at TU Delft: A Text Mining Approach*. Name of journal/book,
-> Accessed 19 Feb 2023. Online at <https://doi.org/xxx/xxx>
+> Forgaci, C., (2023). *The Legacy of the European Postgraduate Master
+> in Urbanism at TU Delft: A Text Mining Approach*. Name of
+> journal/book, Accessed 01 Mar 2024. Online at
+> <https://doi.org/xxx/xxx>
 
 ### How to cite
 
 Please cite this compendium as:
 
-> Authors, (2023). *Compendium of R code and data for The Legacy of the
-> European Postgraduate Master in Urbanism at TU Delft: A Text Mining
-> Approach*. Accessed 19 Feb 2023. Online at <https://doi.org/xxx/xxx>
+> Forgaci, C., Wilczynska, A., (2023), (2024). *Compendium of R code and
+> data for The Legacy of the European Postgraduate Master in Urbanism at
+> TU Delft: A Text Mining Approach*. Accessed 01 Mar 2024. Online at
+> <https://doi.org/xxx/xxx>
 
 ## Contents
 
