@@ -58,7 +58,7 @@ test_that("find_meta_stopwords function produces correct list when all fields pr
       title = c(
         "breakfast of champions",
         "the picture of dorian gray",
-        "one flew over the cuckoos nest"
+        "one flew over the cuckoo's nest"
       )
     )
 
@@ -93,7 +93,7 @@ test_that("find_meta_stopwords function produces correct list when some fields a
       title = c(
         "breakfast of champions",
         "the picture of dorian gray",
-        "one flew over the cuckoos nest"
+        "one flew over the cuckoo's nest"
       )
     )
 
@@ -128,7 +128,7 @@ test_that("find_meta_stopwords function produces correct list when some fields a
       title = c(
         "breakfast of champions",
         "the picture of dorian gray",
-        "one flew over the cuckoos nest"
+        "one flew over the cuckoo's nest"
       )
     )
 
@@ -163,7 +163,7 @@ test_that("find_meta_stopwords function produces correct list when the names of 
       title = c(
         "breakfast of champions",
         "the picture of dorian gray",
-        "one flew over the cuckoos nest"
+        "one flew over the cuckoo's nest"
       )
     )
 
@@ -211,7 +211,7 @@ test_that("find_meta_stopwords function produces correct list when there are add
       title = c(
         "breakfast of champions",
         "the picture of dorian gray",
-        "one flew over the cuckoos nest"
+        "one flew over the cuckoo's nest"
       )
     )
 
@@ -251,7 +251,7 @@ test_that("find_meta_stopwords function produces correct regex when all fields p
   # Expected outpu
   expected_matches <- c("kurt vonnegut|kilgore trout|breakfast of champions",
                        "oscar wilde|henry wotton|the picture of dorian gray",
-                       "ken kesey|chief bromden|one flew over the cuckoos nest")
+                       "ken kesey|chief bromden|one flew over the cuckoo's nest")
 
   # Run the function
   output <- find_meta_stopwords(metadata, convert_to_regex = TRUE)
@@ -276,16 +276,16 @@ test_that("urbanism_stopwords function produces correct vector of stopwords", {
   # Expected output
   expected_output <-
     c(
-      "house",
-      "block",
-      "hut",
-      "playground",
-      "city",
-      "cities",
-      "urban",
-      "urbanism",
-      "hab",
-      "km"
+      "\\bhouse\\b",
+      "\\bblock\\b",
+      "\\bhut\\b",
+      "\\bplayground\\b",
+      "\\bcity\\b",
+      "\\bcities\\b",
+      "\\burban\\b",
+      "\\burbanism\\b",
+      "\\bhab\\b",
+      "\\bkm\\b"
     )
 
   # Run the function
@@ -293,7 +293,7 @@ test_that("urbanism_stopwords function produces correct vector of stopwords", {
 
   # Check the output against the expected result
   expect_equal(output, expected_output,
-               info = "Output should be a vector of words with related to urbanism."
+               info = "Output should be a vector of words related to urbanism."
   )
 
 })
@@ -306,16 +306,16 @@ test_that("urbanism_stopwords function cleans the additional stopwords before ad
   # Expected output
   expected_output <-
     c(
-      "house",
-      "block",
-      "hut",
-      "playground",
-      "city",
-      "cities",
-      "urban",
-      "urbanism",
-      "hab",
-      "km"
+      "\\bhouse\\b",
+      "\\bblock\\b",
+      "\\bhut\\b",
+      "\\bplayground\\b",
+      "\\bcity\\b",
+      "\\bcities\\b",
+      "\\burban\\b",
+      "\\burbanism\\b",
+      "\\bhab\\b",
+      "\\bkm\\b"
     )
 
   # Run the function
@@ -433,15 +433,17 @@ test_that("word_vec_combos works correctly with vectors of strings",{
 # })
 
 
-test_that("normalise_words workd correctly", {
+test_that("normalise_words worked correctly", {
 
   input <- c("Żeromski","Zafón", "García",
              "Márquez", "Cărtărescu", "Müller")
 
-  expected_output <- c("Żeromski","Zafón", "García",
-                       "Márquez", "Cărtărescu", "Müller",
-                       "Zeromski","Zafon", "Garcia",
-                       "Marquez", "Cartarescu", "Muller")
+  expected_output <- c("\\bŻeromski\\b","\\bZafón\\b", "\\bGarcía\\b",
+                       "\\bMárquez\\b", "\\bCărtărescu\\b", "\\bMüller\\b",
+                       "\\bZeromski\\b","\\bZafon\\b", "\\bGarcia\\b",
+                       "\\bMarquez\\b", "\\bCartarescu\\b", "\\bMuller\\b",
+                       "\\bzeromski\\b","\\bzafon\\b", "\\bgarcia\\b",
+                       "\\bmarquez\\b", "\\bcartarescu\\b", "\\bmuller\\b")
 
   output <- normalise_words(input)
 
