@@ -31,7 +31,7 @@ Title <- "The Legacy of the European Postgraduate Master in Urbanism at TU Delft
 
 Please cite this compendium as:
 
-> Forgaci, C., Wilczynska, A., (2023), (`r format(Sys.Date(), "%Y")`). _Compendium of R code and data for `r Title`_. Accessed `r format(Sys.Date(), "%d %b %Y")`. Online at <https://doi.org/xxx/xxx>
+> Forgaci, C., Wilczynska, A., (2023), (`r format(Sys.Date(), "%Y")`). _Compendium of R code and data for `r Title`_. Accessed `r format(Sys.Date(), "%d %b %Y")`. Online at <https://doi.org/10.4121/3295be57-969c-4f72-9c09-8e92aaff78a5>
 
 ## Contents
 
@@ -56,7 +56,7 @@ language R. To work with the compendium, you will need
 installed on your computer the [R software](https://cloud.r-project.org/)
 itself and optionally [RStudio Desktop](https://rstudio.com/products/rstudio/download/).
 
-You can download the compendium as a zip from from this URL:
+You can download the compendium as a zip from this URL:
 [main.zip](/archive/main.zip). After unzipping:
 - open the `.Rproj` file in RStudio
 - run `devtools::install()` to ensure you have the packages this analysis depends on (also listed in the
