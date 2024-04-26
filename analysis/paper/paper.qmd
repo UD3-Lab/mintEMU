@@ -68,11 +68,6 @@ library(tidyverse)
 ## TODO should this be replaced with a call to `library(mintEMU)`?
 devtools::load_all(".")
 
-# Load data ----
-data(emu_metadata)  # Thesis metadata
-data(emu_raw)       # Raw full text data
-data(emu_clean)     # Cleaned full text data
-
 # Join metadata and cleaned text data ----
 emu <- emu_metadata |> 
   left_join(emu_raw, by = "ID") |> 
