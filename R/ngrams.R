@@ -20,7 +20,7 @@ get_ngrams <- function(data,
 
   # Create ngrams column and separate columns for each of the n terms
   data_ngrams <- data |>
-    dplyr::select(id_col, text_col) |>
+    dplyr::select(all_of(id_col), all_of(text_col)) |>
     tidytext::unnest_tokens(ngram, text_col, token = "ngrams", n = n) |>
     tidyr::separate(ngram, into = paste("w" , 1:n, sep = "_"),
                     sep = " ", remove = FALSE)
@@ -38,8 +38,8 @@ get_ngrams <- function(data,
 
   # TODO short words in a separate function
   short_words <- data |>
-    dplyr::select(text_raw) |>
-    tidytext::unnest_tokens(output = word, input = text_raw) |>
+    dplyr::select(all_of(text_col)) |>
+    tidytext::unnest_tokens(output = word, input = text_col) |>
     dplyr::anti_join(tidytext::stop_words, by = "word") |>  # remove stop words
     dplyr::mutate(word = textstem::lemmatize_words(word)) |>  # lemmatise words
     dplyr::filter(nchar(word) <= rm_n_short_words)
