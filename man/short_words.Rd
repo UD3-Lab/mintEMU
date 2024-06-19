@@ -9,7 +9,7 @@ short_words(
   l_word = 4,
   l_list = 50,
   scope = "word",
-  print_kable = TRUE
+  print_kable = FALSE
 )
 }
 \arguments{
