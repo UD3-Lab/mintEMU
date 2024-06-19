@@ -30,9 +30,9 @@ thesis_sw <- mintEMU::thesis_stopwords(
   add_stopwords = c("advisor", "prof", "professor", "fig", "ure", "figure", "ning", "dr", "ir", "drir"))
 # anonymisation_sw <- c("EMAIL_REMOVED", "AUTHOR_REMOVED", "FIRST_NAME_REMOVED", "LAST_NAME_REMOVED") |>
 #   paste(collapse = "|")
-custom_sw <- c("space[s]?", "spatial", "development",
+custom_sw <- c("development", "space", "spatial",
                "project[s]?", "figure[s]?", "map[s]?", "intervention[s]?",
-               "create", "exist", "main", "plan[s]?", "planning", "land", "design", "low") |>
+               "create", "exist", "main", "low") |>
   (\(.) paste0("\\b", ., "\\b"))() |>
   paste(collapse = "|")
 
