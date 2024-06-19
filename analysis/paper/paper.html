@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Claudiu Forgaci">
-<meta name="dcterms.date" content="2024-02-29">
+<meta name="dcterms.date" content="2024-04-26">
 <meta name="keywords" content="<p>urbanism; education; post-master; text mining; topic modeling</p>">
 
 <title>The Legacy of the European Post-Master in Urbanism at TU Delft: A Text Mining Approach</title>
@@ -59,6 +59,8 @@ div.csl-indent {
 <script src="paper_files/libs/quarto-diagram/mermaid.min.js"></script>
 <script src="paper_files/libs/quarto-diagram/mermaid-init.js"></script>
 <link href="paper_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
+<script src="paper_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="paper_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -124,7 +126,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 29, 2024</p>
+      <p class="date">April 26, 2024</p>
     </div>
   </div>
   
@@ -134,7 +136,7 @@ window.Quarto = {
 <div>
   <div class="abstract">
     <div class="block-title">Abstract</div>
-    <p>This paper aims to describe the legacy of the European post-Master of Urbanism (EMU) that ran between 2005 and 2021 at TU Delft. To that end, it reports on the analysis of the graduation theses produced over the duration of the program. The text mining approach allows for a close scrutiny of the latent thematic patterns, and evolutions thereof, found in the full texts of the theses. Results reveal 5 topics that are to a large extent consistent with the set-up of the program in two thematic semesters at TU Delft and three possible exchange semester locations, each characterised by a specific approach. The paper discusses the relevance of the findings for the state of the profession and education in the field. Set up as a research compendium accompanied by a published FAIR dataset and an interactive dashboard, the research is fully reproducible and enables further analysis.</p>
+    <p>This paper aims to describe the legacy of the European post-Master in Urbanism (EMU) that ran between 2005 and 2021 at TU Delft. To that end, it reports on the analysis of the graduation theses produced over the duration of the program. The text mining approach allows for a close scrutiny of the latent thematic patterns, and evolutions thereof, found in the full texts of the theses. Results reveal 5 topics that are to a large extent consistent with the set-up of the program in two thematic semesters at TU Delft and three possible exchange semester locations, each characterised by a specific approach. The paper discusses the relevance of the findings for the state of the profession and education in the field. Set up as a research compendium accompanied by a published FAIR dataset and an interactive dashboard, the research is fully reproducible and enables further analysis.</p>
   </div>
 </div>
 
@@ -156,19 +158,19 @@ window.Quarto = {
 <!-- The actual document text starts here: -->
 <section id="intro" class="level2">
 <h2 class="anchored" data-anchor-id="intro">Introduction</h2>
-<p>The research presented in this paper was prompted by the closure of the European post-Master of Urbanism (EMU) at TU Delft in 2021. The EMU is an advanced program started jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia in 2005. The program distinguished itself internationally as an advanced post-master open only to applicants with a prior MSc degree and practical experience in urbanism or a related field. With a combined research and design curriculum, it provided a bridge towards both advanced practice and research trajectories after graduation. All students followed an exchange semester at one of the other three program universities, allowing them to have a broad, international view on the field of urbanism. Although located in Europe and named “European”, its geographic scope was global, visible especially at the stage of graduation, considering that a large majority of students were of non-European origin and chose to work on a case from their home location.</p>
+<p>The research presented in this paper was prompted by the closure of the European post-Master in Urbanism (EMU) at TU Delft in 2021. The EMU is an advanced program started jointly by TU Delft, KU Leuven, UPC Barcelona and Università IUAV di Venezia in 2005. The program distinguished itself internationally as an advanced post-master open only to applicants with a prior MSc degree and practical experience in urbanism or a related field. With a combined research and design curriculum, it provided a bridge towards both advanced practice and research trajectories after graduation. All students followed an exchange semester at one of the other three program universities, allowing them to have a broad, international view on the field of urbanism. Although located in Europe and named “European”, its geographic scope was global (see <a href="#fig-map-theses" class="quarto-xref">Figure&nbsp;3</a>), visible especially at the stage of graduation, considering that a large majority of students were of non-European origin and chose to work on a case from their home location.</p>
 <p>In 2021, TU Delft left the program, but its approach has remained imprinted on the TU Delft approach to urbanism. Its core topics Urban Region Networks (Semester 1) and Constructing Sustainable Urban Landscapes (Semester 2), as well as the influence of the partner universities—mostly IUAV Venice where most TU-Delft-hosted students spent their exchange semesters—are visible in the current MSc Urbanism and, to some extent, MSc Landscape Architecture tracks. There is general agreement on the considerable impact of the EMU on education and practice targeting sustainable urbanism, but why and how it is so remains implicit. Understanding what made the program impactful would be beneficial for targeted urbanism education and practice in response to current societal challenges. Having a close look at the assignments that were addressed by the program as well as research and design approaches used to tackle those topics throughout the years can provide valuable insight into what are the core, stable elements of urbanism practice, on the one hand, and how does the field need to adapt to changing societal challenges, on the other.</p>
 <p>To describe the legacy of the EMU program, including the distinctive features of its didactic approach, this paper aims to reveal the main topics taught in it and how those topics had evolved over the years of the program. To that end, the research presented in this paper employed a text mining approach targeting the output of the EMU program: 96 theses with a rounded average of 23,000 words produced over the years for the duration of the program between 2005-2021. Although the corpus of theses is relatively small, it is large enough to make a manually conducted quantitative analytical approach unfeasible.</p>
 </section>
-<section id="textmin" class="level2">
-<h2 class="anchored" data-anchor-id="textmin">A text mining approach</h2>
+<section id="tmapproach" class="level2">
+<h2 class="anchored" data-anchor-id="tmapproach">A text mining approach</h2>
 <p>The rise of computational social sciences <span class="citation" data-cites="wallach2018">(<a href="#ref-wallach2018" role="doc-biblioref">Wallach, 2018</a>)</span> provides tools and methods to summarise large sets of data that would not be possible with human annotation <span class="citation" data-cites="blei2012">(<a href="#ref-blei2012" role="doc-biblioref">Blei, 2012</a>)</span>. Often such data is available in unstructured textual form and formats that are not easily machine-readable, such as Adobe PDF or Microsoft Word documents <span class="citation" data-cites="benchimol2022">(<a href="#ref-benchimol2022" role="doc-biblioref">Benchimol et al., 2022</a>)</span>. While quantitative text analysis have been widely adopted in computational social sciences such as linguistics, communication, and political science <span class="citation" data-cites="benchimol2022">(<a href="#ref-benchimol2022" role="doc-biblioref">Benchimol et al., 2022</a>)</span>, urbanism research, in general, and urbanism education studies, in particular, rarely use statistical methods such as topic modeling to analyse unstructured data. This is especially a missed opportunity considering that theses are representative outputs of educational programs that are increasingly available in digital repositories—the TU Delft repository was established in 2007, which is also the first graduation year of the EMU, and has been steadily growing since then. Patterns revealed in past education can potentially better inform future decisions in education in the field.</p>
-<p>Acknowledging that opportunity, this paper leverages topic modeling, a branch of Natural Language Processing, as an unsupervised machine learning method to reveal latent semantic structure and relationships between latent topics in a large document collection <span class="citation" data-cites="muchene2021">(<a href="#ref-muchene2021" role="doc-biblioref">Muchene and Safari, 2021</a>)</span>. Latent Dirichlet Allocation (LDA) is broadly adopted in topic modeling <span class="citation" data-cites="muchene2021">(<a href="#ref-muchene2021" role="doc-biblioref">Muchene and Safari, 2021</a>)</span> as it uses a soft clustering algorithm in which objects can be part of multiple clusters (mixed membership approach) as opposed to hard clustering algorithms (single membership approaches) <span class="citation" data-cites="rüdiger2022">(<a href="#ref-rüdiger2022" role="doc-biblioref">Rüdiger et al., 2022</a>)</span>. LDA uses as input a bag-of-words (BOW) model, more generally called the vector space model (VSM), in which documents in a corpus are decomposed into two low-dimensional matrices for document-topic distribution and word-topic distribution, respectively. Although topic modeling in general automates the process of identifying topics through clustering, those topics need to be manually interpreted and labelled after the application of the algorithm <span class="citation" data-cites="rüdiger2022">(<a href="#ref-rüdiger2022" role="doc-biblioref">Rüdiger et al., 2022</a>)</span>. Moreover, arguing for the right algorithm and a suitable number of clusters remains a challenge <span class="citation" data-cites="rüdiger2022">(<a href="#ref-rüdiger2022" role="doc-biblioref">Rüdiger et al., 2022</a>)</span>.</p>
+<p>Acknowledging that opportunity, this paper leverages topic modeling as an unsupervised machine learning method to reveal latent semantic structure and relationships between latent topics in a large document collection <span class="citation" data-cites="muchene2021">(<a href="#ref-muchene2021" role="doc-biblioref">Muchene and Safari, 2021</a>)</span>. Latent Dirichlet Allocation (LDA) is broadly adopted in topic modeling <span class="citation" data-cites="muchene2021">(<a href="#ref-muchene2021" role="doc-biblioref">Muchene and Safari, 2021</a>)</span> as it uses a soft clustering algorithm in which objects can be part of multiple clusters (mixed membership approach) as opposed to hard clustering algorithms (single membership approaches) <span class="citation" data-cites="rüdiger2022">(<a href="#ref-rüdiger2022" role="doc-biblioref">Rüdiger et al., 2022</a>)</span>. LDA uses as input a bag-of-words (BOW) model, more generally called the vector space model (VSM), in which documents in a corpus are decomposed into two low-dimensional matrices for document-topic distribution and word-topic distribution, respectively. Although topic modeling in general automates the process of identifying topics through clustering, those topics need to be manually interpreted and labelled after the application of the algorithm <span class="citation" data-cites="rüdiger2022">(<a href="#ref-rüdiger2022" role="doc-biblioref">Rüdiger et al., 2022</a>)</span>. Moreover, arguing for the right algorithm and a suitable number of clusters remains a challenge <span class="citation" data-cites="rüdiger2022">(<a href="#ref-rüdiger2022" role="doc-biblioref">Rüdiger et al., 2022</a>)</span>.</p>
 <p>In addition to describing the legacy of the EMU, this paper showcases a reproducible research workflow. Together with a published FAIR dataset, it forms a reproducible research compendium. The analyses presented in this paper were carried out in the free and open-source statistical programming software R <span class="citation" data-cites="rcoreteam2023">(<a href="#ref-rcoreteam2023" role="doc-biblioref">R Core Team, 2023</a>)</span>. The research compendium is available at [ADD CITATION], the data is published in th 4TU.ResearchData repository <span class="citation" data-cites="forgaci2023">(<a href="#ref-forgaci2023" role="doc-biblioref">Forgaci and Wilczynska, 2023</a>)</span> and it is available for exploration in a Shiny dashboard at <a href="http://mintemu_shiny.bk.tudelft.nl:3838/mintemu/" class="uri">http://mintemu_shiny.bk.tudelft.nl:3838/mintemu/</a>.</p>
 <p>The following section describes the case study data, pre-processing steps and the topic modeling workflow. The results of the analysis are then summarised in response to two research questions. The paper concludes with a discussion on what the lessons learned from the EMU program mean for urbanism education and practice in general as well as on the broader challenges and opportunities of the text mining approach taken in the paper.</p>
 </section>
-<section id="methods" class="level1">
-<h1>Methods</h1>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
 <p>To describe the legacy of the EMU program this research answers two questions: What were the main topics addressed in the EMU program? And how did those topics evolve over the duration of the program? The paper then discusses to what extent those topics and evolution thereof were influenced by the assignments given to the students throughout their studies leading up to their thesis and by the exchange semester followed by the students. The research process is described in <a href="#fig-process-diagram" class="quarto-xref">Figure&nbsp;1</a>.</p>
 <div id="fig-process-diagram" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -196,9 +198,9 @@ Figure&nbsp;1: Text mining process
 </figcaption>
 </figure>
 </div>
-<section id="datacol" class="level2">
-<h2 class="anchored" data-anchor-id="datacol">Data collection</h2>
-<p>The dataset consists of full texts and metadata of a subset of EMU theses written in English. The full texts are available as PDF documents with unstructured layouts typical to an urbanism project in which text and various types of graphics are combined <a href="#fig-pdf-example" class="quarto-xref">Figure&nbsp;2</a>. The full-text documents were obtained either from the TU Delft Education Repository upon request, or from the authors via email if not available on the repository. Metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records if unavailable on the repository. Even though repository entries are openly accessible, licenses were not specified and thus it was unclear if the content of the theses can be mined and if the resulting data can be published. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni network, permissions were requested individually. As a result, of the total of 96 theses presented in the EMU program, full-text documents were obtained for 83 of which permissions were granted for 68, that is, 71% of all theses. Only PDFs for which permission was obtained were included in the corpus. The final corpus contains at least one thesis for each year of graduation between 2007-2021 as shown in <a href="#tbl-data-selection" class="quarto-xref">Table&nbsp;1</a>. <a href="#fig-map-theses" class="quarto-xref">Figure&nbsp;3</a> shows the geographic spread of the theses included in the analysis.</p>
+<section id="datacol" class="level3">
+<h3 class="anchored" data-anchor-id="datacol">Data collection</h3>
+<p>The dataset consists of full texts and metadata of a subset of EMU theses written in English. The full texts are available as PDF documents with unstructured layouts typical to an urbanism project in which text and various types of graphics are combined <a href="#fig-pdf-example" class="quarto-xref">Figure&nbsp;2</a>. The full-text documents were obtained either from the TU Delft Education Repository upon request, or from the authors via email if not available on the repository. Metadata was downloaded from the TU Delft Education Repository or obtained from the EMU program coordination records if unavailable on the repository. Even though repository entries are openly accessible, licenses were not specified and thus it was unclear if the content of the theses can be mined and if the resulting data can be published. Considering the relatively small size of the corpus and the possibility of directly contacting the alumni community, permissions were requested individually. As a result, of the total of 96 theses presented in the EMU program, full-text documents were obtained for 83 of which permissions were granted for 68, that is, 71% of all theses. Only PDFs for which permission was obtained were included in the corpus. The final corpus contains at least one thesis for each year of graduation between 2007-2021 as shown in <strong>?@tbl-data-selection</strong>. <a href="#fig-map-theses" class="quarto-xref">Figure&nbsp;3</a> shows the geographic spread of the theses included in the analysis.</p>
 <div id="fig-pdf-example" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-pdf-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -209,22 +211,35 @@ Figure&nbsp;2: Example of facing pages from one of the theses in the corpus.
 </figcaption>
 </figure>
 </div>
+<!-- Table shown in html output -->
 <div class="cell" data-tbl-cap-location="top">
-<div id="tbl-data-selection" class="cell quarto-float anchored" data-tbl-cap-location="top">
+<div id="tbl-data-selection-html" class="cell quarto-float anchored" data-tbl-cap-location="top">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-data-selection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-data-selection-html-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table&nbsp;1: Overview of theses included in the analysis
 </figcaption>
-<div aria-describedby="tbl-data-selection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div aria-describedby="tbl-data-selection-html-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div>
-<table class="do-not-create-environment cell table table-sm table-striped small" data-quarto-postprocess="true">
+<table class="table table-hover do-not-create-environment cell table-sm table-striped small" data-quarto-postprocess="true">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
 <thead>
 <tr class="header">
+<th colspan="2" data-quarto-table-cell-role="th" style="text-align: left; empty-cells: hide; border-bottom: hidden;"></th>
+<th colspan="2" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Included
+</div></th>
+</tr>
+<tr class="odd">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Graduation year</th>
 <th style="text-align: right;" data-quarto-table-cell-role="th">No. theses</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">No. theses included</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">% of all theses per period</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Count</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Percentage</th>
 </tr>
 </thead>
 <tbody>
@@ -232,97 +247,97 @@ Table&nbsp;1: Overview of theses included in the analysis
 <td style="text-align: left;">2007</td>
 <td style="text-align: right;">6</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">16.7%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffb6c1">16.7</span></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2008</td>
 <td style="text-align: right;">5</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">20.0%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #fab8bf">20.0</span></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2009</td>
 <td style="text-align: right;">22</td>
 <td style="text-align: right;">11</td>
-<td style="text-align: right;">50.0%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #d2ccad">50.0</span></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2010</td>
 <td style="text-align: right;">5</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">60.0%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #c5d3a7">60.0</span></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2011</td>
 <td style="text-align: right;">8</td>
 <td style="text-align: right;">7</td>
-<td style="text-align: right;">87.5%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a0e597">87.5</span></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2012</td>
 <td style="text-align: right;">3</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">100.0%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #90ee90">100.0</span></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2013</td>
 <td style="text-align: right;">6</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">83.3%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a6e299">83.3</span></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2014</td>
 <td style="text-align: right;">10</td>
 <td style="text-align: right;">8</td>
-<td style="text-align: right;">80.0%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #aae09b">80.0</span></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2015</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">100.0%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #90ee90">100.0</span></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2016</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">100.0%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #90ee90">100.0</span></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2017</td>
 <td style="text-align: right;">10</td>
 <td style="text-align: right;">10</td>
-<td style="text-align: right;">100.0%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #90ee90">100.0</span></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2018</td>
 <td style="text-align: right;">6</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">83.3%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a6e299">83.3</span></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2019</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">100.0%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #90ee90">100.0</span></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2020</td>
 <td style="text-align: right;">3</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">100.0%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #90ee90">100.0</span></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2021</td>
 <td style="text-align: right;">6</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">83.3%</td>
+<td style="text-align: right; width: 3cm;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a6e299">83.3</span></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">2007-2021</td>
-<td style="text-align: right;">96</td>
-<td style="text-align: right;">68</td>
-<td style="text-align: right;">71%</td>
+<td style="text-align: left; font-weight: bold;">2007-2021</td>
+<td style="text-align: right; font-weight: bold;">96</td>
+<td style="text-align: right; font-weight: bold;">68</td>
+<td style="text-align: right; width: 3cm; font-weight: bold;"><span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #b6daa1">71.0</span></td>
 </tr>
 </tbody>
 </table>
@@ -334,6 +349,9 @@ Table&nbsp;1: Overview of theses included in the analysis
 </figure>
 </div>
 </div>
+<!-- Table shown in non-html output -->
+<!-- TODO Replace with interactive map when rendering HTML.
+This should be an argument in the `visualise_thesis_locations()` function. -->
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-map-theses" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -349,13 +367,13 @@ Figure&nbsp;3: Location of EMU theses included in the analysis
 </div>
 </div>
 </section>
-<section id="prepro" class="level2">
-<h2 class="anchored" data-anchor-id="prepro">Pre-processing</h2>
+<section id="prepro" class="level3">
+<h3 class="anchored" data-anchor-id="prepro">Pre-processing</h3>
 <p>For each full text, henceforth referred to as “document”, the following cleaning steps were performed:</p>
 <ol type="1">
 <li>Text was extracted from the original PDF documents with the the PyMuPDF Python package <span class="citation" data-cites="pymupdf/2024">(<a href="#ref-pymupdf/2024" role="doc-biblioref"><em>Pymupdf/PyMuPDF</em>, 2024</a>)</span>. During extraction, the front matter (cover page, colophon, table of contents, acknowledgements) and back matter (references, acknowledgements, appendices) were excluded. The page numbers used to exclude the front matter and back matter were manually identified and used as input for page selection during text extraction. The extracted text was stored in the <code>text_raw</code> column of the dataset.</li>
 <li>The extracted text was cleaned in R of line breaks, hyphenation, occurrences of the thesis title, author name, and page numbers. The cleaned text data was added to each thesis in a new column <code>text_clean</code>.</li>
-<li>From the metadata only the title, graduation year, exchange semester and location of the case studied in the theses were kept. Column names were shortened and updated to follow the naming conventions used in the dataset.</li>
+<li>From the metadata only the title, graduation year, and location of the case studied in the theses were kept. Column names were shortened and updated to follow the naming conventions used in the dataset.</li>
 </ol>
 <p>The resulting dataset consists of <code>ID</code>, <code>title</code>, <code>grad_year</code>, <code>loc</code>, <code>lat</code>, <code>lon</code>, <code>text_raw</code> and <code>text_clean</code>, as shown in <a href="#tbl-data-variables" class="quarto-xref">Table&nbsp;2</a>.</p>
 <div class="cell" data-tbl-cap-location="top">
@@ -366,13 +384,12 @@ Table&nbsp;2: Variables included in the dataset.
 </figcaption>
 <div aria-describedby="tbl-data-variables-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div>
-<table class="do-not-create-environment cell table table-sm table-striped small" data-quarto-postprocess="true">
+<table class="do-not-create-environment cell table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Column</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Type</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Completeness</th>
+<th style="text-align: left;">Column</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: right;">Completeness</th>
 </tr>
 </thead>
 <tbody>
@@ -418,9 +435,6 @@ Table&nbsp;2: Variables included in the dataset.
 </tr>
 </tbody>
 </table>
-
-
-</div>
 </div>
 </div>
 </figure>
@@ -428,25 +442,24 @@ Table&nbsp;2: Variables included in the dataset.
 </div>
 <p>Both the raw and cleaned data are published in the 4TU.ResearchData repository <span class="citation" data-cites="forgaci2023">(<a href="#ref-forgaci2023" role="doc-biblioref">Forgaci and Wilczynska, 2023</a>)</span>.</p>
 </section>
-<section id="infoext" class="level2">
-<h2 class="anchored" data-anchor-id="infoext">Text mining</h2>
-<!-- TODO Add intro to this section -->
-<p>Text mining is a process of extracting information from unstructured data following the steps of tokenisation, construction of a Document-Term Matrix (DTM), fitting a topic model and visualisation of the results.</p>
-<section id="tokenization" class="level3">
-<h3 class="anchored" data-anchor-id="tokenization">Tokenization</h3>
+<section id="textmin" class="level3">
+<h3 class="anchored" data-anchor-id="textmin">Text mining</h3>
+<p>Text mining is a process of extracting implicit information from unstructured textual data <span class="citation" data-cites="jo2019">(<a href="#ref-jo2019" role="doc-biblioref">Jo, 2019</a>)</span>. following the steps of tokenisation, construction of a Document-Term Matrix (DTM), fitting a topic model and visualisation of the results.</p>
+<section id="tokenization" class="level4">
+<h4 class="anchored" data-anchor-id="tokenization">Tokenization</h4>
 <p>Word-level tokenization was applied on the corpus. In addition, bigrams such as “public space” and trigrams such as “socio-spatial segregation” identified with high frequency (at least 20 on a corpus level) during exploratory data analysis (EDA) were concatenated by replacing white spaces and hyphens with underscores. This way, they could be included alongside words in the topic model.</p>
 <p>Stop words, i.e., common words or words that do not add much meaning, were removed. Global, subject-specific and document stop words <span class="citation" data-cites="hvitfeldt2021a">(<a href="#ref-hvitfeldt2021a" role="doc-biblioref">Hvitfeldt and Silge, 2021</a>)</span> were differentiated. As all theses were written in English, the pre-made “snowball” lexicon was used to remove global stop words <span class="citation" data-cites="porter2001">(<a href="#ref-porter2001" role="doc-biblioref">Porter, 2001</a>)</span>. We manually constructed a list of subject-specific stop words based on our domain knowledge. Words that are commonly used to structure a theses, such as “preface”, “contents”, and “introduction”, were added as subject-specific stop words as well. Finally, titles and author names were removed as document stop words. In the next pre-processing step, we normalised the resulting words, that is, reduced them to their canonical dictionary forms, the resulting words were lemmatised <span class="citation" data-cites="hvitfeldt2021a">(<a href="#ref-hvitfeldt2021a" role="doc-biblioref">Hvitfeldt and Silge, 2021</a>)</span>. Lemmatisation was preferred over stemming as the former tends to be more meaningful and less degrading than the latter.</p>
 <p>Finally, additional checks were made to the document in search for previously undetected stop words. Short words of one and two letters could be safely removed, while three-letter words were kept, as many of those, such as “map”, were meaningful and occurring in high frequency.</p>
 </section>
-<section id="document-term-matrix" class="level3">
-<h3 class="anchored" data-anchor-id="document-term-matrix">Document-term matrix</h3>
+<section id="dtm" class="level4">
+<h4 class="anchored" data-anchor-id="dtm">Document-term matrix</h4>
 <!-- TODO Elaborate or merge with previous section -->
 <p>The tokenized corpus was then converted into a document-term matrix (DTM), which is the format needed as input for the topic model. To reduce the size of the DTM, words with a corpus-level frequency lower than 5 were excluded.</p>
 </section>
-<section id="topic-model" class="level3">
-<h3 class="anchored" data-anchor-id="topic-model">Topic model</h3>
+<section id="tomo" class="level4">
+<h4 class="anchored" data-anchor-id="tomo">Topic model</h4>
 <p>Similar to clustering on numeric data <span class="citation" data-cites="rüdiger2022">(<a href="#ref-rüdiger2022" role="doc-biblioref">Rüdiger et al., 2022</a>)</span>, topic modelling is a method of unsupervised classification of topics found in a collection of documents <span class="citation" data-cites="silge2017">(<a href="#ref-silge2017" role="doc-biblioref">Silge and Robinson, 2017</a>)</span>. We used Latent Dirichlet Allocation (LDA), a generative probabilist topic model which assumes that each topic is a distribution over words and each document is a distribution over topics <span class="citation" data-cites="blei2012 grün2011 blei2003">(<a href="#ref-blei2012" role="doc-biblioref">Blei, 2012</a>; <a href="#ref-blei2003" role="doc-biblioref">Blei et al., 2003</a>; <a href="#ref-grün2011" role="doc-biblioref">Grün and Hornik, 2011</a>)</span>. This means that each document is a mixture of topics and each topic is a mixture of words. The probability of a word being part of a topic is given by the <span class="math inline">\(\beta\)</span> (beta) statistic, while the probability of a document being part of a topic is given by the <span class="math inline">\(\theta\)</span> (theta) statistic.</p>
-<p>The corpus (<span class="math inline">\(D\)</span>) consists of a collection of M = 68 documents with a total number of N = 739,207 words and a vocabulary of V = 38,604 words. After the exclusion of words with a frequency lower than 5, the vocabulary was reduced to V = 6,600.</p>
+<p>The corpus (<span class="math inline">\(D\)</span>) consists of a collection of M = 68 documents with a total number of N = 740,839 words and a vocabulary of V = 38,603 words. After the exclusion of words with a frequency lower than 5, the vocabulary was reduced to V = 6,601.</p>
 <p>A key tuning parameter (i.e., a manually specified parameter) in an LDA model is the number of clusters <span class="math inline">\(K\)</span>. A <span class="math inline">\(K\)</span> with a smaller value will yield more general topics whereas a <span class="math inline">\(K\)</span> with a high value will result in more specific topics. Hence, finding a suitable value entails a trade-off between interpretability and specificity<!-- add reference here -->. This is very much dependent on the data at hand and the research question. Given the small size of the corpus and the way the program was structured, the value of <span class="math inline">\(K = 5\)</span> was determined qualitatively considering the input received by the students in the two thematic semesters at TU Delft and the three alternative exchange semesters, each with a very distinct approach, as described in <a href="#tbl-semesters" class="quarto-xref">Table&nbsp;3</a>.</p>
 <div id="tbl-semesters" class="quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -456,9 +469,9 @@ Table&nbsp;3: Topics covered by each EMU semester at TU Delft and in the exchang
 <div aria-describedby="tbl-semesters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table">
 <colgroup>
-<col style="width: 23%">
-<col style="width: 23%">
-<col style="width: 52%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 50%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -502,14 +515,29 @@ Table&nbsp;3: Topics covered by each EMU semester at TU Delft and in the exchang
 <p>Using the <span class="math inline">\(\theta\)</span> statistic, the distribution of documents over topics is visualised to classify documents according to their dominant topic and to show to what extent a document is specific to a topic or spread across topics.</p>
 <p>Visualise topics with word clouds</p>
 <p>To check how well the clustering is aligned with where the student carried out their exchange semester, we used a confusion matrix to visualize the relation between real values and values assigned through clustering.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>         2          3          4          5          6          7          8 
+1396710842 1385175596 1373544677 1379539544 1354069747 1352201966 1355766566 
+         9 
+1348545022 </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="4200"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 </section>
-<section id="results" class="level1">
-<h1>Results</h1>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
 <!-- Add intro paragraph -->
-<section id="topics" class="level2">
-<h2 class="anchored" data-anchor-id="topics">Topics</h2>
+<section id="topics" class="level3">
+<h3 class="anchored" data-anchor-id="topics">Topics</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-topics-doc" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -526,14 +554,18 @@ Figure&nbsp;4: Topic probability distribution per document
 </div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                               Topic Proportion per corpus
-1   landscape water land system plan                  0.41
-2     plan house build scale process                  0.33
-3 plan house social strategy process                  0.27
+<pre><code>                                 Topic Proportion per corpus
+1 plan land region territory landscape                  0.26
+2    water landscape land river system                  0.26
+3        block plan street house build                  0.24
+4        seoul design scale plan house                  0.13
+5       energy time base level density                  0.11
   No. of documents with primary topic
-1                                  27
-2                                  23
-3                                  18</code></pre>
+1                                  17
+2                                  18
+3                                  16
+4                                   9
+5                                   8</code></pre>
 </div>
 </div>
 <p>The top 20 most frequently used words in the corpus (<a href="#fig-top-words-corpus" class="quarto-xref">Figure&nbsp;5</a>), do not reflect the mean proportion …</p>
@@ -553,7 +585,7 @@ Figure&nbsp;5
 </div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 206 × 3
+<pre><code># A tibble: 205 × 3
       ID word             n
    &lt;dbl&gt; &lt;chr&gt;        &lt;int&gt;
  1     1 tib            239
@@ -566,7 +598,7 @@ Figure&nbsp;5
  8     3 famagusta      139
  9     3 community      114
 10     4 dharavi        206
-# ℹ 196 more rows</code></pre>
+# ℹ 195 more rows</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -580,430 +612,259 @@ Figure&nbsp;5
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 1%">
+<col style="width: 88%">
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">max_topic</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">max_prob</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">ID</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">title</th>
+<th style="text-align: left;">max_topic</th>
+<th style="text-align: right;">max_prob</th>
+<th style="text-align: right;">ID</th>
+<th style="text-align: left;">title</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9918520</td>
-<td style="text-align: right;">16</td>
-<td style="text-align: left;">City Competence through Strategic Spatial Configutation: Case Study: Queretaro, MX</td>
+<td style="text-align: right;">0.9895165</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: left;">Towards a Critical Urbanism: Evaluation and revision of the Open Society concept (Welfare State</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">period) across Western Europe: the Netherlands and Spain.</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9874415</td>
+<td style="text-align: right;">0.9863813</td>
 <td style="text-align: right;">35</td>
 <td style="text-align: left;">Ikseon Hanok Village: The management of change in Historic Urban Quarters</td>
 </tr>
+<tr class="even">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.9860067</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: left;">City Competence through Strategic Spatial Configutation: Case Study: Queretaro, MX</td>
+</tr>
 <tr class="odd">
 <td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9868550</td>
-<td style="text-align: right;">83</td>
-<td style="text-align: left;">re-generating the shrinking Japanese city: urban acupuncture</td>
+<td style="text-align: right;">0.9815992</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: left;">Design methods for a water-sensitive city: Brasília as a case study</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9861052</td>
-<td style="text-align: right;">53</td>
-<td style="text-align: left;">Overcoming the Paradox of Plenty: Resource Extraction and Urbanism in the Venezuelan Guayana</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9845993</td>
+<td style="text-align: right;">0.9758034</td>
 <td style="text-align: right;">33</td>
 <td style="text-align: left;">Heritage of the ordinary: an alternative view: Strategies for using cultural heritage sites as a driver of sustainable urban [re]development in Piraeus</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9784835</td>
+<td style="text-align: right;">0.9536274</td>
 <td style="text-align: right;">21</td>
 <td style="text-align: left;">Creative cultural incubator carpet in western gateway of Seoul</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9750652</td>
-<td style="text-align: right;">72</td>
-<td style="text-align: left;">The Porosity of the Purgatory: Tools for an alternative development of East Naples</td>
-</tr>
 <tr class="even">
 <td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9727410</td>
-<td style="text-align: right;">68</td>
-<td style="text-align: left;">Suburban potential: The challenges and opportunities of greyfield regeneration in Melbourne</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9648494</td>
-<td style="text-align: right;">14</td>
-<td style="text-align: left;">Bucharest 2025: A new paradigm</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9647607</td>
-<td style="text-align: right;">57</td>
-<td style="text-align: left;">Productive landscapes of Moscow: Binding modernities</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9595812</td>
+<td style="text-align: right;">0.9407401</td>
 <td style="text-align: right;">61</td>
 <td style="text-align: left;">Reimagining the New Density in Apartment Urbanism: The conflicted social and economic space of apartment complexes in Seoul, Korea</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9588773</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: left;">(Re-)designing the planning process: The case study of Panepistimiou Street in Athens</td>
-</tr>
 <tr class="odd">
 <td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9579530</td>
-<td style="text-align: right;">9</td>
-<td style="text-align: left;">Athens: A sequence of changing political paradigms, changing migrational spaces</td>
+<td style="text-align: right;">0.5713110</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: left;">Productive landscapes of Moscow: Binding modernities</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9534168</td>
-<td style="text-align: right;">48</td>
-<td style="text-align: left;">Metaxourgio of Athens: Towards a counter hegemonic use of space</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9505970</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: left;">Amazon Way: Territorial Co-creation for Life in the Peruvian Amazon Waterway</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9491655</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: left;">A Framework for Transition: Urban Planning Sustainability on Belgrade’s Riverfront, Serbia</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9240807</td>
-<td style="text-align: right;">50</td>
-<td style="text-align: left;">Moscow: Restructuring of the Inner Periphery through Transit-Oriented Development. Towards the mixed metropolis</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.9075530</td>
-<td style="text-align: right;">22</td>
-<td style="text-align: left;">De-fragmenting Athens: Drosscape as a device for integration between the metropolitan and the local scale</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.8756510</td>
-<td style="text-align: right;">51</td>
-<td style="text-align: left;">Napoly. latencity</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.7994027</td>
-<td style="text-align: right;">26</td>
-<td style="text-align: left;">Facing Growth through Permeability: 120 PROJECTS FOR CARACAS</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.7972850</td>
-<td style="text-align: right;">13</td>
-<td style="text-align: left;">Bucharest: Between North and South</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.6679295</td>
-<td style="text-align: right;">81</td>
-<td style="text-align: left;">Urban-Landscape Transformation along CBL Canal</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">0.5497489</td>
-<td style="text-align: right;">15</td>
-<td style="text-align: left;">Building Back Better: The redevelopment of Bam in Post-disaster Condition</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9886844</td>
-<td style="text-align: right;">75</td>
-<td style="text-align: left;">Tracing Scopes of Action: Design Principles to Approach the Complexity of the Urban Block: Along Case Studies in [Paris]</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9884901</td>
-<td style="text-align: right;">31</td>
-<td style="text-align: left;">Habitat Embroidery: An Interwoven Landscape Framework for a Reclaimed Former Sea Bed</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9881961</td>
-<td style="text-align: right;">38</td>
-<td style="text-align: left;">Intelligent Planning Support System in terms of Residential and Service Locations and Network: Cruquius Case Study</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9877701</td>
-<td style="text-align: right;">40</td>
-<td style="text-align: left;">Intertwined Natures: Towards Territorial Cohesion &amp;amp; Flood Risk Adaptation in Lambayeque, Peru</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9859601</td>
-<td style="text-align: right;">62</td>
-<td style="text-align: left;">Resilient Medway River Landscape: Adaptive Design Strategies for a Sustainable Coastal Landscape</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9837408</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">'Territories in between': A comparative permeability study of two European regions between urban and rural - local and global</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9825540</td>
-<td style="text-align: right;">56</td>
-<td style="text-align: left;">Planning for the end of fossil fuel and beyond 2050: Study case Province of Groningen The Netherlands</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9822151</td>
-<td style="text-align: right;">73</td>
-<td style="text-align: left;">The sensitive river scape, the sinuous territory: Transforming Dajia River Basin as a Water-Sensitive Landscape Infrastructure</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9775899</td>
-<td style="text-align: right;">29</td>
-<td style="text-align: left;">Futures in Common?: New Directions for Spatial Development in Shrinking Resource Regions</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9712040</td>
-<td style="text-align: right;">19</td>
-<td style="text-align: left;">Constructing the in-between metropolitan landscapes: An open space strategy for the Barcelona Metropolitan Region</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9670518</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: left;">A Benevolent Future: Towards a strategic spatial framework fostering social resilience - The case of Dharavi, Mumbai</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9642698</td>
-<td style="text-align: right;">76</td>
-<td style="text-align: left;">Turning rural: Enabling sustainability in remote settlement patterns in Ireland</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9617175</td>
+<td style="text-align: right;">0.5678474</td>
 <td style="text-align: right;">78</td>
 <td style="text-align: left;">Urban Landscape Infrastructures in Anuradhapura, Sri Lanka: An integrated urban regeneration strategy employing urban landscape infrastructures as armatures for sustainable development</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9614382</td>
+<td style="text-align: right;">0.9904227</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: left;">Intertwined Natures: Towards Territorial Cohesion &amp; Flood Risk Adaptation in Lambayeque, Peru</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">0.9889441</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: left;">Overcoming the Paradox of Plenty: Resource Extraction and Urbanism in the Venezuelan Guayana</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">0.9878614</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">Amazon Way: Territorial Co-creation for Life in the Peruvian Amazon Waterway</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">0.9833868</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: left;">Urban-Landscape Transformation along CBL Canal</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">0.9828967</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: left;">The sensitive river scape, the sinuous territory: Transforming Dajia River Basin as a Water-Sensitive Landscape Infrastructure</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">0.9815548</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: left;">Habitat Embroidery: An Interwoven Landscape Framework for a Reclaimed Former Sea Bed</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">0.9675565</td>
 <td style="text-align: right;">60</td>
 <td style="text-align: left;">ReCentering Mumbai: Appropriation of Thane Creek</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9614134</td>
-<td style="text-align: right;">55</td>
-<td style="text-align: left;">Planning for Uncertainty: Adaptation Strategies for Agricultural Self-Reliance in the Lower Mainland of British Columbia, Canada</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9530164</td>
+<td style="text-align: right;">0.9519808</td>
 <td style="text-align: right;">7</td>
 <td style="text-align: left;">Almere in Water: Integration of spatial planning and water management for climate adaptive urban development</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9519844</td>
-<td style="text-align: right;">49</td>
-<td style="text-align: left;">Metropolitan Region Vienna-Bratislava, rethinking the dispersed territory in-between the two capital cities</td>
-</tr>
 <tr class="odd">
 <td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9499272</td>
-<td style="text-align: right;">12</td>
-<td style="text-align: left;">Blue Stitches for a Broken City: Exploring the potential of drainage basins as backbone for improving the living environment in Las Cruces Mountain Range</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9295557</td>
-<td style="text-align: right;">71</td>
-<td style="text-align: left;">Tehran has a Coast: 35N51E2050</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9228119</td>
-<td style="text-align: right;">17</td>
-<td style="text-align: left;">Colouring the Patchwork Metropolis</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9157823</td>
-<td style="text-align: right;">63</td>
-<td style="text-align: left;">Retrieving the synchronicity between people and water: A spatial study of water resilient megacity, a sprawling unplanned urban tissue Dhaka</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9156890</td>
+<td style="text-align: right;">0.9380917</td>
 <td style="text-align: right;">52</td>
 <td style="text-align: left;">Open space as a structuring device: Towards integrating territory</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2</td>
-<td style="text-align: right;">0.9128774</td>
-<td style="text-align: right;">44</td>
-<td style="text-align: left;">Living on the 'Edge': In between Water and Urban fabric of Pune city</td>
+<td style="text-align: right;">0.9155479</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: left;">Blue Stitches for a Broken City: Exploring the potential of drainage basins as backbone for improving the living environment in Las Cruces Mountain Range</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2</td>
-<td style="text-align: right;">0.8806150</td>
-<td style="text-align: right;">11</td>
-<td style="text-align: left;">Beyond the Edge: Complexity Approach to Urban Fringes</td>
+<td style="text-align: right;">0.8808845</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: left;">Living on the ‘Edge’: In between Water and Urban fabric of Pune city</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2</td>
-<td style="text-align: right;">0.8132388</td>
+<td style="text-align: right;">0.8096433</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: left;">Colouring the Patchwork Metropolis</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">0.8053164</td>
 <td style="text-align: right;">24</td>
 <td style="text-align: left;">Enabling infrastructures: Rethinking urban informality in Guadalajara</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">2</td>
-<td style="text-align: right;">0.7583948</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: left;">After the Earthquake: Spatial Alternatives for the City of Pisco</td>
-</tr>
 <tr class="even">
 <td style="text-align: left;">2</td>
-<td style="text-align: right;">0.7373602</td>
-<td style="text-align: right;">27</td>
-<td style="text-align: left;">Farmin Paris 2030: Shaping the city by open space</td>
+<td style="text-align: right;">0.7541215</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: left;">Beyond the Edge: Complexity Approach to Urban Fringes</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9908915</td>
-<td style="text-align: right;">74</td>
-<td style="text-align: left;">Towards a Critical Urbanism: Evaluation and revision of the Open Society concept (Welfare State period) across Western Europe: the Netherlands and Spain.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9896339</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">0.6978636</td>
 <td style="text-align: right;">46</td>
 <td style="text-align: left;">Looking for alternatives in the city of the slopes: Housing as a process to reduce socio-spatial segregation in Lima, Peru</td>
 </tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">0.6374846</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: left;">Contextualizing Edges: the rural case of Sardinia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">0.6309315</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">A Framework for Transition: Urban Planning Sustainability on Belgrade’s Riverfront, Serbia</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">0.5025794</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: left;">Resilient Medway River Landscape: Adaptive Design Strategies for a Sustainable Coastal Landscape</td>
+</tr>
 <tr class="odd">
 <td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9895444</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: left;">Barcelona: Energy + Urban Form</td>
+<td style="text-align: right;">0.9931065</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: left;">Intelligent Planning Support System in terms of Residential and Service Locations and Network: Cruquius Case Study</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9885395</td>
+<td style="text-align: right;">0.9881864</td>
 <td style="text-align: right;">54</td>
 <td style="text-align: left;">Pilgrimage, power and identity of the place: Strategies for future development of Mashhad as a sustainable religious city</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9882720</td>
-<td style="text-align: right;">25</td>
-<td style="text-align: left;">Engaging Socio-Spatial Fragmentation Through Public Domain: Gated Communities in the Greater Metropolitan Area, San Jose, Costa Rica</td>
+<td style="text-align: right;">0.9875752</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Barcelona: Energy + Urban Form</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9866648</td>
-<td style="text-align: right;">36</td>
-<td style="text-align: left;">Inclusive Infrastructure: Large-scale projects and the consequences for urban development and social justice in the city of Fortaleza</td>
+<td style="text-align: right;">0.9802367</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">A Benevolent Future: Towards a strategic spatial framework fostering social resilience - The case of Dharavi, Mumbai</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9756608</td>
-<td style="text-align: right;">41</td>
-<td style="text-align: left;">Is There a City Beyond the Buildings?: Searching for Urbanity in Recife</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9689357</td>
-<td style="text-align: right;">58</td>
-<td style="text-align: left;">Queretaro: Exploring sustainable development through future scenarios</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9611704</td>
-<td style="text-align: right;">18</td>
-<td style="text-align: left;">Connecting the megalopolis: Corridors for integrated air and public transport networks in the megalopolis of Mexico.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9582074</td>
-<td style="text-align: right;">59</td>
-<td style="text-align: left;">RE_VALUE and LINKAGE of REGENERATING URBAN VOIDS: Design and Planning strategies to counteract local socio-spatial fragmentation, in the Iquique urban system</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9496874</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: left;">35°6′54″N 33°56′33″E Terra Incognita_: Towards common imaginaries for a Shared Cyprus</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9406959</td>
-<td style="text-align: right;">70</td>
-<td style="text-align: left;">Tehran Underground</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9260718</td>
-<td style="text-align: right;">45</td>
-<td style="text-align: left;">Living on the Edges of a Border City: The case of Cucuta and El Rodeo. Planning strategies for the spontaneous city</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">3</td>
-<td style="text-align: right;">0.9236499</td>
-<td style="text-align: right;">28</td>
-<td style="text-align: left;">From public space to public domain: A regeneration project for degraded public spaces in Copacabana</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3</td>
-<td style="text-align: right;">0.8470446</td>
+<td style="text-align: right;">0.9577223</td>
 <td style="text-align: right;">65</td>
 <td style="text-align: left;">Self-driven MRDH: A Method to Assess the Impact of Automated Vehicles on Urban Liveability in the Rotterdam The Hague Metropolitan Region</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">3</td>
-<td style="text-align: right;">0.8454335</td>
-<td style="text-align: right;">66</td>
-<td style="text-align: left;">Shifting Centralities, Shared Lines: A redefined role for the peri - urban space in Delhi, National Capital Region</td>
+<td style="text-align: right;">0.7849958</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">‘Territories in between’: A comparative permeability study of two European regions between urban and rural - local and global</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">3</td>
-<td style="text-align: right;">0.7769021</td>
-<td style="text-align: right;">23</td>
-<td style="text-align: left;">Design methods for a water-sensitive city: Brasília as a case study</td>
+<td style="text-align: right;">0.5263716</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: left;">Planning for the end of fossil fuel and beyond 2050: Study case Province of Groningen The Netherlands</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">3</td>
-<td style="text-align: right;">0.5692134</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: left;">Contextualizing Edges: the rural case of Sardinia</td>
+<td style="text-align: right;">0.4789490</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: left;">Tehran Underground</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">0.9928051</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: left;">Tracing Scopes of Action: Design Principles to Approach the Complexity of the Urban Block: Along Case Studies in [Paris]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">0.9861898</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">Engaging Socio-Spatial Fragmentation Through Public Domain: Gated Communities in the Greater Metropolitan Area, San Jose, Costa Rica</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">0.9816505</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: left;">The Porosity of</td>
 </tr>
 </tbody>
 </table>
-
-
-</div>
+<p>the Purgatory: Tools for an alternative development of East Naples | |4 | 0.9747491| 28|From public space to public domain: A regeneration project for degraded public spaces in Copacabana | |4 | 0.9735910| 83|re-generating the shrinking Japanese city: urban acupuncture | |4 | 0.9679841| 59|RE_VALUE and LINKAGE of REGENERATING URBAN VOIDS: Design and Planning strategies to counteract local socio-spatial fragmentation, in the Iquique urban system | |4 | 0.9675685| 41|Is There a City Beyond the Buildings?: Searching for Urbanity in Recife | |4 | 0.9580822| 36|Inclusive Infrastructure: Large-scale projects and the consequences for urban development and social justice in the city of Fortaleza | |4 | 0.9261527| 9|Athens: A sequence of changing political paradigms, changing migrational spaces | |4 | 0.8888889| 2|(Re-)designing the planning process: The case study of Panepistimiou Street in Athens | |4 | 0.8807249| 48|Metaxourgio of Athens: Towards a counter hegemonic use of space | |4 | 0.7878193| 27|Farmin Paris 2030: Shaping the city by open space | |4 | 0.7754742| 45|Living on the Edges of a Border City: The case of Cucuta and El Rodeo. Planning strategies for the spontaneous city | |4 | 0.7256877| 51|Napoly. latencity | |4 | 0.6272677| 50|Moscow: Restructuring of the Inner Periphery through Transit-Oriented Development. Towards the mixed metropolis | |4 | 0.5070790| 63|Retrieving the synchronicity between people and water: A spatial study of water resilient megacity, a sprawling unplanned urban tissue Dhaka | |5 | 0.9858734| 29|Futures in Common?: New Directions for Spatial Development in Shrinking Resource Regions | |5 | 0.9827829| 3|35°6′54″N 33°56′33″E Terra Incognita_: Towards common imaginaries for a Shared Cyprus | |5 | 0.9806164| 19|Constructing the in-between metropolitan landscapes: An open space strategy for the Barcelona Metropolitan Region | |5 | 0.9804518| 58|Queretaro: Exploring sustainable development through future scenarios | |5 | 0.9735950| 71|Tehran has a Coast: 35N51E2050 | |5 | 0.9663057| 76|Turning rural: Enabling sustainability in remote settlement patterns in Ireland | |5 | 0.9648654| 18|Connecting the megalopolis: Corridors for integrated air and public transport networks in the megalopolis of Mexico. | |5 | 0.9544725| 66|Shifting Centralities, Shared Lines: A redefined role for the peri - urban space in Delhi, National Capital Region | |5 | 0.9516922| 49|Metropolitan Region Vienna-Bratislava, rethinking the dispersed territory in-between the two capital cities | |5 | 0.9389364| 68|Suburban potential: The challenges and opportunities of greyfield regeneration in Melbourne | |5 | 0.8983471| 55|Planning for Uncertainty: Adaptation Strategies for Agricultural Self-Reliance in the Lower Mainland of British Columbia, Canada | |5 | 0.8672087| 13|Bucharest: Between North and South | |5 | 0.8391582| 14|Bucharest 2025: A new paradigm | |5 | 0.7764151| 15|Building Back Better: The redevelopment of Bam in Post-disaster Condition | |5 | 0.7498623| 26|Facing Growth through Permeability: 120 PROJECTS FOR CARACAS | |5 | 0.6943419| 6|After the Earthquake: Spatial Alternatives for the City of Pisco | |5 | 0.6318044| 22|De-fragmenting Athens: Drosscape as a device for integration between the metropolitan and the local scale |</p>
 </div>
 </div>
 <p>The <code>tf-idf</code> statistic shows words that are the most important to one document in a collection of documents <span class="citation" data-cites="silge2017">(<a href="#ref-silge2017" role="doc-biblioref">Silge and Robinson, 2017</a>)</span>. In this case, it shows high values for the names of thesis locations that tend to be high-frequency thesis-specific words.</p>
@@ -1026,43 +887,43 @@ Figure&nbsp;5
 # ℹ 333 more rows</code></pre>
 </div>
 </div>
-<section id="topic-1-plan-house-build-scale-process" class="level3">
-<h3 class="anchored" data-anchor-id="topic-1-plan-house-build-scale-process">Topic 1: plan house build scale process</h3>
+<section id="topic1" class="level4">
+<h4 class="anchored" data-anchor-id="topic1">Topic 1: seoul design scale plan house</h4>
 <p><strong>People and places:</strong> <em>community land house develop region</em></p>
 <p>Community, social, … local scale</p>
 </section>
-<section id="topic-2-landscape-water-land-system-plan" class="level3">
-<h3 class="anchored" data-anchor-id="topic-2-landscape-water-land-system-plan">Topic 2: landscape water land system plan</h3>
+<section id="topic2" class="level4">
+<h4 class="anchored" data-anchor-id="topic2">Topic 2: water landscape land river system</h4>
 <p><strong>Landscapes:</strong> <em>water landscape system river land</em></p>
 <p>The most dominant topic highlights the systemic, landscape-driven component of the program. This topic was central in the Spring semester at TU Delft.</p>
 </section>
-<section id="topic-3-plan-house-social-strategy-process" class="level3">
-<h3 class="anchored" data-anchor-id="topic-3-plan-house-social-strategy-process">Topic 3: plan house social strategy process</h3>
+<section id="topic3" class="level4">
+<h4 class="anchored" data-anchor-id="topic3">Topic 3: energy time base level density</h4>
 <p><strong>Spatial morphology:</strong> <em>block street build athens house</em></p>
 <p>This topic is predominantly morphological… density… plot…</p>
 <p>The theses with the highest probabilities in this cluster…</p>
 </section>
-<section id="topic-4-na" class="level3">
-<h3 class="anchored" data-anchor-id="topic-4-na">Topic 4: NA</h3>
+<section id="topic4" class="level4">
+<h4 class="anchored" data-anchor-id="topic4">Topic 4: block plan street house build</h4>
 <p><strong>Integrated projects:</strong> <em>park build main house community</em></p>
 </section>
-<section id="topic-5-na" class="level3">
-<h3 class="anchored" data-anchor-id="topic-5-na">Topic 5: NA</h3>
+<section id="topic5" class="level4">
+<h4 class="anchored" data-anchor-id="topic5">Topic 5: plan land region territory landscape</h4>
 <p><strong>Regional networks:</strong> <em>territory land rural potential region</em></p>
 <p>This topic represents territorial challenges that go beyond the urban to consider</p>
 </section>
-<section id="integrated-projects" class="level3">
-<h3 class="anchored" data-anchor-id="integrated-projects">Integrated projects</h3>
+<section id="intpro" class="level4">
+<h4 class="anchored" data-anchor-id="intpro">Integrated projects</h4>
 <p>Theses that have a broader distribution across topics have an integrative character. Do those theses have a relatively higher frequency of the term “integrate”? Also, Topics # and # share the dominant term “system” as they both represent systemic approaches</p>
 </section>
 </section>
-<section id="the-dynamics-of-thesis-topics" class="level2">
-<h2 class="anchored" data-anchor-id="the-dynamics-of-thesis-topics">The dynamics of thesis topics</h2>
+<section id="topdyn" class="level3">
+<h3 class="anchored" data-anchor-id="topdyn">The dynamics of thesis topics</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="paper_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="4200"></p>
+<p><img src="paper_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="4200"></p>
 </figure>
 </div>
 </div>
@@ -1074,8 +935,8 @@ Figure&nbsp;5
 </ul>
 </section>
 </section>
-<section id="discussion" class="level1">
-<h1>Discussion</h1>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
 <p>The relevance of the findings for the state of the profession and urbanism education…</p>
 <p>What are the core, stable elements of urbanism practice and how does the field need to adapt to changing societal challenges?</p>
 <p>The topics can be useful for searching…</p>
@@ -1089,17 +950,17 @@ Figure&nbsp;5
 </ul></li>
 </ul>
 </section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 </section>
-<section id="acknowledgements" class="level1">
-<h1>Acknowledgements</h1>
+<section id="acknowledgements" class="level2">
+<h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
 <p>I would like to acknowledge the invaluable contribution of Aleksandra Wilczynska to the development of this paper as a reproducible research compendium as part of DCC support provided by the TU Delft library. I would also like to thank former EMU coordinators Birgit Hausleitner and Luiz De Carvalho Filho for their support in collecting the metadata and data used in this paper, as well as to Bjarne van der Drift and Greta Samulionytė for their assistance in completing the metadata.</p>
 <!-- The following line inserts a page break  -->
 <div style="page-break-after: always;"></div>
 </section>
-<section id="references" class="level1">
-<h1>References</h1>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
 <!-- The following line ensures the references appear here for the MS Word or HTML output files, rather than right at the end of the document (this will not work for PDF files):  -->
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-benchimol2022" class="csl-entry" role="listitem">
@@ -1119,6 +980,9 @@ Grün, B., Hornik, K., 2011. topicmodels: An R Package for Fitting Topic Models.
 </div>
 <div id="ref-hvitfeldt2021a" class="csl-entry" role="listitem">
 Hvitfeldt, E., Silge, J., 2021. Supervised <span>Machine Learning</span> for <span>Text Analysis</span> in <span>R</span>, 1st edition. ed. <span>Chapman and Hall/CRC</span>, <span>Boca Raton</span>.
+</div>
+<div id="ref-jo2019" class="csl-entry" role="listitem">
+Jo, T., 2019. Introduction, in: Jo, T. (Ed.),. Springer International Publishing, Cham, pp. 3–17. <a href="https://doi.org/10.1007/978-3-319-91815-0_1">https://doi.org/10.1007/978-3-319-91815-0_1</a>
 </div>
 <div id="ref-muchene2021" class="csl-entry" role="listitem">
 Muchene, L., Safari, W., 2021. Two-stage topic modelling of scientific publications: A case study of University of Nairobi, Kenya. PLOS ONE 16, e0243208. <a href="https://doi.org/10.1371/journal.pone.0243208">https://doi.org/10.1371/journal.pone.0243208</a>
@@ -1145,165 +1009,157 @@ Wallach, H., 2018. Computational social science ≠ computer science + social da
 <div style="page-break-after: always;"></div>
 <section id="colophon" class="level3">
 <h3 class="anchored" data-anchor-id="colophon">Colophon</h3>
-<p>This paper was generated on 2024-02-29 13:24:36.605269 using the following computational environment and dependencies:</p>
+<p>This paper was generated on 2024-04-26 13:00:36.071648 using the following computational environment and dependencies:</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>─ Session info ───────────────────────────────────────────────────────────────
  setting  value
- version  R version 4.3.0 (2023-04-21)
- os       macOS Ventura 13.2.1
+ version  R version 4.3.3 (2024-02-29)
+ os       macOS Sonoma 14.4.1
  system   aarch64, darwin20
  ui       X11
  language (EN)
  collate  en_US.UTF-8
  ctype    en_US.UTF-8
  tz       Europe/Amsterdam
- date     2024-02-29
+ date     2024-04-26
  pandoc   3.1.1 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────
  ! package        * version    date (UTC) lib source
-   backports        1.4.1      2021-12-13 [1] CRAN (R 4.3.0)
-   bit              4.0.5      2022-11-15 [1] CRAN (R 4.3.0)
-   bit64            4.0.5      2020-08-30 [1] CRAN (R 4.3.0)
- P brio             1.1.3      2021-11-30 [?] CRAN (R 4.3.0)
-   broom            1.0.5      2023-06-09 [1] CRAN (R 4.3.0)
- P bs4Dash          2.2.1      2022-12-20 [?] CRAN (R 4.3.0)
+ P backports        1.4.1      2021-12-13 [?] CRAN (R 4.3.0)
+ P bit              4.0.5      2022-11-15 [?] CRAN (R 4.3.0)
+ P bit64            4.0.5      2020-08-30 [?] CRAN (R 4.3.0)
+ P brio             1.1.4      2023-12-10 [?] CRAN (R 4.3.1)
+ P broom            1.0.5      2023-06-09 [?] CRAN (R 4.3.0)
+ P bs4Dash          2.3.3      2024-01-23 [?] CRAN (R 4.3.1)
  P cachem           1.0.8      2023-05-01 [?] CRAN (R 4.3.0)
- P callr            3.7.3      2022-11-02 [?] CRAN (R 4.3.0)
-   cellranger       1.1.0      2016-07-27 [1] CRAN (R 4.3.0)
-   cli              3.6.2      2023-12-11 [1] CRAN (R 4.3.1)
-   codetools        0.2-19     2023-02-01 [2] CRAN (R 4.3.0)
-   colorspace       2.1-0      2023-01-23 [1] CRAN (R 4.3.0)
-   crayon           1.5.2      2022-09-29 [1] CRAN (R 4.3.0)
- P crosstalk        1.2.0      2021-11-04 [?] CRAN (R 4.3.0)
- P data.table       1.14.8     2023-02-17 [?] CRAN (R 4.3.0)
- P desc             1.4.2      2022-09-08 [?] CRAN (R 4.3.0)
- P devtools         2.4.5      2022-10-11 [?] CRAN (R 4.3.0)
- P digest           0.6.33     2023-07-07 [?] CRAN (R 4.3.0)
- P dplyr          * 1.1.3      2023-09-03 [?] CRAN (R 4.3.0)
+ P cellranger       1.1.0      2016-07-27 [?] CRAN (R 4.3.0)
+ P cli              3.6.2      2023-12-11 [?] CRAN (R 4.3.1)
+   codetools        0.2-19     2023-02-01 [2] CRAN (R 4.3.3)
+ P colorspace       2.1-0      2023-01-23 [?] CRAN (R 4.3.0)
+ P crayon           1.5.2      2022-09-29 [?] CRAN (R 4.3.0)
+ P crosstalk        1.2.1      2023-11-23 [?] CRAN (R 4.3.1)
+   data.table       1.15.4     2024-03-30 [1] CRAN (R 4.3.1)
+ P desc             1.4.3      2023-12-10 [?] CRAN (R 4.3.1)
+   devtools         2.4.5.9000 2024-04-15 [1] Github (r-lib/devtools@c3fa3df)
+   digest           0.6.35     2024-03-11 [1] CRAN (R 4.3.1)
+ P dplyr          * 1.1.4      2023-11-17 [?] CRAN (R 4.3.1)
  P ellipsis         0.3.2      2021-04-29 [?] CRAN (R 4.3.0)
- P evaluate         0.21       2023-05-05 [?] CRAN (R 4.3.0)
- P fansi            1.0.4      2023-01-22 [?] CRAN (R 4.3.0)
-   farver           2.1.1      2022-07-06 [1] CRAN (R 4.3.0)
+ P evaluate         0.23       2023-11-01 [?] CRAN (R 4.3.1)
+ P fansi            1.0.6      2023-12-08 [?] CRAN (R 4.3.1)
+ P farver           2.1.1      2022-07-06 [?] CRAN (R 4.3.0)
  P fastmap          1.1.1      2023-02-24 [?] CRAN (R 4.3.0)
-   forcats        * 1.0.0      2023-01-29 [1] CRAN (R 4.3.0)
+ P forcats        * 1.0.0      2023-01-29 [?] CRAN (R 4.3.0)
+ P formattable      0.2.1      2021-01-07 [?] CRAN (R 4.3.0)
  P fs               1.6.3      2023-07-20 [?] CRAN (R 4.3.0)
-   furrr            0.3.1      2022-08-15 [1] CRAN (R 4.3.0)
- P future           1.32.0     2023-03-07 [?] CRAN (R 4.3.0)
-   generics         0.1.3      2022-07-05 [1] CRAN (R 4.3.0)
- P ggplot2        * 3.4.3      2023-08-14 [?] CRAN (R 4.3.0)
- P git2r            0.32.0     2023-04-12 [?] CRAN (R 4.3.0)
-   globals          0.16.2     2022-11-21 [1] CRAN (R 4.3.0)
-   glue             1.7.0      2024-01-09 [1] CRAN (R 4.3.1)
-   gtable           0.3.4      2023-08-21 [1] CRAN (R 4.3.0)
-   here             1.0.1      2020-12-13 [1] CRAN (R 4.3.0)
- P highr            0.10       2022-12-22 [?] CRAN (R 4.3.0)
-   hms              1.1.3      2023-03-21 [1] CRAN (R 4.3.0)
- P htmltools        0.5.5      2023-03-23 [?] CRAN (R 4.3.0)
- P htmlwidgets      1.6.2      2023-03-17 [?] CRAN (R 4.3.0)
- P httpuv           1.6.11     2023-05-11 [?] CRAN (R 4.3.0)
-   httr             1.4.7      2023-08-15 [1] CRAN (R 4.3.0)
-   janeaustenr      1.0.0      2022-08-26 [1] CRAN (R 4.3.0)
- P jsonlite         1.8.7      2023-06-29 [?] CRAN (R 4.3.0)
- P kableExtra       1.3.4      2021-02-20 [?] CRAN (R 4.3.0)
- P knitr            1.43       2023-05-25 [?] CRAN (R 4.3.0)
+ P furrr            0.3.1      2022-08-15 [?] CRAN (R 4.3.0)
+   future           1.33.2     2024-03-26 [1] CRAN (R 4.3.1)
+ P generics         0.1.3      2022-07-05 [?] CRAN (R 4.3.0)
+ P ggplot2        * 3.5.0      2024-02-23 [?] CRAN (R 4.3.1)
+ P git2r            0.33.0     2023-11-26 [?] CRAN (R 4.3.1)
+   globals          0.16.3     2024-03-08 [1] CRAN (R 4.3.1)
+ P glue             1.7.0      2024-01-09 [?] CRAN (R 4.3.1)
+ P gt               0.10.1     2024-01-17 [?] CRAN (R 4.3.1)
+ P gtable           0.3.4      2023-08-21 [?] CRAN (R 4.3.0)
+ P here             1.0.1      2020-12-13 [?] CRAN (R 4.3.0)
+ P hms              1.1.3      2023-03-21 [?] CRAN (R 4.3.0)
+   htmltools        0.5.8.1    2024-04-04 [1] CRAN (R 4.3.1)
+ P htmlwidgets      1.6.4      2023-12-06 [?] CRAN (R 4.3.1)
+   httpuv           1.6.15     2024-03-26 [1] CRAN (R 4.3.1)
+ P janeaustenr      1.0.0      2022-08-26 [?] CRAN (R 4.3.0)
+ P jsonlite         1.8.8      2023-12-04 [?] CRAN (R 4.3.1)
+ P kableExtra       1.4.0      2024-01-24 [?] CRAN (R 4.3.1)
+ P knitr            1.46       2024-04-06 [?] CRAN (R 4.3.3)
  P koRpus           0.13-8     2021-05-17 [?] CRAN (R 4.3.0)
  P koRpus.lang.en   0.1-4      2020-10-24 [?] CRAN (R 4.3.0)
-   labeling         0.4.3      2023-08-29 [1] CRAN (R 4.3.0)
- P later            1.3.1      2023-05-02 [?] CRAN (R 4.3.0)
-   lattice          0.21-8     2023-04-05 [2] CRAN (R 4.3.0)
+ P labeling         0.4.3      2023-08-29 [?] CRAN (R 4.3.0)
+ P later            1.3.2      2023-12-06 [?] CRAN (R 4.3.1)
+ P lattice          0.22-5     2023-10-24 [?] CRAN (R 4.3.1)
  P ldatuning        1.0.2      2020-04-21 [?] CRAN (R 4.3.0)
-   LDAvis           0.3.2      2015-10-24 [1] CRAN (R 4.3.0)
- P leaflet          2.1.2      2023-03-10 [?] CRAN (R 4.3.0)
+ P LDAvis           0.3.2      2015-10-24 [?] CRAN (R 4.3.0)
+   leaflet          2.2.2      2024-03-26 [1] CRAN (R 4.3.1)
  P lexicon          1.2.1      2019-03-21 [?] CRAN (R 4.3.0)
-   lifecycle        1.0.4      2023-11-07 [1] CRAN (R 4.3.1)
- P listenv          0.9.0      2022-12-16 [?] CRAN (R 4.3.0)
- P lubridate      * 1.9.2      2023-02-10 [?] CRAN (R 4.3.0)
+ P lifecycle        1.0.4      2023-11-07 [?] CRAN (R 4.3.1)
+ P listenv          0.9.1      2024-01-29 [?] CRAN (R 4.3.0)
+ P lubridate      * 1.9.3      2023-09-27 [?] CRAN (R 4.3.1)
  P magrittr         2.0.3      2022-03-30 [?] CRAN (R 4.3.0)
  P maps             3.4.2      2023-12-15 [?] CRAN (R 4.3.1)
-   Matrix           1.5-4      2023-04-04 [2] CRAN (R 4.3.0)
+ P Matrix           1.6-5      2024-01-11 [?] CRAN (R 4.3.1)
  P memoise          2.0.1      2021-11-26 [?] CRAN (R 4.3.0)
-   mgcv             1.8-42     2023-03-02 [2] CRAN (R 4.3.0)
+ P mgcv             1.9-1      2023-12-21 [?] CRAN (R 4.3.1)
  P mime             0.12       2021-09-28 [?] CRAN (R 4.3.0)
- P miniUI           0.1.1.1    2018-05-18 [?] CRAN (R 4.3.0)
  R mintEMU        * 0.0.0.9000 &lt;NA&gt;       [?] &lt;NA&gt;
-   modeltools       0.2-23     2020-03-05 [1] CRAN (R 4.3.0)
-   munsell          0.5.0      2018-06-12 [1] CRAN (R 4.3.0)
-   nlme             3.1-162    2023-01-31 [2] CRAN (R 4.3.0)
-   NLP              0.2-1      2020-10-14 [1] CRAN (R 4.3.0)
- P parallelly       1.36.0     2023-05-26 [?] CRAN (R 4.3.0)
-   pillar           1.9.0      2023-03-22 [1] CRAN (R 4.3.0)
- P pkgbuild         1.4.1      2023-06-14 [?] CRAN (R 4.3.0)
-   pkgconfig        2.0.3      2019-09-22 [1] CRAN (R 4.3.0)
- P pkgload          1.3.2.1    2023-07-08 [?] CRAN (R 4.3.0)
- P plyr             1.8.8      2022-11-11 [?] RSPM (R 4.3.0)
+ P modeltools       0.2-23     2020-03-05 [?] CRAN (R 4.3.0)
+   munsell          0.5.1      2024-04-01 [1] CRAN (R 4.3.1)
+ P nlme             3.1-164    2023-11-27 [?] CRAN (R 4.3.1)
+ P NLP              0.2-1      2020-10-14 [?] CRAN (R 4.3.0)
+   parallelly       1.37.1     2024-02-29 [1] CRAN (R 4.3.1)
+ P pillar           1.9.0      2023-03-22 [?] CRAN (R 4.3.0)
+   pkgbuild         1.4.4      2024-03-17 [1] CRAN (R 4.3.1)
+ P pkgconfig        2.0.3      2019-09-22 [?] CRAN (R 4.3.0)
+ P pkgload          1.3.4      2024-01-16 [?] CRAN (R 4.3.1)
+ P plyr             1.8.9      2023-10-02 [?] CRAN (R 4.3.1)
  P png              0.1-8      2022-11-29 [?] CRAN (R 4.3.0)
- P prettyunits      1.1.1      2020-01-24 [?] CRAN (R 4.3.0)
- P processx         3.8.2      2023-06-30 [?] CRAN (R 4.3.0)
- P profvis          0.3.8      2023-05-02 [?] CRAN (R 4.3.0)
- P promises         1.2.0.1    2021-02-11 [?] CRAN (R 4.3.0)
- P ps               1.7.5      2023-04-18 [?] CRAN (R 4.3.0)
-   purrr          * 1.0.2      2023-08-10 [1] CRAN (R 4.3.0)
+   promises         1.3.0      2024-04-05 [1] CRAN (R 4.3.1)
+ P purrr          * 1.0.2      2023-08-10 [?] CRAN (R 4.3.0)
  P R6               2.5.1      2021-08-19 [?] CRAN (R 4.3.0)
- P Rcpp             1.0.11     2023-07-06 [?] CRAN (R 4.3.0)
- P readr          * 2.1.4      2023-02-10 [?] CRAN (R 4.3.0)
- P readxl           1.4.2      2023-02-09 [?] CRAN (R 4.3.0)
- P remotes          2.4.2      2021-11-30 [?] CRAN (R 4.3.0)
-   renv             0.16.0     2022-09-29 [1] CRAN (R 4.3.0)
-   reshape2         1.4.4      2020-04-09 [1] CRAN (R 4.3.0)
- P reticulate       1.30       2023-06-09 [?] CRAN (R 4.3.0)
-   rlang            1.1.3      2024-01-10 [1] CRAN (R 4.3.1)
- P rmarkdown        2.22       2023-06-01 [?] CRAN (R 4.3.0)
- P rprojroot        2.0.3      2022-04-02 [?] CRAN (R 4.3.0)
- P rrtools          0.1.5      2023-09-13 [?] Github (benmarwick/rrtools@acbae5e)
-   rstudioapi       0.15.0     2023-07-07 [1] CRAN (R 4.3.0)
- P rvest            1.0.3      2022-08-19 [?] CRAN (R 4.3.0)
- P scales           1.2.1      2022-08-20 [?] CRAN (R 4.3.0)
+ P Rcpp             1.0.12     2024-01-09 [?] CRAN (R 4.3.1)
+ P readr          * 2.1.5      2024-01-10 [?] CRAN (R 4.3.1)
+ P readxl           1.4.3      2023-07-06 [?] CRAN (R 4.3.0)
+   remotes          2.5.0      2024-03-17 [1] CRAN (R 4.3.1)
+   renv             1.0.7      2024-04-11 [1] CRAN (R 4.3.1)
+ P reshape2         1.4.4      2020-04-09 [?] CRAN (R 4.3.0)
+ P reticulate       1.36.0     2024-04-15 [?] CRAN (R 4.3.3)
+ P rlang            1.1.3      2024-01-10 [?] CRAN (R 4.3.1)
+   rmarkdown        2.26       2024-03-05 [1] CRAN (R 4.3.1)
+ P rprojroot        2.0.4      2023-11-05 [?] CRAN (R 4.3.1)
+   rrtools          0.1.6      2024-04-15 [1] Github (benmarwick/rrtools@c536a72)
+   rstudioapi       0.16.0     2024-03-24 [1] CRAN (R 4.3.1)
+   sass             0.4.9      2024-03-15 [1] CRAN (R 4.3.1)
+ P scales           1.3.0      2023-11-28 [?] CRAN (R 4.3.1)
  P sessioninfo      1.2.2      2021-12-06 [?] CRAN (R 4.3.0)
- P shiny            1.7.4      2022-12-15 [?] CRAN (R 4.3.0)
+   shiny            1.8.1.1    2024-04-02 [1] CRAN (R 4.3.1)
  P shinyjs          2.1.0      2021-12-23 [?] CRAN (R 4.3.0)
-   slam             0.1-50     2022-01-08 [1] CRAN (R 4.3.0)
- P slider           0.3.0      2022-11-16 [?] CRAN (R 4.3.0)
-   SnowballC        0.7.1      2023-04-25 [1] CRAN (R 4.3.0)
-   stringi          1.8.3      2023-12-11 [1] CRAN (R 4.3.1)
-   stringr        * 1.5.1      2023-11-14 [1] CRAN (R 4.3.1)
- P svglite          2.1.1      2023-01-10 [?] CRAN (R 4.3.0)
+ P slam             0.1-50     2022-01-08 [?] CRAN (R 4.3.0)
+ P slider           0.3.1      2023-10-12 [?] CRAN (R 4.3.1)
+ P SnowballC        0.7.1      2023-04-25 [?] CRAN (R 4.3.0)
+ P stringi          1.8.3      2023-12-11 [?] CRAN (R 4.3.1)
+ P stringr        * 1.5.1      2023-11-14 [?] CRAN (R 4.3.1)
+ P svglite          2.1.3      2023-12-08 [?] CRAN (R 4.3.1)
  P sylly            0.1-6      2020-09-20 [?] CRAN (R 4.3.0)
  P sylly.en         0.1-3      2018-03-19 [?] CRAN (R 4.3.0)
- P systemfonts      1.0.4      2022-02-11 [?] CRAN (R 4.3.0)
- P syuzhet          1.0.6      2020-11-24 [?] CRAN (R 4.3.0)
- P testthat       * 3.1.10     2023-07-06 [?] CRAN (R 4.3.0)
+   systemfonts      1.0.6      2024-03-07 [1] CRAN (R 4.3.1)
+ P syuzhet          1.0.7      2023-08-11 [?] CRAN (R 4.3.0)
+   testthat       * 3.2.1.9000 2024-04-15 [1] Github (r-lib/testthat@f060cce)
  P textstem         0.1.4      2018-04-09 [?] CRAN (R 4.3.0)
- P thematic         0.1.2.1    2021-06-09 [?] CRAN (R 4.3.0)
-   tibble         * 3.2.1      2023-03-20 [1] CRAN (R 4.3.0)
-   tidygeocoder     1.0.5      2021-11-02 [1] CRAN (R 4.3.0)
- P tidyr          * 1.3.0      2023-01-24 [?] CRAN (R 4.3.0)
-   tidyselect       1.2.0      2022-10-10 [1] CRAN (R 4.3.0)
-   tidytext         0.4.1      2023-01-07 [1] CRAN (R 4.3.0)
-   tidyverse      * 2.0.0      2023-02-22 [1] CRAN (R 4.3.0)
- P timechange       0.2.0      2023-01-11 [?] CRAN (R 4.3.0)
-   tm               0.7-11     2023-02-05 [1] CRAN (R 4.3.0)
-   tokenizers       0.3.0      2022-12-22 [1] CRAN (R 4.3.0)
- P topicmodels      0.2-14     2023-03-31 [?] RSPM (R 4.3.0)
-   tzdb             0.4.0      2023-05-12 [1] CRAN (R 4.3.0)
- P urlchecker       1.0.1      2021-11-30 [?] CRAN (R 4.3.0)
- P usethis          2.2.0      2023-06-06 [?] CRAN (R 4.3.0)
- P utf8             1.2.3      2023-01-31 [?] CRAN (R 4.3.0)
-   vctrs            0.6.5      2023-12-01 [1] CRAN (R 4.3.1)
-   viridisLite      0.4.2      2023-05-02 [1] CRAN (R 4.3.0)
- P vroom            1.6.3      2023-04-28 [?] CRAN (R 4.3.0)
- P warp             0.2.0      2020-10-21 [?] CRAN (R 4.3.0)
- P webshot          0.5.4      2022-09-26 [?] CRAN (R 4.3.0)
-   widyr            0.1.5      2022-09-13 [1] CRAN (R 4.3.0)
- P withr            2.5.0      2022-03-03 [?] CRAN (R 4.3.0)
+ P thematic         0.1.5      2024-02-14 [?] CRAN (R 4.3.1)
+ P tibble         * 3.2.1      2023-03-20 [?] CRAN (R 4.3.0)
+ P tidygeocoder     1.0.5      2021-11-02 [?] CRAN (R 4.3.0)
+ P tidyr          * 1.3.1      2024-01-24 [?] CRAN (R 4.3.1)
+   tidyselect       1.2.1      2024-03-11 [1] CRAN (R 4.3.1)
+   tidytext         0.4.2      2024-04-10 [1] CRAN (R 4.3.1)
+ P tidyverse      * 2.0.0      2023-02-22 [?] CRAN (R 4.3.0)
+ P timechange       0.3.0      2024-01-18 [?] CRAN (R 4.3.1)
+   tm               0.7-12     2024-03-11 [1] CRAN (R 4.3.1)
+ P tokenizers       0.3.0      2022-12-22 [?] CRAN (R 4.3.0)
+ P topicmodels      0.2-16     2024-01-09 [?] CRAN (R 4.3.1)
+ P tzdb             0.4.0      2023-05-12 [?] CRAN (R 4.3.0)
+   usethis          2.2.3.9000 2024-04-15 [1] Github (r-lib/usethis@9e64daf)
+ P utf8             1.2.4      2023-10-22 [?] CRAN (R 4.3.1)
+ P vctrs            0.6.5      2023-12-01 [?] CRAN (R 4.3.1)
+ P viridisLite      0.4.2      2023-05-02 [?] CRAN (R 4.3.0)
+ P vroom            1.6.5      2023-12-05 [?] CRAN (R 4.3.1)
+ P warp             0.2.1      2023-11-02 [?] CRAN (R 4.3.1)
+ P widyr            0.1.5      2022-09-13 [?] CRAN (R 4.3.0)
+ P withr            3.0.0      2024-01-16 [?] CRAN (R 4.3.1)
  P wordcloud2       0.2.1      2018-01-03 [?] CRAN (R 4.3.0)
- P xfun             0.39       2023-04-20 [?] CRAN (R 4.3.0)
- P xml2             1.3.5      2023-07-06 [?] CRAN (R 4.3.0)
+   xfun             0.43       2024-03-25 [1] CRAN (R 4.3.1)
+ P xml2             1.3.6      2023-12-04 [?] CRAN (R 4.3.1)
  P xtable           1.8-4      2019-04-21 [?] CRAN (R 4.3.0)
- P yaml             2.3.7      2023-01-23 [?] CRAN (R 4.3.0)
+ P yaml             2.3.8      2023-12-11 [?] CRAN (R 4.3.1)
 
- [1] /Users/claudiuforgaci/Library/Caches/org.R-project.R/R/renv/library/minTEMU-a20e3900/R-4.3/aarch64-apple-darwin20
+ [1] /Users/claudiuforgaci/Library/Caches/org.R-project.R/R/renv/library/mintEMU-8cf2c9d8/R-4.3/aarch64-apple-darwin20
  [2] /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library
 
  P ── Loaded and on-disk path mismatch.
@@ -1315,9 +1171,9 @@ Wallach, H., 2018. Computational social science ≠ computer science + social da
 <p>The current Git commit details are:</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>Local:    main /Users/claudiuforgaci/Projects/minTEMU
-Remote:   main @ origin (https://github.com/UD3-Lab/mintEMU.git)
-Head:     [6603def] 2024-02-27: Update templates</code></pre>
+<pre><code>Local:    main /Users/claudiuforgaci/Projects/mintEMU
+Remote:   main @ origin (git@github.com:UD3-Lab/mintEMU.git)
+Head:     [0748b0f] 2024-04-17: Update readme file</code></pre>
 </div>
 </div>
 </section>
