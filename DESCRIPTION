@@ -1,57 +1,44 @@
 Package: mintEMU
-Title: The Legacy of the European Postgraduate Master in Urbanism at TU Delft: A Text Mining Approach
+Title: The Legacy of the European Postgraduate Master in Urbanism at TU
+    Delft: A Text Mining Approach
 Version: 0.0.0.9000
 Authors@R: c(
-    person(given   = "Claudiu",
-           family  = "Forgaci",
-           email   = "C.Forgaci@tudelft.nl", 
-           role    = c("aut", "cre"),
-           comment = c(ORCID = "0000-0003-3218-5102")
-           ),
-    person(given   = "Aleksandra",
-           family  = "Wilczynska", 
-           email   = "A.E.Wilczynska@tudelft.nl",
-           role    = c("aut"),
-           comment = c(ORCID = "0000-0001-9323-0267")
-           ),
-    person(given   = "Dilara Selin",
-           family  = "Kubilay", 
-           email   = "D.S.Kubilay@tudelft.nl",
-           role    = c("ctb")
-           )
-           )
-Description: This package is a research compendium produced with the `rrtools`
-    package containing the paper and code of "The Legacy of the European post-Master 
-    in Urbanism (EMU) at TU Delft: A Text Mining Approach" research project.
+    person("Claudiu", "Forgaci", , "C.Forgaci@tudelft.nl", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-3218-5102")),
+    person("Aleksandra", "Wilczynska", , "A.E.Wilczynska@tudelft.nl", role = "aut",
+           comment = c(ORCID = "0000-0001-9323-0267")),
+    person("Dilara Selin", "Kubilay", , "D.S.Kubilay@tudelft.nl", role = "ctb")
+  )
+Description: This package is a research compendium produced with the
+    `rrtools` package containing the paper and code of "The Legacy of the
+    European post-Master in Urbanism (EMU) at TU Delft: A Text Mining
+    Approach" research project.
 License: MIT + file LICENSE
-ByteCompile: true
-Encoding: UTF-8
-LazyData: true
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+Depends: 
+    R (>= 2.10)
 Imports: 
-    ggplot2,
-    here,
-    reticulate,
-    tidygeocoder,
     base (>= 4.2.0),
     bs4Dash (>= 2.2.1),
     dplyr (>= 1.1.2),
     furrr (>= 0.3.1),
     future (>= 1.32.0),
+    ggplot2,
     git2r (>= 0.32.0),
     grid (>= 4.2.0),
+    here,
     jsonlite (>= 1.8.5),
     kableExtra (>= 1.3.4),
     knitr (>= 1.43),
     ldatuning (>= 1.0.2),
     LDAvis (>= 0.3.2),
     leaflet (>= 2.1.2),
+    magrittr,
     plyr (>= 1.8.8),
     purrr (>= 1.0.1),
     readr (>= 2.1.4),
     readxl (>= 1.4.2),
     renv (>= 0.16.0),
+    reticulate,
     rlang (>= 1.1.1),
     rmarkdown (>= 2.22),
     rrtools (>= 0.1.5),
@@ -64,6 +51,7 @@ Imports:
     textstem (>= 0.1.4),
     thematic (>= 0.1.2.1),
     tibble (>= 3.2.1),
+    tidygeocoder,
     tidyr (>= 1.3.0),
     tidyselect (>= 1.2.0),
     tidytext (>= 0.4.1),
@@ -72,14 +60,16 @@ Imports:
     topicmodels (>= 0.2-14),
     utils (>= 4.2.0),
     widyr (>= 0.1.5),
-    wordcloud2 (>= 0.2.1),
-    magrittr
+    wordcloud2 (>= 0.2.1)
 Suggests: 
     devtools,
     testthat (>= 3.0.0),
     usethis
 Remotes:
-  benmarwick/rrtools    
+    benmarwick/rrtools
+ByteCompile: true
 Config/testthat/edition: 3
-Depends: 
-    R (>= 2.10)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
