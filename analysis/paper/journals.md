@@ -6,7 +6,7 @@
 | [Information, Communication & Society](https://www.tandfonline.com/journals/rics20) |         |             |     |
 | [EPJ Data Science](https://epjdatascience.springeropen.com/)                        |         |             |     |
 | [Journal of Planning Education and Research](https://journals.sagepub.com/home/jpe) |         |             |     |
-|                                                                                     |         |             |     |
+| [Environment and Planning B](https://journals.sagepub.com/home/epb)                 |         |             |     |
 |                                                                                     |         |             |     |
 |                                                                                     |         |             |     |
 |                                                                                     |         |             |     |
