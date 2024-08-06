@@ -153,6 +153,24 @@ get_topics <-
                             control = list(seed = seed, ...))
   }
 
+#' Fit LDA model
+#'
+#' @param dtm Document term matrix
+#' @param k Number of topics
+#' @param ... Additional arguments to be passed to the LDA function
+#'
+#' @return A list with the beta and theta matrices
+#' @export
+fit_lda <- function(dtm, k, ...) {
+  model <- topicmodels::LDA(dtm, k = k, method="Gibbs",
+                          control = list(seed = 2023, iter = 500, verbose = 100))
+
+  beta <- modeltools::posterior(model)$terms
+  theta <- modeltools::posterior(model)$topics
+
+  list(model = model, beta = beta, theta = theta)
+}
+
 #' Add pseudo-names to topics in an LDA model
 #'
 #' Pseudo-names are obtained by pasting together the top n terms with
@@ -296,6 +314,28 @@ count_docs_per_topic <- function(lda) {
              row.names = NULL)
 }
 
+#' Get dominant topic per document
+#'
+#' @param theta Matrix with each row representing the probability distribution
+#'              of a document over topics.
+#'
+#' @return Tibble with the dominant topic per document
+#' @export
+get_max_topic_per_doc <- function(theta) {
+  theta |>
+    tibble::as_tibble() |>
+    dplyr::mutate(ID = as.numeric(rownames(theta))) |>
+    tidyr::pivot_longer(cols = `1`:ncol(theta),
+                        names_to = "topic",
+                        values_to = "prob") |>
+    dplyr::group_by(ID) |>
+    dplyr::mutate(max_prob = max(prob, na.rm = FALSE),
+           max_topic = dplyr::if_else(round(prob, digits = 7) == round(max_prob, digits = 7), topic, NA)) |>
+    dplyr::ungroup() |>
+    dplyr::select(ID, prob, max_prob, max_topic) |>
+    tidyr::drop_na()
+}
+
 # TODO check if this can be included in the Shiny dashboard
 #' Visualise LDA model
 #'
@@ -384,4 +424,25 @@ vis_top_words_per_corpus <- function(lda, words, top_n = 20) {
     ggplot2::labs(title = paste0("Top ", top_n, " most used words in the corpus of theses")) +
     ggplot2::theme_minimal() +
     ggplot2::theme(panel.grid = ggplot2::element_blank())
+}
+
+#' Visualise topic distributions over the years
+#'
+#' @param data Data frame with theses, containing columns with topics and years.
+#' @param max_topic_col Name of the column containing the main topic.
+#' @param year_col Name of the column containing the year.
+#'
+#' @return `ggplot` boxplot of topic distributions over the years.
+#' @export
+vis_dom_topic_distr <- function(data,
+                                max_topic_col = NULL,
+                                year_col = NULL) {
+
+  max_topic <- rlang::sym(max_topic_col)
+  year <- rlang::sym(year_col)
+
+  data |>
+    ggplot2::ggplot(aes(!!max_topic, !!year)) +
+    ggplot2::geom_boxplot() +
+    ggplot2::coord_flip()
 }
