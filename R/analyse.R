@@ -165,14 +165,14 @@ fit_lda <- function(dtm, k, ...) {
 #'
 name_topics <- function(beta, n_words = 5) {
 
-  topic_names <- c()
+  topic_pseudonames <- c()
 
   for (i in 1:nrow(beta)) {
     name <- paste(names(head(sort(beta[i, ], decreasing = TRUE), n_words)), collapse = " ")
-    topic_names <- c(topic_names, name)
+    topic_pseudonames <- c(topic_pseudonames, name)
   }
 
-  topic_names
+  tibble(topic_id = 1:nrow(beta), topic_pseudoname = topic_pseudonames)
 }
 
 #' Get number of topics for LDA model empirically
