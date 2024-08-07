@@ -4,14 +4,17 @@
 \alias{get_topic_proportions}
 \title{Get topic proportions in an LDA model}
 \usage{
-get_topic_proportions(lda, digits = 2)
+get_topic_proportions(theta, digits = 2)
 }
 \arguments{
-\item{lda}{LDA model object}
+\item{theta}{Matrix with each row representing the probability
+distribution of a document over topics}
+
+\item{digits}{Number of digits to round the results}
 }
 \value{
-Data frame with topics and their proportions
+Data frame with topic ids and their proportions in the corpus
 }
 \description{
-Get topic proportions in an LDA model
+Calculate the mean probability of each topic over all documents.
 }

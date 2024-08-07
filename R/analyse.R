@@ -259,58 +259,43 @@ get_tf_idf <- function(data, id_col = NULL, word_col = NULL) {
 
 #' Get topic proportions in an LDA model
 #'
-#' @param lda LDA model object
+#' Calculate the mean probability of each topic over all documents.
 #'
-#' @return Data frame with topics and their proportions
+#' @param theta Matrix with each row representing the probability
+#'              distribution of a document over topics
+#' @param digits Number of digits to round the results
+#'
+#' @return Data frame with topic ids and their proportions in the corpus
 #' @export
-get_topic_proportions <- function(lda, digits = 2) {
-
-  topic_prob <- modeltools::posterior(lda)$topics
-  term_prob <- modeltools::posterior(lda)$terms
-
-  ndocs <- length(unique(rownames(topic_prob)))
-
-  # mean probabilities over all documents
-  topic_proportions <- colSums(topic_prob) / ndocs
-  # assign topic names
-  names(topic_proportions) <- mintEMU::name_topics(term_prob)
-  # show summed proportions in decreased order
-  sorted_topic_proportions <- sort(topic_proportions, decreasing = TRUE) |>
-    round(digits = digits)
-  data.frame(topic = names(sorted_topic_proportions),
-             proportion = sorted_topic_proportions,
+get_topic_proportions <- function(theta, digits = 2) {
+  ndocs <- length(rownames(theta))
+  topic_proportions <- round(colSums(theta) / ndocs, digits)
+  data.frame(topic_id = 1:ncol(theta),
+             prop = topic_proportions,
              row.names = NULL)
 }
 
-#' Count documents per main topic
+#' Count documents by main topic
 #'
-#' @param lda LDA model
+#' For each topic, count how many documents have it as the main topic.
 #'
-#' @return Data frame with topics and count of documents per main topic
+#' @param theta Matrix with each row representing the probability
+#'              distribution of a document over topics
+#'
+#' @return Data frame with topics and count of documents per each topic
 #' @export
-count_docs_per_topic <- function(lda) {
-
-  topic_prob <- modeltools::posterior(lda)$topics
-  term_prob <- modeltools::posterior(lda)$terms
-
-  k <- ncol(topic_prob)
-  ndocs <- length(unique(rownames(topic_prob)))
-
-  counts_of_primary_topics <- rep(0, k)
-  names(counts_of_primary_topics) <- name_topics(term_prob)
+get_doc_counts_per_topic <- function(theta) {
+  ndocs <- length(rownames(theta))
+  counts <- rep(0, ncol(theta))
 
   for (i in 1:ndocs) {
-    topics_per_doc <- topic_prob[i,]  # select topic distribution for document i
-    # get first element position from ordered list
+    topics_per_doc <- theta[i,]
     primary_topic <- order(topics_per_doc, decreasing = TRUE)[1]
-
-    counts_of_primary_topics[primary_topic] <-
-      counts_of_primary_topics[primary_topic] + 1
+    counts[primary_topic] <- counts[primary_topic] + 1
   }
 
-  sorted_document_counts_per_topic <- sort(counts_of_primary_topics, decreasing = TRUE)
-  data.frame(topic = names(sorted_document_counts_per_topic),
-             count = sorted_document_counts_per_topic,
+  data.frame(topic_id = 1:ncol(theta),
+             count = counts,
              row.names = NULL)
 }
 
