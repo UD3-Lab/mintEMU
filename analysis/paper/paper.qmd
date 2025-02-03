@@ -32,17 +32,24 @@ filters:
 bibliography: references.bib
 csl: "../templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
 abstract: |
-  This paper aims to describe the legacy of the European post-Master in Urbanism 
-  (EMU) that ran between 2005 and 2021 at TU Delft. To that end, it reports on the
-  analysis of the graduation theses produced over the duration of the program.
-  The text mining approach allows for a close scrutiny of the latent thematic patterns, 
-  and evolutions thereof, found in the full texts of the theses. Results reveal 5 topics
-  that are to a large extent consistent with the set-up of the program in two thematic 
-  semesters at TU Delft and three possible exchange semester locations, each characterised 
-  by a specific approach. The paper discusses the relevance of the findings for the
-  state of the profession and education in the field. Set up as a research
-  compendium accompanied by a published FAIR dataset and an interactive dashboard, 
-  the research is fully reproducible and enables further analysis. 
+  After seventeen years of being part of the the European post-Master in 
+  Urbanism (EMU), Delft Univerisity of Technology (TU Delft) left the program in
+  2021. This paper aims to describe the legacy of TU Delft's contribution to the
+  EMU and the profession. It reports on a topic model of graduation theses
+  produced during the program. Results reveal topics that are consistent with
+  the set-up of the program in two thematic semesters and three possible
+  exchange semester locations. The paper discusses the relevance of the findings
+  for the state of the profession and education in the field.
+# TODO check sentences on results and discussion
+# TODO JPER abstracts should generally be no longer than 125 words and have one sentence to
+# answer each of the following questions:
+# 1. What is the issue addressed and why is it important for planning theory or
+# practice?
+# 2. What gaps or misunderstandings in the literature does the research fill or correct?
+# 3. How was the research conducted?
+# 4. What are the research findings?
+# 5. What are the conclusions for planning theory or practice and the implications for
+# further research? 
 keywords: |
   urbanism; education; post-master; text mining; topic modeling
 highlights: |
